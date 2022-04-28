@@ -2,17 +2,16 @@ version: '3'
 services:
 
   mysqldb:
-    image: "mysql"
+    image: "mysql/mysql-server:8.0"
     restart: unless-stopped
     container_name: mysqldb
-    env_file: ./.env
     environment:
       - MYSQL_ROOT_PASSWORD=123
       - MYSQL_DATABASE=bookingmodels
     ports:
       - 13306:3306
     volumes:
-      - db/data:/var/lib/mysql
+      - ./db/data:/var/lib/mysql
 
 #   backend-app:
 #     depends_on:
