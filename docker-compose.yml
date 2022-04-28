@@ -9,10 +9,10 @@ services:
     ports:
     - 13306:3306
     volumes:
-    - ${pwd}/db/my.cnf:/etc/my.cnf
-    - ${pwd}/data,dst=/var/lib/mysql
+    - /home/student209/test-project/db/my.cnf:/etc/my.cnf
+    - /home/student209/test-project/db/data,dst=/var/lib/mysql
 
-    
+
 #   backend-app:
 #     depends_on:
 #       - mysqldb
