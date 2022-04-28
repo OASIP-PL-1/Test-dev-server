@@ -78,6 +78,6 @@ values
 (3,'xxxxxxxx TT-4','somkiat.kay@kmutt.ac.th','2022-05-23 16:30:00',(select eventCategoryDuration from eventCategories where eventCategoryId=3),null,3);
 
 
-update eventcategories set eventCategoryDuration = 20 where eventCategoryId=2;
+update eventCategories set eventCategoryDuration = 20 where eventCategoryId=2;
 select * from eventCategories;
 select * from events;
