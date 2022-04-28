@@ -36,7 +36,6 @@ FROM maven:3.8.5-jdk-11-slim AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn clean install
 RUN mvn -f pom.xml clean package
 
 FROM openjdk:11-jdk-slim
