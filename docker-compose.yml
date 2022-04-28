@@ -11,6 +11,7 @@ services:
     volumes:
     - /home/student209/test-project/db/my.cnf:/etc/my.cnf
     - /home/student209/test-project/db/data,dst=/var/lib/mysql
+    - /home/student209/test-project/db/:/docker-entrypoint-initdb.d
 
 
 #   backend-app:
