@@ -1,0 +1,89 @@
+{
+    "events": [
+        {
+            "id": 1,
+            "bookingName": "Siraphop Group 04",
+            "bookingEmail": "siraphop.c@kmutt.ac.th",
+            "eventStartTime": "2022-04-25T03:30:00Z",
+            "eventDuration": 30,
+            "eventNotes": "มีคำถามเรื่อง requirement เพิ่มเติมครับ ว่า view-list-all ต้องแสดงข้อมูลอะไรบ้าง และส่วน validate ควรทำอะไรบ้างเพื่อความแน่ใจครับ มันจำเป็นที่ต้องกันเรื่องความทับซ้อนของช่วงเวลาภายใน eventcategory ด้วยเหรอครับ?",
+            "eventCategoryId": {
+                "id": 221,
+                "eventCategoryName": "Project Management Clinic",
+                "eventCategoryDescription": "For Project Management. Advisor: Aj.Olarn",
+                "eventCategoryDuration": 30
+            }
+        },
+        {
+            "id": 2,
+            "bookingName": "Pammy Group 02",
+            "bookingEmail": "jariyavadee.26@kmutt.ac.th",
+            "eventStartTime": "2022-04-25T05:15:00Z",
+            "eventDuration": 20,
+            "eventNotes": "อยากรบกวนอาจารย์ช่วยดูโปรเจกต์ให้หน่อยค่ะว่าเหมาะสมหรือไม่ รวมถึงอยากถามเรื่อง design อื่น ๆ เช็คความถูกต้องค่ะ",
+            "eventCategoryId": {
+                "id": 101,
+                "eventCategoryName": "Advisoeventcategoriesr - Achara",
+                "eventCategoryDescription": "Aj.Achara group for consultation",
+                "eventCategoryDuration": 20
+            }
+        },
+        {
+            "id": 3,
+            "bookingName": "Nice - Nice suGroup 01",
+            "bookingEmail": "vichuta.nice@kmutt.ac.th",
+            "eventStartTime": "2022-04-25T11:25:00Z",
+            "eventDuration": 20,
+            "eventNotes": "แจ้งอาจารย์ให้ดู design ต่าง ๆ ได้แก่ ER diagram, software development design, system development design และรับ feedback มาแก้ไขค่ะ",
+            "eventCategoryId": {
+                "id": 106,
+                "eventCategoryName": "Advisor - Pichet",
+                "eventCategoryDescription": "Aj.Pichet group for consultation",
+                "eventCategoryDuration": 20
+            }
+        },
+        {
+            "id": 4,
+            "bookingName": "Poom Group 07",
+            "bookingEmail": "Nitipoom.it@kmutt.ac.th",
+            "eventStartTime": "2022-04-25T13:00:00Z",
+            "eventDuration": 40,
+            "eventNotes": "อยากสอบถามเรื่อง การทำ eventDuration ของทั้ง 2 ตารางว่าควรทำยังไงดีครับ ? พอดีใน requirement มันมีเงื่อนไขบางส่วนน่ะครับ",
+            "eventCategoryId": {
+                "id": 206,
+                "eventCategoryName": "Database Clinic",
+                "eventCategoryDescription": "For database problem. Advisor: Aj.Sanit, Aj.Sunisa",
+                "eventCategoryDuration": 40
+            }
+        },
+        {
+            "id": 5,
+            "bookingName": "Cartoonydesu Group 04",
+            "bookingEmail": "piraya.cartoony@mail.kmutt.ac.th",
+            "eventStartTime": "2022-04-25T14:30:00Z",
+            "eventDuration": 25,
+            "eventNotes": "อยากให้อาจารย์ให้ feed back เกี่ยว wireframe ที่กลุ่มของพวกหนูออกแบบค่ะ รวมถึงอยากให้ดูเรื่อง database ที่ insert ข้อมูลเรียบร้อยแล้วค่ะ",
+            "eventCategoryId": {
+                "id": 108,
+                "eventCategoryName": "Advisor - Sunisa",
+                "eventCategoryDescription": "Aj.Sunisa group for consultation",
+                "eventCategoryDuration": 25
+            }
+        },
+        {
+            "id": 6,
+            "bookingName": "Pornticha Nice Group 05",
+            "bookingEmail": "pornticha.nice@mail.kmutt.ac.th",
+            "eventStartTime": "2022-04-26T15:30:00Z",
+            "eventDuration": 20,
+            "eventNotes": "อยากปรึกษาเรื่องการทำ constraint เช็คเงื่อนไขใน database และการส่ง error ให้ backend",
+            "eventCategoryId": {
+                "id": 109,
+                "eventCategoryName": "Advisor - Sanit",
+                "eventCategoryDescription": "Aj.Sanit group for consultation",
+                "eventCategoryDuration": 20
+            }
+        }
+    ]
+}
+    
