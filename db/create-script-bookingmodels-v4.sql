@@ -62,7 +62,7 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 use bookingmodels;
-insert  into eventcategories(eventCategoryId,eventCategoryName,eventCategoryDescription,eventCategoryDuration) 
+insert  into eventCategories(eventCategoryId,eventCategoryName,eventCategoryDescription,eventCategoryDuration) 
 values 
 (1,'Project Management Clinic','project management clinic INT221 integrated project I',30),
 (2,'DevOps/Infra Clinic','Use this event category for DevOps/Infra clinic.',30),
@@ -73,11 +73,11 @@ values
 
 insert  into events(eventId,bookingName,bookingEmail,eventStartTime,eventDuration,eventNotes,eventCategoryId) 
 values 
-(1,'Somchai Jaidee (OR-7)','somchai.jai@mail.kmutt.ac.th','2022-05-23 13:30:00',(select eventCategoryDuration from eventcategories where eventCategoryId=2),null,2),
-(2,'Somsri Rakdee (SJ-3)','somsri.rak@mail.kmutt.ac.th','2022-04-27 09:30:00',(select eventCategoryDuration from eventcategories where eventCategoryId=1),'xxxx',1),
-(3,'xxxxxxxx TT-4','somkiat.kay@kmutt.ac.th','2022-05-23 16:30:00',(select eventCategoryDuration from eventcategories where eventCategoryId=3),null,3);
+(1,'Somchai Jaidee (OR-7)','somchai.jai@mail.kmutt.ac.th','2022-05-23 13:30:00',(select eventCategoryDuration from eventCategories where eventCategoryId=2),null,2),
+(2,'Somsri Rakdee (SJ-3)','somsri.rak@mail.kmutt.ac.th','2022-04-27 09:30:00',(select eventCategoryDuration from eventCategories where eventCategoryId=1),'xxxx',1),
+(3,'xxxxxxxx TT-4','somkiat.kay@kmutt.ac.th','2022-05-23 16:30:00',(select eventCategoryDuration from eventCategories where eventCategoryId=3),null,3);
 
 
 update eventcategories set eventCategoryDuration = 20 where eventCategoryId=2;
-select * from eventcategories;
+select * from eventCategories;
 select * from events;
