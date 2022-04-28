@@ -30,7 +30,9 @@ services:
         "spring.jpa.hibernate.ddl-auto" : "update",
         "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
         "spring.data.rest.default-media-type" : "application/json",
-        "spring.hateoas.use-hal-as-default-json-media-type" : "false"
+        "spring.hateoas.use-hal-as-default-json-media-type" : "false",
+        "spring.servlet.multipart.enabled" : "true",
+        "spring.servlet.multipart.max-file-size" : "10MB"
       }'
     volumes:
       - .m2:/root/.m2

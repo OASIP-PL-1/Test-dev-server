@@ -3,3 +3,7 @@
 sudo docker run -d --name mysqldb -p 13306:3306 -v ${pwd}/db/my.cnf:/etc/my.cnf -v ${pwd}/data,dst=/var/lib/mysql -e MYSQL_ROOT_PASSWORD='123' mysql/mysql-server:8.0
 sudo docker exec -it mysqldb mysql -u root -p
 sudo docker-compose up -d
+
+2. test build maven ก่อน แล้วค่อย up 
+mvn -f pom.xml clean package  
+เปลี่ยน dockerfile ใน backend RUN mvn -Dmaven.test.skip package
