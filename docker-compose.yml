@@ -9,9 +9,9 @@ services:
     ports:
     - 13306:3306
     volumes:
-    - /home/student209/test-project/db/my.cnf:/etc/my.cnf
-    - /home/student209/test-project/db/data,dst=/var/lib/mysql
-    - /home/student209/test-project/db/:/docker-entrypoint-initdb.d
+    - ~/test-project/db/my.cnf:/etc/my.cnf
+    - ~/test-project/db/data,dst=/var/lib/mysql
+    - ~/test-project/db/:/docker-entrypoint-initdb.d
 
   backend-app:
     depends_on:
