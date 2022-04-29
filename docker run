@@ -4,6 +4,8 @@ sudo docker run -d --name mysqldb -p 13306:3306 -v ${pwd}/db/my.cnf:/etc/my.cnf 
 sudo docker exec -it mysqldb mysql -u root -p
 sudo docker-compose up -d
 
-2. test build maven ก่อน แล้วค่อย up 
+2. ลอง build maven ก่อน แล้วค่อย up 
+//run build ใน project backend บนเครื่องตัวเอง
+.\mvnw package 
 mvn -f pom.xml clean package  
 เปลี่ยน dockerfile ใน backend RUN mvn -Dmaven.test.skip package
