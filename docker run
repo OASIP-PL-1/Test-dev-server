@@ -6,6 +6,7 @@ sudo docker-compose up -d
 
 2. ลอง build maven ก่อน แล้วค่อย up 
 //run build ใน project backend บนเครื่องตัวเอง
+//เพิ่ม env ตรง path กรอบล่าง C:\Program Files\apache-maven-3.8.5-bin\apache-maven-3.8.5\bin
 .\mvnw package 
 mvn -f pom.xml clean package  
 เปลี่ยน dockerfile ใน backend RUN mvn -Dmaven.test.skip package

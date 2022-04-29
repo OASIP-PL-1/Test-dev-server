@@ -62,6 +62,7 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 use bookingmodels;
+set names utf8;
 insert  into eventCategories(eventCategoryId,eventCategoryName,eventCategoryDescription,eventCategoryDuration) 
 values 
 (1,'Project Management Clinic','project management clinic INT221 integrated project I',30),
