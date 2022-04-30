@@ -43,7 +43,7 @@ services:
     build: ./Front-end
     restart: on-failure
     ports:
-      - 3000:3000
+      - 80:3000
     container_name: frontend-app
     volumes:
        - ./Front-end:/usr/src/app/Front-end
