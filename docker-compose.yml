@@ -2,12 +2,17 @@ version: '3'
 services:
   
   frontend-app:
-    build: ./Front-end
+    build:
+      context: ./Front-end
+      dockerfile: Dockerfile-dev
     restart: on-failure
-    container_name: frontend-app
     ports:
       - 3000:3000
-    
+    container_name: frontend-app
+    volumes:
+       - ./my-app:/usr/src/app/my-app
+       - /usr/src/app/my-app/node_modules
+       
   # mysqldb:
   #   container_name: mysqldb
   #   environment:
