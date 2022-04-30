@@ -5,7 +5,7 @@
   const events = ref([])
 
   const getEvents = async () => {
-    // const res = await fetch('http://localhost/api/events')
+    // const res = await fetch('http://localhost:8080/api/events')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`)
     events.value = await res.json()
   }
