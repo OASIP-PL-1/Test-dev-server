@@ -31,10 +31,14 @@
 # CMD ["nginx", "-g", "daemon off;"]
 
 #3
+#api
+
+
 #app
-FROM node:10
+FROM node:17
 WORKDIR /usr/src/app/my-app
 COPY package*.json ./
 RUN npm install
+RUN npm run build
 EXPOSE 3000
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "dev"]
