@@ -1,6 +1,13 @@
 version: '3'
 services:
-
+  
+  frontend-app:
+    build: ./Front-end
+    restart: on-failure
+    container_name: frontend-app
+    ports:
+      - 3000:3000
+    
   # mysqldb:
   #   container_name: mysqldb
   #   environment:
@@ -38,10 +45,5 @@ services:
   #   tty: true
 # volumes:
 #   db:
-  frontend-app:
-    build: ./Front-end
-    restart: on-failure
-    container_name: frontend-app
-    ports:
-      - 3000:3000
+
     
