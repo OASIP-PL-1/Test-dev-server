@@ -1,10 +1,11 @@
 # วิธี run dev server
-
-### run docker-compose
+*ช่วงแรก* : ที่เข้า vm ให้ `ssh-keygen` แล้ว copy `id_rsa.pub` ใน `~/.ssh` ไปใส่ใน link git ที่จะ pull project 
 ``` 
 git clone https://github.com/OASIP-PL-1/Test-dev-server
 cd ./Test-dev-server/
-
+``` 
+### run docker-compose
+``` 
 sudo docker-compose up -d
 ``` 
 //รอ ... 5-10 นาที
@@ -61,8 +62,7 @@ sudo docker exec -it mysqldb mysql -u root -p
 ``` 
 
 2. สร้าง backend container 
-
-*ช่วงแรก ลอง build maven ก่อน แล้วค่อย up*
+*ช่วงแรก* : ลอง build maven ก่อน แล้วค่อย up
 - run build ใน project backend บนเครื่องตัวเอง
 - เพิ่ม java ใน env กรอบล่าง New> JAVA_HOME เลือก  C:\Program Files\java\jdk... *ต้องใช้ java version เดียวกับ pom.xml*
 - เพิ่ม mvn ใน env ตรง path กรอบล่าง C:\Program Files\apache-maven-3.8.5-bin\apache-maven-3.8.5\bin
