@@ -1,19 +1,18 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.EventAllDTO;
 import com.example.backend.dtos.EventDTO;
 import com.example.backend.entities.Event;
 import com.example.backend.repositories.EventRepository;
 import com.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
+@CrossOrigin(origins = "http://localhost:3000/")
 public class EventController{
     @Autowired
     private EventRepository repository;
@@ -21,7 +20,7 @@ public class EventController{
     private EventService service;
 
     @GetMapping("")
-    public List<EventDTO> getAllEventDTO(){
+    public List<EventAllDTO> getAllEventDTO(){
         return service.getEventDTO();
     }
 
