@@ -4,43 +4,50 @@
 git clone https://github.com/OASIP-PL-1/Test-dev-server
 cd ./Test-dev-server/
 ``` 
-### run docker-compose
+### 1. run docker-compose
 ``` 
 sudo docker-compose up -d
 ``` 
-//รอ ... 5-10 นาที
+> รอ ... 5-10 นาที
+
+- ถ้าจะเข้าไป check database container --> user:`root` , password:`123`
+``` 
+sudo docker exec -it mysqldb mysql -u root -p
+``` 
+
 - ถ้า error ให้ดู `logs` 
 ```
 sudo docker logs mysqldb
 sudo docker logs backend-app
 ```
+> แล้วไปแก้ code ใน vscode แล้ว git push และ git pull ลง VM อีกรอบ
+> และต้อง `docker-compose down` + ลบไฟล์ด้วย
 
-### stop docker-compose
+
+### 2. stop docker-compose
 ```
 sudo docker-compose down
 ``` 
-** ถ้า down แล้ว **
-1. ต้องลบข้อมูลใน Test-dev-server/db/data
+> *ทำทุกคร้้ง!!! หลัง `docker-compose down`* >>  2.1 , 2.2 
+#### 2.1. ต้องลบข้อมูลใน `Test-dev-server/db/data` เพื่อลบข้อมูลเก่าของ database
 ```
 cd /db
 sudo rm -r data
 mkdir data
-ls data 
-//data ต้องเป็น floder ว่าง
+ls data                 # data ต้องเป็น floder ว่าง
 cd ../
 ```
-2. และลบ image `test-project_backend-app` , `none` 
+#### 2.2. ลบ image `test-project_backend-app` , `<none>` เพื่อข้อมูลเก่าของ backend
 ```
-sudo docker rmi [contianer_id1] [contianer_id2]
 sudo docker images
+sudo docker rmi [contianer_id1] [contianer_id2]
 ```
-//ถ้าไม่ลบ container จะใช้ไฟล์เดิม
-ให้แก้ code ใน vscode แล้ว git push และ git pull ลง VM อีกรอบ
+> ถ้าไม่ลบ image container จะใช้ไฟล์เดิม
+
 ---
 
-## docker-compose.yml
-1. สร้าง database container
-- 
+## วิธีสร้าง docker-compose.yml + Dockerfile
+### 1. สร้าง database container ใน docker-compose.yml
 ```yml
 mysqldb:
     container_name: mysqldb
@@ -50,37 +57,19 @@ mysqldb:
     ports:
     - 13306:3306
     volumes:
-    - /home/student209/test-project/db/my.cnf:/etc/my.cnf             # path ที่มี my.cnf
-    - /home/student209/test-project/db/data:/var/lib/mysql            # path ของ data directory (ที่เก็บข้อมูล)
-    - /home/student209/test-project/db/:/docker-entrypoint-initdb.d   # path ที่มี .sql ไฟล์ไว้รัน script
-``` 
-- /home/student209 ต้องเปลี่ยนเป็น path ~ ของ VM
-
-* เข้าไป check database container --> user:`root` , password:`123`
-``` 
-sudo docker exec -it mysqldb mysql -u root -p
+    - ./db/my.cnf:/etc/my.cnf                # path ที่มี my.cnf
+    - ./db/data:/var/lib/mysql               # path ของ data directory (ที่เก็บข้อมูล)
+    - ./db/:/docker-entrypoint-initdb.d      # path ที่มี .sql ไฟล์ไว้รัน script            
 ``` 
 
-2. สร้าง backend container 
-*ช่วงแรก* : ลอง build maven ก่อน แล้วค่อย up
-- run build ใน project backend บนเครื่องตัวเอง
-- เพิ่ม java ใน env กรอบล่าง New> JAVA_HOME เลือก  C:\Program Files\java\jdk... *ต้องใช้ java version เดียวกับ pom.xml*
-- เพิ่ม mvn ใน env ตรง path กรอบล่าง C:\Program Files\apache-maven-3.8.5-bin\apache-maven-3.8.5\bin
-//รันบน Terminal ใน vscode บนเครื่องตัวเอง 
-```
-cd /test 
-.\mvnw package
-mvn -f pom.xml clean package 
-```
-- เมื่อ bulid แล้ว จะมี target เพิ่มมา
-เปลี่ยน Dockerfile ใน ./Backend --> RUN mvn -Dmaven.test.skip package
-
+### 2. สร้าง `Dockerfile` ใน `./Back-end` เพื่อใช้ bulid image ก่อนสร้าง container
 ```dockerfile
 FROM maven:3.8.5-jdk-11-slim AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn -Dmaven.test.skip package
+RUN mvn -Dmaven.test.skip package    
+# ต้อง run หลังจากใช้ mvn package แล้ว 
 
 FROM openjdk:11-jdk-slim
 ARG JAR_FILE=/app/target/*.jar
@@ -88,7 +77,20 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
 ```
+*ช่วงแรก* : ถ้าไม่มี `target` floder ต้อง build maven ก่อน แล้วค่อย up ขึ้น server (เพราะลอง bulid บน server แล้วรันไม่ได้)
+- เปิด Terminal ใน vscode บนเครื่องตัวเอง แล้วเข้าไปที่ `Test-dev-server/Back-end/` แล้ว run build ใน project backend
+```
+cd Test-dev-server/Back-end/
+./mvnw package
+mvn -Dmaven.test.skip package
+```
+> เมื่อรันแล้ว จะขึ้น `BUILD SUCCESS` และมีโฟลเดอร์ `target` ขึ้นมา (ควร bulid project ใหม่ทุกครั้งที่มีการแก้ไข code ใน backend)
 
+- ถ้าใช้ `mvn` ไม่ได้ > ต้องไปติดตั้ง env เพิ่ม
+    - เพิ่ม `java` ใน env กรอบล่าง New> JAVA_HOME เลือก C:\Program Files\java\jdk... *ต้องใช้ java version เดียวกับ pom.xml*
+    - เพิ่ม `mvn` ใน env ตรง path กรอบล่าง C:\Program Files\apache-maven-3.8.5-bin\apache-maven-3.8.5\bin (dowload > https://maven.apache.org/)
+
+### 3. สร้าง backend container ใน docker-compose.yml
 ```yml
 backend-app:
     depends_on:
@@ -116,4 +118,10 @@ backend-app:
 volumes:
   db:
 ```
-- ไม่ต้องแก้ application.properties
+> ไม่ต้องแก้อะไร `application.properties` ใน project backend เพราะ `docker-compose.yml` จะ set ให้ใหม่ 
+
+
+### 4. สร้าง `Dockerfile` ใน `.Front-end`
+...
+### 5. สร้าง frontend container ใน docker-compose.yml
+...
