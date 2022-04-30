@@ -1,6 +1,44 @@
 version: '3'
 services:
   
+  mysqldb:
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: '123'
+    image: mysql
+    ports:
+    - 13306:3306
+    volumes:
+    - ./db/my.cnf:/etc/my.cnf
+    - ./db/data:/var/lib/mysql
+    - ./db/:/docker-entrypoint-initdb.d
+
+  backend-app:
+    depends_on:
+      - mysqldb
+    build: ./Back-end
+    restart: on-failure
+    container_name: backend-app
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver",
+        "spring.datasource.username" : "root",
+        "spring.datasource.password" : "123",
+        "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/bookingmodels?allowPublicKeyRetrieval=true&useSSL=false",
+        "spring.jpa.hibernate.ddl-auto" : "update",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
+        "spring.data.rest.default-media-type" : "application/json",
+        "spring.hateoas.use-hal-as-default-json-media-type" : "false"
+      }'
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+# volumes:
+#   db:
+
   frontend-app:
     build: ./Front-end
     restart: on-failure
@@ -10,43 +48,4 @@ services:
     volumes:
        - ./Front-end:/usr/src/app/Front-end
        - ./node_modules:/usr/src/app/Front-end/node_modules
-
-  # mysqldb:
-  #   container_name: mysqldb
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: '123'
-  #   image: mysql
-  #   ports:
-  #   - 13306:3306
-  #   volumes:
-  #   - ./db/my.cnf:/etc/my.cnf
-  #   - ./db/data:/var/lib/mysql
-  #   - ./db/:/docker-entrypoint-initdb.d
-
-  # backend-app:
-  #   depends_on:
-  #     - mysqldb
-  #   build: ./Back-end
-  #   restart: on-failure
-  #   container_name: backend-app
-  #   ports:
-  #     - 8080:8080
-  #   environment:
-  #     SPRING_APPLICATION_JSON: '{
-  #       "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver",
-  #       "spring.datasource.username" : "root",
-  #       "spring.datasource.password" : "123",
-  #       "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/bookingmodels?allowPublicKeyRetrieval=true&useSSL=false",
-  #       "spring.jpa.hibernate.ddl-auto" : "update",
-  #       "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
-  #       "spring.data.rest.default-media-type" : "application/json",
-  #       "spring.hateoas.use-hal-as-default-json-media-type" : "false"
-  #     }'
-  #   volumes:
-  #     - .m2:/root/.m2
-  #   stdin_open: true
-  #   tty: true
-# volumes:
-#   db:
-
     
