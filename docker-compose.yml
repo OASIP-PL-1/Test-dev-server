@@ -8,8 +8,8 @@ services:
       - 3000:3000
     container_name: frontend-app
     volumes:
-       - ./my-app:/usr/src/app/my-app
-       - /usr/src/app/my-app/node_modules
+       - ./Front-end:/usr/src/app/Front-end
+       - ./node_modules:/usr/src/app/Front-end/node_modules
 
   # mysqldb:
   #   container_name: mysqldb
