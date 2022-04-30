@@ -31,7 +31,7 @@ sudo docker-compose down
 > *ทำทุกคร้้ง!!! หลัง `docker-compose down`* >>  2.1 , 2.2 
 #### 2.1. ต้องลบข้อมูลใน `Test-dev-server/db/data` เพื่อลบข้อมูลเก่าของ database
 ```
-cd /db
+cd db
 sudo rm -r data
 mkdir data
 ls data                 # data ต้องเป็น floder ว่าง
