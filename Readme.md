@@ -28,7 +28,7 @@ sudo docker logs backend-app
 ```
 sudo docker-compose down
 ``` 
-> *ทำทุกคร้้ง!!! หลัง `docker-compose down`* >>  2.1 , 2.2 
+> *ทำทุกคร้้ง!!! หลัง `docker-compose down`* แล้วมีการแก้ไข code backend >>  2.1 , 2.2 
 #### 2.1. ต้องลบข้อมูลใน `Test-dev-server/db/data` เพื่อลบข้อมูลเก่าของ database
 ```
 cd db
