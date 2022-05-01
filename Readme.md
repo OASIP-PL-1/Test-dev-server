@@ -122,6 +122,35 @@ volumes:
 
 
 ### 4. สร้าง `Dockerfile` ใน `.Front-end`
-...
+- อันนี้จะเป็นการรัน Vue.js บน nginx
+```
+# build stage
+FROM node:lts-alpine as build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# production stage
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
 ### 5. สร้าง frontend container ใน docker-compose.yml
-...
+```
+frontend-app:
+    depends_on:
+      - backend-app
+    build: ./Front-end
+    restart: on-failure
+    ports:
+      - 3000:80
+    container_name: frontend-app
+```
+### 6. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
+- ต้องเปลี่ยนเลขเป็นเลข ip บนเครื่อง VM
+```
+VITE_BASE_URL=http://10.4.84.106:8080/api
+```
