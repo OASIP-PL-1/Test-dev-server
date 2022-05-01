@@ -28,8 +28,8 @@ sudo docker logs backend-app
 ```
 sudo docker-compose down
 ``` 
-> *ทำทุกคร้้ง!!! หลัง `docker-compose down`* แล้วมีการแก้ไข code backend >>  2.1 , 2.2 
-#### 2.1. ต้องลบข้อมูลใน `Test-dev-server/db/data` เพื่อลบข้อมูลเก่าของ database
+> *ทำทุกคร้้ง!!! หลัง `docker-compose down`*>>  2.1 , 2.2 
+#### 2.1. ถ้ามีการแก้ไข `script.sql` -> ต้องลบข้อมูลใน `Test-dev-server/db/data` เพื่อลบข้อมูลเก่าของ database
 ```
 cd db
 sudo rm -r data
@@ -37,13 +37,19 @@ mkdir data
 ls data                 # data ต้องเป็น floder ว่าง
 cd ../
 ```
-#### 2.2. ลบ image `test-project_backend-app` , `<none>` เพื่อข้อมูลเก่าของ backend
+#### 2.2. ถ้ามีการแก้ไข `code backend` -> ลบ image `test-project_backend-app` , `<none>` เพื่อข้อมูลเก่าของ backend
 ```
 sudo docker images
 sudo docker rmi [contianer_id1] [contianer_id2]
 ```
 > ถ้าไม่ลบ image container จะใช้ไฟล์เดิม
 
+#### 2.3. ถ้ามีการแก้ไข `code frontend` -> ลบ image `test-dev-server_frontend-app` , `<none>` เพื่อข้อมูลเก่าของ frontend
+```
+sudo docker images
+sudo docker rmi [contianer_id1] [contianer_id2]
+```
+> ถ้าไม่ลบ image container จะใช้ไฟล์เดิม
 ---
 
 ## วิธีสร้าง docker-compose.yml + Dockerfile
@@ -123,7 +129,7 @@ volumes:
 
 ### 4. สร้าง `Dockerfile` ใน `.Front-end`
 - อันนี้จะเป็นการรัน Vue.js บน nginx
-```
+```Dockerfile
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /app
@@ -139,7 +145,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 ### 5. สร้าง frontend container ใน docker-compose.yml
-```
+```yml
 frontend-app:
     depends_on:
       - backend-app
