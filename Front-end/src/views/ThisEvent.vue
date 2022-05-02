@@ -16,6 +16,7 @@
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`)
     .catch(()=> {
         message.value = "Not Found Backend Server!!!"
+        showDetail.value = false
     });
         thisEvent.value = await res.json()
         console.log(res.status)
