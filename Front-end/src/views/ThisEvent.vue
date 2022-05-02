@@ -3,14 +3,30 @@
     import {useRoute, useRouter} from 'vue-router'
 
     const {params} = useRoute()
+
     const thisEvent = ref({})
     const showDetail = ref({})
+
+    const loading =ref()
+    const message = ref()
+
     const getThisEvent = async () => {
+        loading.value = true
+        message.value = "loading..."
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`)
+    .catch(()=> {
+        message.value = "Not Found Backend Server!!!"
+        showDetail.value = false
+    });
         thisEvent.value = await res.json()
-        showDetail.value = checkStatus(res.status)
+        console.log(res.status)
+        if(res.status===200){
+            showDetail.value = true
+        }else if(res.status===404){
+            showDetail.value = false
+        }
+        loading.value = false
     }
-    const checkStatus = (resStatus) => {return resStatus === 200 ? true : false}
 
     onBeforeMount(async () => {
       await getThisEvent()
@@ -26,14 +42,15 @@
         return changeDate
     }
 
-    
-
-</script>
- 
+</script> 
  
 <template>
     <button @click="goBack">Back</button>
-    <div v-show="showDetail" class="box">
+    <div v-if="loading" class="subText">{{message}}</div>
+    <div v-else-if="!showDetail" class="NotFoundText">
+        -- ไม่พบข้อมูล --
+    </div>
+     <div v-else class="box">
         <h3>Booking Name : {{thisEvent.bookingName}}</h3>
             <b>bookingEmail :</b> {{thisEvent.bookingEmail}}
         <hr>
@@ -47,15 +64,12 @@
         <br>
             <b>Finished time : </b> {{ addMinutes(new Date(thisEvent.startTime),thisEvent.duration).toLocaleTimeString('th-TH') }}
         <br>
-        <div v-if="thisEvent.notes !== null">
-            <b>Notes :</b> {{thisEvent.notes}}
+        <div v-if="thisEvent.notes === null || thisEvent.notes.length === 0">
+            <b>Notes :</b> -
         </div>
         <div v-else>
-            <b>Notes :</b> - 
+            <b>Notes :</b> {{thisEvent.notes}}
         </div>
-    </div>
-    <div v-show="!showDetail" class="NotFoundText">
-        -- ไม่พบข้อมูล --
     </div>
     <div class="button-right">
         <!-- <button @click="">Edit</button>

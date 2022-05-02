@@ -19,17 +19,17 @@
 # CMD mvn spring-boot:run
 
 # # 3
-# FROM maven:3.8.5-openjdk-17-slim as build
+# FROM maven:3.8.5-jdk-11-slim AS build
 # WORKDIR /app
 # COPY pom.xml .
-# COPY src/ ./src/
-# RUN mvn -Dmaven.test.skip package
+# COPY src ./src
+# RUN mvn -f pom.xml clean package
 
-# FROM openjdk:17-jdk-alpine
+# FROM openjdk:11-jdk-slim
 # ARG JAR_FILE=/app/target/*.jar
-# COPY --from=build ${JAR_FILE} app.jar
+# COPY --from=build /app/target/*.jar app.jar
 # EXPOSE 8080
-# ENTRYPOINT exec java -jar app.jar
+# ENTRYPOINT ["java","-jar","app.jar"]
 
 # ***
 FROM maven:3.8.5-jdk-11-slim AS build

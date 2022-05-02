@@ -1,6 +1,6 @@
 version: '3'
 services:
-
+  
   mysqldb:
     container_name: mysqldb
     environment:
@@ -9,9 +9,9 @@ services:
     ports:
     - 13306:3306
     volumes:
-    - /home/student209/test-project/db/my.cnf:/etc/my.cnf
-    - /home/student209/test-project/db/data,dst=/var/lib/mysql
-    - /home/student209/test-project/db/:/docker-entrypoint-initdb.d
+    - ./db/my.cnf:/etc/my.cnf
+    - ./db/data:/var/lib/mysql
+    - ./db/:/docker-entrypoint-initdb.d
 
   backend-app:
     depends_on:
@@ -36,5 +36,29 @@ services:
       - .m2:/root/.m2
     stdin_open: true
     tty: true
-volumes:
-  db:
+
+  
+  # frontend-app:
+  #   depends_on:
+  #     - backend-app
+  #   build: ./Front-end
+  #   restart: on-failure
+  #   ports:
+  #     - 80:80
+  #   container_name: frontend-app
+    
+  frontend-app:
+    depends_on:
+      - backend-app
+    build: ./Front-end
+    image: vue_app
+    restart: on-failure
+    ports:
+      - 80:3000
+    container_name: frontend-app
+    tty: true
+    
+      
+   
+
+
