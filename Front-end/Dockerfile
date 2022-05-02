@@ -43,3 +43,13 @@ CMD ["nginx", "-g", "daemon off;"]
 # RUN npm run build
 # EXPOSE 3000
 # CMD ["npm", "run", "serve"]
+
+#4
+# FROM node:17-buster-slim
+# WORKDIR /app
+# ENV PATH /app/node_modules/.bin:$PATH
+# COPY package*.json ./
+# RUN npm install --silent
+# COPY . .
+# EXPOSE 3000
+# CMD ["npm", "run", "dev"]
