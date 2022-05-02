@@ -47,7 +47,10 @@
 <template>
     <button @click="goBack">Back</button>
     <div v-if="loading" class="subText">{{message}}</div>
-    <div v-else v-show="showDetail" class="box">
+    <div v-else-if="!showDetail" class="NotFoundText">
+        -- ไม่พบข้อมูล --
+    </div>
+     <div v-else class="box">
         <h3>Booking Name : {{thisEvent.bookingName}}</h3>
             <b>bookingEmail :</b> {{thisEvent.bookingEmail}}
         <hr>
@@ -67,9 +70,6 @@
         <div v-else>
             <b>Notes :</b> {{thisEvent.notes}}
         </div>
-    </div>
-    <div v-show="!showDetail" class="NotFoundText">
-        -- ไม่พบข้อมูล --
     </div>
     <div class="button-right">
         <!-- <button @click="">Edit</button>
