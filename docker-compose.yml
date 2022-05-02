@@ -46,9 +46,7 @@ services:
     ports:
       - 80:80
     container_name: frontend-app
-    volumes:
-      - './frontend:/app'
-      - '/app/node_modules'
+    
    
 
 
