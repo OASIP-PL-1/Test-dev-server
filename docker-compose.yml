@@ -37,16 +37,6 @@ services:
     stdin_open: true
     tty: true
 
-  
-  # frontend-app:
-  #   depends_on:
-  #     - backend-app
-  #   build: ./Front-end
-  #   restart: on-failure
-  #   ports:
-  #     - 80:80
-  #   container_name: frontend-app
-    
   frontend-app:
     depends_on:
       - backend-app
