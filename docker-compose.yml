@@ -36,18 +36,30 @@ services:
       - .m2:/root/.m2
     stdin_open: true
     tty: true
-# volumes:
-#   db:
 
+  
   frontend-app:
     depends_on:
       - backend-app
     build: ./Front-end
     restart: on-failure
     ports:
-      - 3000:80
+      - 80:80
     container_name: frontend-app
-    # volumes:
-    #    - ./Front-end:/usr/src/app/Front-end
-    #    - ./node_modules:/usr/src/app/Front-end/node_modules
+    volumes:
+       - ./Front-end:/usr/src/app/Front-end
+       - ./node_modules:/usr/src/app/Front-end/node_modules
     
+
+  # frontend-app:
+  #   depends_on:
+  #     - backend-app
+  #   container_name: frontend-app
+  #   image: node:lts
+  #   working_dir: /var/www/html/app/
+  #   entrypoint: /bin/bash
+  #   expose:
+  #     - 3000
+  #   volumes:
+  #     - ./Front-end/:/var/www/html/app
+  #   tty: true
