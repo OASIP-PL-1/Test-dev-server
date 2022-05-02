@@ -1,7 +1,7 @@
 # วิธี run dev server
 *ช่วงแรก* : ที่เข้า vm ให้ `ssh-keygen` แล้ว copy `id_rsa.pub` ใน `~/.ssh` ไปใส่ใน link git ที่จะ pull project 
 ``` 
-git clone https://github.com/OASIP-PL-1/Test-dev-server
+git clone git@github.com:OASIP-PL-1/Test-dev-server.git
 cd ./Test-dev-server/
 ``` 
 ### 1. run docker-compose
