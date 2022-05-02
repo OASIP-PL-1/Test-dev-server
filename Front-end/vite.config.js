@@ -10,8 +10,8 @@ export default defineConfig({
       '/api': {
         target: 'http://10.4.84.106:8080',
         changeOrigin: true,
-        secure: false,
-        port: 8080
+        toProxy: true,
+        secure: false
       }
     } ,
     port : 80
