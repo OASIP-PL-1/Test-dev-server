@@ -152,7 +152,7 @@ frontend-app:
     build: ./Front-end
     restart: on-failure
     ports:
-      - 3000:80
+      - 80:80
     container_name: frontend-app
 ```
 ### 6. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
