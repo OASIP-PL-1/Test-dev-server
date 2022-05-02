@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "http://10.4.56.100")
+@CrossOrigin(origins = "*")
 public class EventController{
     @Autowired
     private EventRepository repository;
