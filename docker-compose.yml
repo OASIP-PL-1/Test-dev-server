@@ -44,19 +44,11 @@ services:
     build: ./Front-end
     restart: on-failure
     ports:
-      - 80:80
+      - 80:3000
     container_name: frontend-app
+    volumes:
+      - './frontend:/app'
+      - '/app/node_modules'
    
 
-  # frontend-app:
-  #   depends_on:
-  #     - backend-app
-  #   container_name: frontend-app
-  #   image: node:lts
-  #   working_dir: /var/www/html/app/
-  #   entrypoint: /bin/bash
-  #   expose:
-  #     - 3000
-  #   volumes:
-  #     - ./Front-end/:/var/www/html/app
-  #   tty: true
+

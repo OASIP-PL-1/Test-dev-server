@@ -13,5 +13,10 @@ export default defineConfig({
         secure: false
       }
     }, port : 80
+  },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   }
 })
