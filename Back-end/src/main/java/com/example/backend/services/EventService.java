@@ -16,11 +16,11 @@ import java.util.List;
 @Service
 public class EventService {
     @Autowired
-    private final EventRepository repository;
+    private EventRepository repository;
     @Autowired
-    private final ModelMapper modelMapper;
+    private ModelMapper modelMapper;
     @Autowired
-    private final ListMapper listMapper = ListMapper.getInstance();
+    private ListMapper listMapper;
 
     @Autowired
     public EventService(EventRepository repository, ModelMapper modelMapper){
@@ -28,7 +28,7 @@ public class EventService {
         this.modelMapper = modelMapper;
     }
 
-    public List<EventDTO> getEventDTO(){
+    public List<EventAllDTO> getEventDTO(){
         List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
         return listMapper.mapList(events, EventAllDTO.class,modelMapper);
     }

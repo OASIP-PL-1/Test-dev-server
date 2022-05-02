@@ -14,9 +14,9 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAllDTO {
-    private int id;
+    private Integer id;
     private String bookingName;
     private String categoryName;
     private Instant startTime;
-    private int duration;
+    private Integer duration;
 }

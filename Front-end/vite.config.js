@@ -12,7 +12,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       }
-    },
-    port:80
+    }, port : 80
   }
 })

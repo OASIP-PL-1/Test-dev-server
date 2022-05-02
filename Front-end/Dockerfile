@@ -1,20 +1,45 @@
-# ### STAGE 1: Build ###
-# FROM node:12.7-alpine AS build
-# WORKDIR /usr/src/app
-# COPY package.json ./
-# RUN npm install
-# COPY . .
-# RUN npm run build
-
-# ### STAGE 2: Run ###
-# FROM nginx:1.17.1-alpine
-# COPY default.conf /etc/nginx/conf.d/default.conf
-# COPY --from=build /usr/src/app/dist/kanban-ui /usr/share/nginx/html
-# EXPOSE 80
-
-# FROM node:18-alpine3.14 as build-stage
+# 1
+# FROM node:lts-alpine
+# # install simple http server for serving static content
+# RUN npm install -g http-server
+# # make the 'app' folder the current working directory
 # WORKDIR /app
+# # copy both 'package.json' and 'package-lock.json' (if available)
+# COPY package*.json ./
+# # install project dependencies
+# RUN npm install
+# # copy project files and folders to the current working directory (i.e. 'app' folder)
+# COPY . .
+# # build app for production with minification
+# RUN npm run build
+# EXPOSE 3000
+# CMD [ "http-server", "dist" ]
+
+# 2
+# build stage
+FROM node:lts-alpine as build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# production stage
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+#3
+#api
+
+
+# #app
+# FROM node:17
+# WORKDIR /usr/src/app/my-app
 # COPY package*.json ./
 # RUN npm install
 # COPY . .
 # RUN npm run build
+# EXPOSE 3000
+# CMD ["npm", "run", "serve"]

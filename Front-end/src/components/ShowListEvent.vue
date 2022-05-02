@@ -1,15 +1,15 @@
 <script setup>
   defineProps({
       events:{
-          type: Array,
+          type: Object,
           require: true
       }
   })
 </script>
  
 <template>
-  <div v-if="events.length === 0" style="text-align: center;">
-    <span class="emptyText">No Scheduled Events </span>
+  <div v-if="events.length === 0" class="centerText">
+    <span class="emptyText"> --- No Scheduled Events -- </span>
   </div>
   <div v-else>
     <h2>List All Event</h2>
