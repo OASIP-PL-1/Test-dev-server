@@ -46,10 +46,7 @@ services:
     ports:
       - 80:80
     container_name: frontend-app
-    volumes:
-       - ./Front-end:/usr/src/app/Front-end
-       - ./node_modules:/usr/src/app/Front-end/node_modules
-    
+   
 
   # frontend-app:
   #   depends_on:
