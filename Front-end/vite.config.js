@@ -4,19 +4,14 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()]
-  ,
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://10.4.84.106:8080',
-        changeOrigin: true,
-        secure: false
-      }
-    }, port : 80
-  },
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
-  }
+  // ,
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       target: 'http://10.4.84.106:8080',
+  //       changeOrigin: true,
+  //       secure: false
+  //     }
+  //   }, port : 80
+  // }
 })
