@@ -38,15 +38,27 @@ services:
     tty: true
 
   
+  # frontend-app:
+  #   depends_on:
+  #     - backend-app
+  #   build: ./Front-end
+  #   restart: on-failure
+  #   ports:
+  #     - 80:80
+  #   container_name: frontend-app
+    
   frontend-app:
     depends_on:
       - backend-app
     build: ./Front-end
+    image: vue_app
     restart: on-failure
     ports:
-      - 80:80
+      - 80:3000
     container_name: frontend-app
+    tty: true
     
+      
    
 
 
