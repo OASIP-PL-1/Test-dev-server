@@ -21,9 +21,9 @@
               <hr>
             <b>Category Name :</b> {{event.categoryName}}
               <br>
-            <b>Date :</b> {{new Date(event.startTime).toLocaleDateString('th-TH')}}
+            <b>Date :</b> {{new Date(event.startTime).toLocaleDateString()}}
               <br>
-            <b>Start Time :</b> {{new Date(event.startTime).toLocaleTimeString('th-TH')}}
+            <b>Start Time :</b> {{new Date(event.startTime).toLocaleTimeString()}}
               <br>
             <b>Duration :</b> {{event.duration}} (mins)
           </div>
