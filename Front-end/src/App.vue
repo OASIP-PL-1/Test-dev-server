@@ -1,16 +1,16 @@
 <script setup>
-async function connectToServer() {
-        const ws = new WebSocket('ws://172.21.0.4:3000');
-        return new Promise((resolve, reject) => {
-            const timer = setInterval(() => {
-                if(ws.readyState === 1) {
-                    clearInterval(timer)
-                    resolve(ws);
-                }
-            }, 10);
-        });
-    }
-connectToServer()
+// async function connectToServer() {
+//         const ws = new WebSocket('ws://echo.websocket.org/');
+//         return new Promise((resolve, reject) => {
+//             const timer = setInterval(() => {
+//                 if(ws.readyState === 1) {
+//                     clearInterval(timer)
+//                     resolve(ws);
+//                 }
+//             }, 10);
+//         });
+//     }
+// connectToServer()
 </script>
  
 <template>
