@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 ",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "backend": "json-server --watch ./data/db.json --port 5000"
+    "backend": "json-server --watch ./data/db.json --port 5000",
+    "serve": "vite --host 0.0.0.0"
   },
   "dependencies": {
     "json-server": "^0.17.0",
