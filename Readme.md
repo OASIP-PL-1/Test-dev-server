@@ -141,12 +141,11 @@ CMD [ "npm", "run", "serve" ]
 ```
 ### 5. สร้าง frontend container ใน docker-compose.yml
 ```yml
-frontend-app:
+ frontend-app:
     depends_on:
       - backend-app
     build: ./Front-end
     image: vue_app
-    restart: on-failure
     ports:
       - 80:3000
     container_name: frontend-app
