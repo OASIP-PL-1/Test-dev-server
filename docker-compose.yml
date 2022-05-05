@@ -46,7 +46,7 @@ services:
       - 80:80
     container_name: frontend-app
     env_file: 
-      - ./front-end/.env.production
+      - ./Front-end/.env.production
     tty: true
     volumes:
       - ./Front-end:/app
