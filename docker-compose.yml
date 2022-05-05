@@ -41,10 +41,12 @@ services:
     depends_on:
       - backend-app
     build: ./Front-end
-    image: vue_app
+    # image: vue_app
     ports:
       - 80:80
     container_name: frontend-app
+    env_file: 
+      - ./front-end/.env.production
     tty: true
     volumes:
       - ./Front-end:/app
