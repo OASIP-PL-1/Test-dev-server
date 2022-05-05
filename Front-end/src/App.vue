@@ -1,8 +1,20 @@
 <script setup>
+async function connectToServer() {
+        const ws = new WebSocket('ws://10.4.84.106:3000');
+        return new Promise((resolve, reject) => {
+            const timer = setInterval(() => {
+                if(ws.readyState === 1) {
+                    clearInterval(timer)
+                    resolve(ws);
+                }
+            }, 10);
+        });
+    }
+connectToServer()
 </script>
  
 <template>
-<div>
+<div id="app">
     <h1>OASIP - PL1</h1>
     <div>
         <!-- <router-link :to="{name:'ViewEvent'}">View Event</router-link> -->
