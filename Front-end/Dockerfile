@@ -15,12 +15,11 @@
 
 
 #4
-FROM node:17-alpine
-RUN npm install -g http-server
+FROM node:14-alpine
 WORKDIR /vue_app
 COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
 EXPOSE 3000
-CMD [ "http-server", "dist" ]
+CMD [ "npm", "run", "serve" ]
