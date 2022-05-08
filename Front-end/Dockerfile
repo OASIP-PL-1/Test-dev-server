@@ -1,4 +1,21 @@
 # 1
+# FROM node:lts-alpine
+# # install simple http server for serving static content
+# RUN npm install -g http-server
+# # make the 'app' folder the current working directory
+# WORKDIR /app
+# # copy both 'package.json' and 'package-lock.json' (if available)
+# COPY package*.json ./
+# # install project dependencies
+# RUN npm install
+# # copy project files and folders to the current working directory (i.e. 'app' folder)
+# COPY . .
+# # build app for production with minification
+# RUN npm run build
+# EXPOSE 3000
+# CMD [ "http-server", "dist" ]
+
+# 2
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /vue_app
@@ -13,13 +30,26 @@ COPY --from=build-stage /vue_app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
+#3
+#api
 
-# #4
-# FROM node:14-alpine
-# WORKDIR /vue_app
+
+# #app
+# FROM node:17
+# WORKDIR /usr/src/app/my-app
 # COPY package*.json ./
 # RUN npm install
 # COPY . .
 # RUN npm run build
 # EXPOSE 3000
-# CMD [ "npm", "run", "serve" ]
+# CMD ["npm", "run", "serve"]
+
+#4
+# FROM node:17-buster-slim
+# WORKDIR /app
+# ENV PATH /app/node_modules/.bin:$PATH
+# COPY package*.json ./
+# RUN npm install --silent
+# COPY . .
+# EXPOSE 3000
+# CMD ["npm", "run", "dev"]
