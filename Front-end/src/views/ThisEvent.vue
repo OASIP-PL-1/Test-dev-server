@@ -4,9 +4,9 @@
 
     const {params} = useRoute()
 
+// --- Get all list --- 
     const thisEvent = ref({})
     const showDetail = ref({})
-
     const loading =ref()
     const message = ref()
 
@@ -16,7 +16,6 @@
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`)
     .catch(()=> {
         message.value = "Not Found Backend Server!!!"
-        showDetail.value = false
     });
         thisEvent.value = await res.json()
         console.log(res.status)
@@ -32,9 +31,24 @@
       await getThisEvent()
     })
 
+// --- Go back --- 
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
 
+// --- show Date --- 
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
+    const a = new Date('2022-05-04')
+    const getDate = (givenDate) => {
+        console.log(givenDate)
+        const day = days[givenDate.getDay()]
+        const date = givenDate.getDate()
+        const month = months[givenDate.getMonth()]
+        const year = givenDate.getFullYear()
+        return day + ' ' + date + ' ' + month + ' ' + year
+    }
+
+// --- calculate Finished time --- 
     const addMinutes = (date,duration) => {
         const changeDate = date
         changeDate.setMinutes(changeDate.getMinutes()+duration)
@@ -42,38 +56,60 @@
         return changeDate
     }
 
+// --- Edit---
+    
+// --- Delete---
+    const removeEvent = async () => {
+        let isExecuted = confirm(`Do you want to delete event :  ${params.eventId}`)
+        if (isExecuted){
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}` , {
+                method: 'DELETE'
+            })
+            if (res.status===200) {
+                console.log('deleted successfully')
+                goBack()
+            } else console.log('error, cannot delete')
+        }
+    }
+
 </script> 
  
 <template>
-    <button @click="goBack">Back</button>
-    <div v-if="loading" class="subText">{{message}}</div>
-    <div v-else-if="!showDetail" class="NotFoundText">
-        -- ไม่พบข้อมูล --
-    </div>
-     <div v-else class="box">
-        <h3>Booking Name : {{thisEvent.bookingName}}</h3>
-            <b>bookingEmail :</b> {{thisEvent.bookingEmail}}
-        <hr>
-            <b>Category Name :</b> {{thisEvent.categoryName}}
-        <br>
-            <b>Date :</b> {{new Date(thisEvent.startTime).toLocaleDateString('th-TH')}}
-        <br>
-            <b>Start Time :</b> {{new Date(thisEvent.startTime).toLocaleTimeString('th-TH')}}
-        <br>
-            <b>Duration :</b> {{thisEvent.duration}} min  
-        <br>
-            <b>Finished time : </b> {{ addMinutes(new Date(thisEvent.startTime),thisEvent.duration).toLocaleTimeString('th-TH') }}
-        <br>
-        <div v-if="thisEvent.notes === null || thisEvent.notes.length === 0">
-            <b>Notes :</b> -
+    <div class="thisEvent">
+        <button @click="goBack" class="button-18" role="button">Back</button>
+        <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
+        <div v-else-if="!showDetail" class="NotFoundText" style="margin-top: 2em;">
+        -- Not Found Data --
         </div>
         <div v-else>
-            <b>Notes :</b> {{thisEvent.notes}}
+            <div class="box">
+                <h3>Booking Name : {{thisEvent.bookingName}}</h3>
+                    <b>Email :</b> {{thisEvent.bookingEmail}}
+                <hr>
+                    <b>Category Name :</b> {{thisEvent.categoryName}}
+                <br>
+                    <b>Date :</b> {{ getDate(new Date(thisEvent.startTime))}}
+                <br>
+                    <b>Start Time :</b> {{new Date(thisEvent.startTime).toLocaleTimeString('th-TH')}}
+                    
+                <br>
+                    <b>Duration :</b> {{thisEvent.duration}} min  
+                <br>
+                    <b>Finished time : </b> {{ addMinutes(new Date(thisEvent.startTime),thisEvent.duration).toLocaleTimeString('th-TH') }}
+                <br>
+                <div v-if="thisEvent.notes === null">
+                    <b>Notes :</b> -
+                </div>
+                <div v-else>
+                    <b>Notes :</b> {{thisEvent.notes}}
+                </div>
+
+            </div>
+            <div class="button-right">
+                <!-- <button @click="$emit('editEvent', thisEvent.bookingName)" class="button-18" role="button" >Edit</button> &ensp; -->
+                <button @click="removeEvent()" class="button-18" role="button">Delete</button>     
+            </div>
         </div>
-    </div>
-    <div class="button-right">
-        <!-- <button @click="">Edit</button>
-        <button @click="">Delete</button>      -->
     </div>
 </template>
  
@@ -82,9 +118,11 @@
         color: #000000;
     }
     .box {
-        background-color: #DBE7E4;
-        padding: 0px 20px 20px 20px;
+        background-color: #e1dbe7;
+        padding: 1em 2em 3em 2em;
         border-radius: 10px;
+        margin: 1em 2em;
+        min-width: 600px;
     }
     .NotFoundText{
         color: gray;
@@ -92,5 +130,12 @@
     }
     .button-right {
         float: right;
+        margin-right: 2em;
+    }
+    .thisEvent { 
+        margin-left: 2em;
+        margin-right: 2em;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 </style>

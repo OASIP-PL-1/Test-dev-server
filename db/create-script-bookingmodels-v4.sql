@@ -24,7 +24,7 @@ USE `bookingmodels` ;
 DROP TABLE IF EXISTS `bookingmodels`.`eventCategories` ;
 
 CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventCategories` (
-  `eventCategoryId` INT NOT NULL,
+  `eventCategoryId` INT NOT NULL auto_increment,
   `eventCategoryName` VARCHAR(100) NOT NULL,
   `eventCategoryDescription` TEXT(500) NULL,
   `eventCategoryDuration` INT NOT NULL,
@@ -41,7 +41,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bookingmodels`.`events` ;
 
 CREATE TABLE IF NOT EXISTS `bookingmodels`.`events` (
-  `eventId` INT NOT NULL,
+  `eventId` INT NOT NULL auto_increment,
   `bookingName` VARCHAR(100) NOT NULL,
   `bookingEmail` VARCHAR(50) NOT NULL,
   `eventStartTime` DATETIME NOT NULL,

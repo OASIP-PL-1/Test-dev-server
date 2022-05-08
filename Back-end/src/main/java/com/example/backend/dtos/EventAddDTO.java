@@ -1,6 +1,5 @@
 package com.example.backend.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +11,11 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventAllDTO {
+public class EventAddDTO {
     private int id;
     private String bookingName;
-    private String categoryName;
+    private String bookingEmail;
     private Date startTime;
-    private int duration;
+    private String notes;
+    private int eventCategoryId;
 }

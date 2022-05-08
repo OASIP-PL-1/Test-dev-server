@@ -1,89 +1,272 @@
 {
-    "events": [
-        {
-            "id": 1,
-            "bookingName": "Siraphop Group 04",
-            "bookingEmail": "siraphop.c@kmutt.ac.th",
-            "eventStartTime": "2022-04-25T03:30:00Z",
-            "eventDuration": 30,
-            "eventNotes": "มีคำถามเรื่อง requirement เพิ่มเติมครับ ว่า view-list-all ต้องแสดงข้อมูลอะไรบ้าง และส่วน validate ควรทำอะไรบ้างเพื่อความแน่ใจครับ มันจำเป็นที่ต้องกันเรื่องความทับซ้อนของช่วงเวลาภายใน eventcategory ด้วยเหรอครับ?",
-            "eventCategoryId": {
-                "id": 221,
-                "eventCategoryName": "Project Management Clinic",
-                "eventCategoryDescription": "For Project Management. Advisor: Aj.Olarn",
-                "eventCategoryDuration": 30
-            }
-        },
-        {
-            "id": 2,
-            "bookingName": "Pammy Group 02",
-            "bookingEmail": "jariyavadee.26@kmutt.ac.th",
-            "eventStartTime": "2022-04-25T05:15:00Z",
-            "eventDuration": 20,
-            "eventNotes": "อยากรบกวนอาจารย์ช่วยดูโปรเจกต์ให้หน่อยค่ะว่าเหมาะสมหรือไม่ รวมถึงอยากถามเรื่อง design อื่น ๆ เช็คความถูกต้องค่ะ",
-            "eventCategoryId": {
-                "id": 101,
-                "eventCategoryName": "Advisoeventcategoriesr - Achara",
-                "eventCategoryDescription": "Aj.Achara group for consultation",
-                "eventCategoryDuration": 20
-            }
-        },
-        {
-            "id": 3,
-            "bookingName": "Nice - Nice suGroup 01",
-            "bookingEmail": "vichuta.nice@kmutt.ac.th",
-            "eventStartTime": "2022-04-25T11:25:00Z",
-            "eventDuration": 20,
-            "eventNotes": "แจ้งอาจารย์ให้ดู design ต่าง ๆ ได้แก่ ER diagram, software development design, system development design และรับ feedback มาแก้ไขค่ะ",
-            "eventCategoryId": {
-                "id": 106,
-                "eventCategoryName": "Advisor - Pichet",
-                "eventCategoryDescription": "Aj.Pichet group for consultation",
-                "eventCategoryDuration": 20
-            }
-        },
-        {
-            "id": 4,
-            "bookingName": "Poom Group 07",
-            "bookingEmail": "Nitipoom.it@kmutt.ac.th",
-            "eventStartTime": "2022-04-25T13:00:00Z",
-            "eventDuration": 40,
-            "eventNotes": "อยากสอบถามเรื่อง การทำ eventDuration ของทั้ง 2 ตารางว่าควรทำยังไงดีครับ ? พอดีใน requirement มันมีเงื่อนไขบางส่วนน่ะครับ",
-            "eventCategoryId": {
-                "id": 206,
-                "eventCategoryName": "Database Clinic",
-                "eventCategoryDescription": "For database problem. Advisor: Aj.Sanit, Aj.Sunisa",
-                "eventCategoryDuration": 40
-            }
-        },
-        {
-            "id": 5,
-            "bookingName": "Cartoonydesu Group 04",
-            "bookingEmail": "piraya.cartoony@mail.kmutt.ac.th",
-            "eventStartTime": "2022-04-25T14:30:00Z",
-            "eventDuration": 25,
-            "eventNotes": "อยากให้อาจารย์ให้ feed back เกี่ยว wireframe ที่กลุ่มของพวกหนูออกแบบค่ะ รวมถึงอยากให้ดูเรื่อง database ที่ insert ข้อมูลเรียบร้อยแล้วค่ะ",
-            "eventCategoryId": {
-                "id": 108,
-                "eventCategoryName": "Advisor - Sunisa",
-                "eventCategoryDescription": "Aj.Sunisa group for consultation",
-                "eventCategoryDuration": 25
-            }
-        },
-        {
-            "id": 6,
-            "bookingName": "Pornticha Nice Group 05",
-            "bookingEmail": "pornticha.nice@mail.kmutt.ac.th",
-            "eventStartTime": "2022-04-26T15:30:00Z",
-            "eventDuration": 20,
-            "eventNotes": "อยากปรึกษาเรื่องการทำ constraint เช็คเงื่อนไขใน database และการส่ง error ให้ backend",
-            "eventCategoryId": {
-                "id": 109,
-                "eventCategoryName": "Advisor - Sanit",
-                "eventCategoryDescription": "Aj.Sanit group for consultation",
-                "eventCategoryDuration": 20
-            }
-        }
-    ]
+  "events": [
+    {
+      "id": 51,
+      "bookingName": "Natthakan Group 08",
+      "categoryName": "BackEnd Clinic",
+      "startTime": "2022-05-10T12:20:00Z",
+      "duration": 70
+    },
+    {
+      "id": 50,
+      "bookingName": "Kobfah - Sarin Group 06",
+      "categoryName": "Project Management Clinic",
+      "startTime": "2022-05-10T06:50:00Z",
+      "duration": 30
+    },
+    {
+      "id": 49,
+      "bookingName": "Chisanucha Group 05",
+      "categoryName": "Advisor - Pichet",
+      "startTime": "2022-05-09T12:30:00Z",
+      "duration": 20
+    },
+    {
+      "id": 48,
+      "bookingName": "Teeradet Group 10",
+      "categoryName": "Advisor - Kittiphan",
+      "startTime": "2022-05-09T03:20:00Z",
+      "duration": 25
+    },
+    {
+      "id": 47,
+      "bookingName": "Tarathep Group 05",
+      "categoryName": "DevOps-Infra Clinic",
+      "startTime": "2022-05-08T13:20:00Z",
+      "duration": 50
+    },
+    {
+      "id": 46,
+      "bookingName": "Nuttapong Group 10",
+      "categoryName": "Front-End Clinic",
+      "startTime": "2022-05-08T04:45:00Z",
+      "duration": 60
+    },
+    {
+      "id": 45,
+      "bookingName": "Chanatip Group 09",
+      "categoryName": "Network Clinic",
+      "startTime": "2022-05-07T11:25:00Z",
+      "duration": 60
+    },
+    {
+      "id": 5,
+      "bookingName": "Cartoonydesu Group 04",
+      "categoryName": "Advisor - Sunisa",
+      "startTime": "2022-04-25T14:30:00Z",
+      "duration": 25
+    },
+    {
+      "id": 4,
+      "bookingName": "Poom Group 07",
+      "categoryName": "Database Clinic",
+      "startTime": "2022-04-25T13:00:00Z",
+      "duration": 40
+    },
+    {
+      "id": 3,
+      "bookingName": "Nice - Nice suGroup 01",
+      "categoryName": "Advisor - Pichet",
+      "startTime": "2022-04-25T11:25:00Z",
+      "duration": 20
+    },
+    {
+      "id": 2,
+      "bookingName": "Pammy Group 02",
+      "categoryName": "Advisoeventcategoriesr - Achara",
+      "startTime": "2022-04-25T05:15:00Z",
+      "duration": 20
+    },
+    {
+      "bookingName": "zzzz",
+      "bookingEmail": "xxxx",
+      "startTime": "2022-05-12T18:10",
+      "notes": "ง่วงงงงงงงงง",
+      "eventCategoryId": 2,
+      "id": 52
+    },
+    {
+      "bookingName": "zzzz",
+      "bookingEmail": "xxxx",
+      "startTime": "2022-05-12T18:10",
+      "notes": "",
+      "eventCategoryId": 2,
+      "id": 53
+    },
+    {
+      "bookingName": "sssss",
+      "bookingEmail": "sssss",
+      "startTime": "2022-05-03T16:20",
+      "notes": null,
+      "eventCategoryId": 3,
+      "id": 54
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-13T09:20",
+      "notes": null,
+      "eventCategoryId": 3,
+      "id": 55
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-11T16:15",
+      "notes": null,
+      "eventCategoryId": 3,
+      "id": 56
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-10T16:16",
+      "notes": null,
+      "eventCategoryId": 3,
+      "id": 57
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-04T09:17:00.000Z",
+      "notes": null,
+      "eventCategoryId": 4,
+      "id": 58
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-04T12:17:00.000Z",
+      "notes": null,
+      "eventCategoryId": 4,
+      "id": 59
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-12T12:18:00.000Z",
+      "notes": null,
+      "eventCategoryId": 2,
+      "id": 60
+    },
+    {
+      "bookingName": "xxxxx",
+      "bookingEmail": "xxxxxxxx",
+      "startTime": "2022-05-13T09:22:00.000Z",
+      "notes": null,
+      "eventCategoryId": 2,
+      "id": 61
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-11T09:20:00.000Z",
+      "notes": null,
+      "id": 62
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-05T09:23:00.000Z",
+      "notes": null,
+      "id": 63
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-10T12:21:00.000Z",
+      "notes": null,
+      "id": 64
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-19T09:26:00.000Z",
+      "notes": null,
+      "id": 65
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-12T09:27:00.000Z",
+      "notes": null,
+      "id": 66
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-12T09:27:00.000Z",
+      "notes": null,
+      "eventCategoryId": 3,
+      "id": 67
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-13T09:29:00.000Z",
+      "notes": null,
+      "eventCategoryId": 4,
+      "id": 68
+    },
+    {
+      "bookingName": "",
+      "bookingEmail": "",
+      "startTime": "2022-05-05T12:34:00.000Z",
+      "notes": null,
+      "id": 69
+    }
+  ],
+  "event": [
+    {
+      "id": 1,
+      "bookingName": "Siraphop Group 04",
+      "bookingEmail": "siraphop.c@kmutt.ac.th",
+      "categoryName": "Project Management Clinic",
+      "duration": 30,
+      "notes": "มีคำถามเรื่อง requirement เพิ่มเติมครับ ว่า view-list-all ต้องแสดงข้อมูลอะไรบ้าง และส่วน validate ควรทำอะไรบ้างเพื่อความแน่ใจครับ มันจำเป็นที่ต้องกันเรื่องความทับซ้อนของช่วงเวลาภายใน eventcategory ด้วยเหรอครับ?",
+      "startTime": "2022-04-25T03:30:00Z"
+    }
+  ],
+  "addEvent": [
+    {
+      "id": 60,
+      "bookingName": "test",
+      "bookingEmail": "test@gmail.com",
+      "startTime": "2022-05-20T10:00:00.000+07:00",
+      "notes": "test test",
+      "eventCategoryId": 101
+    }
+  ],
+  "eventCategories": [
+    {
+      "id": 203,
+      "categoryName": "Front-End Clinic",
+      "duration": 60
+    },
+    {
+      "id": 204,
+      "categoryName": "BackEnd Clinic",
+      "duration": 70
+    },
+    {
+      "id": 206,
+      "categoryName": "Database Clinic",
+      "duration": 40
+    },
+    {
+      "id": 208,
+      "categoryName": "Network Clinic",
+      "duration": 60
+    },
+    {
+      "id": 209,
+      "categoryName": "DevOps-Infra Clinic",
+      "duration": 50
+    },
+    {
+      "id": 221,
+      "categoryName": "Project Management Clinic",
+      "duration": 30
+    }
+  ]
 }
-    

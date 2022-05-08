@@ -13,11 +13,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDTO {
-    private Integer id;
+    private int id;
     private String bookingName;
     private String bookingEmail;
     private String categoryName;
-    private Integer duration;
+    private int duration;
     private String notes;
-    private Instant startTime;
+    private Date startTime;
 }
