@@ -165,20 +165,23 @@ CMD ["nginx", "-g", "daemon off;"]
 VITE_BASE_URL=http://10.4.84.106:8080/api
 ```
 ### 7. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
+```
 sudo docker exec -it frontend-app sh
 cd /etc/nginx/conf.d
 cat default.conf
 
 vi default.conf
-เพิ่ม try_files $uri $uri/ /index.html;
+```
+เพิ่ม `try_files $uri $uri/ /index.html;`
 Esc :w :q 
 exit;
 
+```
 location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
         try_files $uri $uri/ /index.html;
     }
-
+```
 จากนั้น restart container
 sudo docker-compose restart
