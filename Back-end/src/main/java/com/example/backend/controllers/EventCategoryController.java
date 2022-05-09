@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/eventcategories")
+@RequestMapping("api/eventcategories")
 @CrossOrigin(origins = "*")
 public class EventCategoryController {
     @Autowired
