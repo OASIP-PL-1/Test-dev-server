@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAllDTO {
-    private int id;
+    private Integer id;
     private String bookingName;
     private String categoryName;
     private Date startTime;

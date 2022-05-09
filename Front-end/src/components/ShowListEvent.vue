@@ -22,7 +22,6 @@
 </script>
  
 <template>
-
   <div class="showEvent">
         <h2>List All Event</h2>
         <div class="grid-container">
@@ -57,11 +56,12 @@
    border-radius: 20px;
    padding: 4px 24px 24px;
    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+   min-width: 1000px;
  }
  .grid-container {
     display: grid;
     border-radius: 20px;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 340px 340px 340px;
     background-color: #9F9FF9;
     padding: 15px;
     column-gap: 20px;
@@ -76,6 +76,8 @@
     border-radius: 20px;
     transition: background-color 1s, transform .5s;
     transition-duration: box-shadow 2s;
+    width: 300px;
+    max-height: 250px;
   }
   .grid-item:hover{
     background-color: rgba(255, 255, 255, 1);

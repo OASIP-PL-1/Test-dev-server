@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -30,7 +29,7 @@ public class EventService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private ListMapper listMapper = ListMapper.getInstance();
+    private ListMapper listMapper;
 
     @Autowired
     public EventService(EventRepository repository, ModelMapper modelMapper){
@@ -90,10 +89,16 @@ public class EventService {
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Thailand"));
         Date date = sdf.parse(dateString);
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-
         List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
-
         return listMapper.mapList(events,EventAllDTO.class,modelMapper);
     }
 
+    public boolean checkBookOverlap(int categoryId, String dateTime) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        Date startTime = sdf.parse(dateTime);
+        int duration = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, categoryId + "is not existed.")).getEventCategoryDuration();
+        Date endTime = new Date(startTime.getTime() + (1000 * 60 * duration));
+        List<Event> events = repository.findAllByEventStartTimeBetween(startTime,endTime);
+        return events.size() == 0;
+    }
 }

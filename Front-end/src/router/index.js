@@ -6,7 +6,7 @@ import ThisEvent from '../views/ThisEvent.vue'
 import AddNewEvent from '../views/AddNewEvent.vue'
 import About from '../views/About.vue'
 
-const history = createWebHistory()
+const history = createWebHistory('/pl1/')
 const routes = [
   {
     path: '/:catchNotMatchPath(.*)',

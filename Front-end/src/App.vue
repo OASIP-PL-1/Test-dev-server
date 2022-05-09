@@ -6,7 +6,8 @@
     <div class="navbar">
         <!-- <h1 style="font-size: 2em; display: inline;">BOOKING. </h1> 
         <span><strong> OASIP - PL1</strong></span> -->
-        <img src="./assets/logo.png" alt="logo" style="padding-left: 4em; padding-top: 5px; max-width: 500px; min-width: 300px; width: 20%;">
+        <img src="./assets/logo.png" alt="logo"
+            style="padding-left: 4em; padding-top: 5px; max-width: 500px; min-width: 300px; width: 20%;">
         <span class="navtop" style="display: inline;">
             <span class="navhover">
                 <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
@@ -148,5 +149,8 @@
         cursor: not-allowed;
         background: rgba(0, 0, 0, .08);
         color: rgba(0, 0, 0, .3);
+    }
+    hr {
+        border: 1px solid #5C5CFF;
     }
 </style>

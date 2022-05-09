@@ -133,7 +133,4 @@
     padding: 4px;
     margin: 8px 0px;
   }
-  hr {
-    border: 1px solid #5C5CFF;
-  }
 </style>

@@ -34,6 +34,10 @@
 // --- Go back --- 
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
+    // const goNext = () => {
+    //     myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId++}})
+    //     getThisEvent()
+    // }
 
 // --- show Date --- 
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
@@ -76,14 +80,16 @@
  
 <template>
     <div class="thisEvent">
-        <button @click="goBack" class="button-18" role="button">Back</button>
+        <button @click="goBack" class="button-18" role="button">Back</button>&ensp;
+        <!-- <button @click="goNext()" class="button-18" role="button">Next</button> -->
         <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
         <div v-else-if="!showDetail" class="NotFoundText" style="margin-top: 2em;">
         -- Not Found Data --
         </div>
         <div v-else>
+           
             <div class="box">
-                <h3>Booking Name : {{thisEvent.bookingName}}</h3>
+                <h3>Booking Name : {{thisEvent.bookingName}}</h3>   
                     <b>Email :</b> {{thisEvent.bookingEmail}}
                 <hr>
                     <b>Category Name :</b> {{thisEvent.categoryName}}
@@ -107,22 +113,26 @@
             </div>
             <div class="button-right">
                 <!-- <button @click="$emit('editEvent', thisEvent.bookingName)" class="button-18" role="button" >Edit</button> &ensp; -->
-                <button @click="removeEvent()" class="button-18" role="button">Delete</button>     
+                <button @click="removeEvent()" class="button-18" role="button" >Delete</button>     
             </div>
         </div>
     </div>
 </template>
  
 <style scoped>
+    h3 {
+        color: #FFA21A;
+    }
     b {
-        color: #000000;
+        color: #FFCB4C;
     }
     .box {
-        background-color: #e1dbe7;
+        background-color: #3333A3;
         padding: 1em 2em 3em 2em;
         border-radius: 10px;
         margin: 1em 2em;
         min-width: 600px;
+        color: white;
     }
     .NotFoundText{
         color: gray;

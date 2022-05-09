@@ -12,4 +12,7 @@ public interface EventRepository extends JpaRepository <Event, Integer> {
     public List<Event> findByEventStartTimeLessThanOrderByEventStartTimeDesc(Date currentDate);
     public List<Event> findByEventStartTimeGreaterThanOrderByEventStartTimeAsc(Date currentDate);
     public List<Event> findByEventStartTimeGreaterThanAndEventStartTimeLessThan(Date starDateTime, Date endDateTime);
+    public List<Event> findAllByEventStartTimeBetween(Date startTime, Date endTime);
+
+
 }

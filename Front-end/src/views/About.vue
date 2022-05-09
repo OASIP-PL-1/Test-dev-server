@@ -1,5 +1,8 @@
 <script setup>
+    import {useRouter} from 'vue-router'
 
+    const myRouter = useRouter()
+    const goBack = () => myRouter.go(-1)
 </script>
  
 <template>
@@ -7,6 +10,23 @@
         <h2>About</h2>
         <p>We are PL-1 CaFe Ni</p>
         <p>school of information technology KMUTT</p>
+        <div class="grid-cols-3">
+            <div>
+                Panalee Palasri
+                63130500075
+            </div>
+            <div>
+                Piraya Sutthiparinyanon
+                63130500087
+            </div>
+            <div>
+                Vichuta Pipoppinyo
+                6310500106
+            </div>
+        </div>
+    </div>
+    <div class="btbackAbout">
+        <button @click="goBack" class="button-18" role="button">Back</button>
     </div>
 </template>
  
@@ -25,6 +45,17 @@
         width: 600px;
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
         margin: auto;
+        text-align: center;
+    }
+    .grid-cols-3 {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(0,1fr));
+        text-align: center;
+        min-width: 100%;
+    }
+    .btbackAbout {
+        margin: auto;
+        margin-top: 1em;
         text-align: center;
     }
 </style>

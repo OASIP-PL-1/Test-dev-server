@@ -49,7 +49,7 @@ services:
       - ./Front-end/.env.production
     tty: true
     volumes:
-      - ./Front-end:/app
+      - ./Front-end:/vue_app
     
       
    

@@ -72,7 +72,7 @@
         border-radius: 20px;
         padding: 4px 20px 20px 20px;
         height: 540px;
-        width: 250px;
+        width: 200px;
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
     }
     .choices{
@@ -89,6 +89,9 @@
         padding: 0.5em;
         margin: 0.25em 0;
     }
+    
+
+
 </style>
 
 

@@ -7,11 +7,9 @@ import com.example.backend.entities.Event;
 import com.example.backend.repositories.EventRepository;
 import com.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -61,6 +59,11 @@ public class EventController {
     @GetMapping("/date/{date}")
     public List<EventAllDTO> getEventByDate(@PathVariable String date) throws ParseException {
         return service.getEventALLDTOByDate(date);
+    }
+
+    @GetMapping("/book/{categoryId}/{dateTime}")
+    public boolean checkBookOverlap(@PathVariable int categoryId, @PathVariable String dateTime) throws ParseException {
+        return service.checkBookOverlap(categoryId,dateTime);
     }
 
 }
