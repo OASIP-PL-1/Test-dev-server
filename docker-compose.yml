@@ -50,6 +50,7 @@ services:
     tty: true
     volumes:
       - ./Front-end:/vue_app
+      - ./Front-end/nginx-frontend.conf:/etc/nginx/conf.d
     
       
    
