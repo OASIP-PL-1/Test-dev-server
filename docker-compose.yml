@@ -31,7 +31,6 @@ services:
         "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
         "spring.data.rest.default-media-type" : "application/json",
         "spring.hateoas.use-hal-as-default-json-media-type" : "false",
-        "spring.jpa.properties.hibernate.jdbc.time_zone" : "Asia/Bangkok",
         "spring.jackson.time-zone" : "Asia/Bangkok"
       }'
     volumes:

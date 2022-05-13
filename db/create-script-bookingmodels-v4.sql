@@ -62,6 +62,10 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 use bookingmodels;
+
+SET GLOBAL time_zone = '+07:00';
+SET SESSION time_zone = 'Asia/Bangkok';
+
 set names utf8;
 insert  into eventCategories(eventCategoryId,eventCategoryName,eventCategoryDescription,eventCategoryDuration) 
 values 
