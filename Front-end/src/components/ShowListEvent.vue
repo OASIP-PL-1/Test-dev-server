@@ -10,7 +10,7 @@
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
   const a = new Date('2022-05-04')
-  const getDate = (givenDate) => {
+  const showDate = (givenDate) => {
       // console.log(givenDate)
       const day = days[givenDate.getDay()]
       const date = givenDate.getDate()
@@ -18,7 +18,10 @@
       const year = givenDate.getFullYear()
       return day + ' ' + date + ' ' + month + ' ' + year
   }
-
+// --- show start time ---
+const showTime = (givenDate) => {
+    return givenDate.toLocaleTimeString('th-TH').substring(0,5)
+}
 </script>
  
 <template>
@@ -31,15 +34,17 @@
           <div v-else v-for="(event,index) in events" :key="index" class="grid-item">
             <router-link :to="{ name: 'ThisEvent', params:{eventId:event.id}}">
               <div>
-                  <h4><strong>Booking name: </strong>{{event.bookingName}}</h4>
+                  <strong>Booking name : </strong>
+                  <h4 v-if="event.bookingName.length > 50">{{event.bookingName.substring(0,50)}} ...</h4>
+                  <h4 v-else>{{event.bookingName}}</h4>
               <hr>
-                  <b>Category Name :</b> {{event.categoryName}}
+                  <b>Date :</b> {{ showDate(new Date(event.startTime)) }}
               <br>
-                  <b>Date :</b> {{ getDate(new Date(event.startTime)) }}
+                  <b>Start Time :</b> {{ showTime(new Date(event.startTime))}}
               <br>
-                  <b>Start Time :</b> {{new Date(event.startTime).toLocaleTimeString('th-TH')}}
+                  <strong>Category :</strong> 
               <br>
-                  <b>Duration :</b> {{event.duration}} (mins)
+                  <div class="category"><b>{{event.categoryName}}</b>  &emsp;({{event.duration}} min.)</div>
               </div>
             </router-link>
           </div>
@@ -48,15 +53,31 @@
 </template>
  
 <style scoped>
+  .category{
+    background-color: antiquewhite;
+    border-radius: 10px;
+    margin-top: 5px;
+    padding: 0 4px;
+  }
   h2 {
     color: #FFCB4C;
   }
- .showEvent{
-   background-color: #3333A3;
-   border-radius: 20px;
-   padding: 4px 24px 24px;
-   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-   min-width: 1000px;
+  h4{
+    padding-top: 0;
+    margin: 0 0 1em 0;
+  }
+  strong {
+    font-size: smaller;
+    color: #3333A3;
+  }
+ .showEvent {
+    background-color: #3333A3;
+    border-radius: 30px;
+    padding: 4px 24px 24px;
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+    /* min-width: 1000px; */
+    -o-object-fit: cover;
+    object-fit: cover;
  }
  .grid-container {
     display: grid;
@@ -68,16 +89,16 @@
     row-gap: 20px;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 440px;
+    height: 500px;
   }
   .grid-item {
     background-color: rgba(255, 255, 255, 0.8);
-    padding: 4px 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
     border-radius: 20px;
     transition: background-color 1s, transform .5s;
     transition-duration: box-shadow 2s;
     width: 300px;
-    max-height: 250px;
+    height: 175px;
   }
   .grid-item:hover{
     background-color: rgba(255, 255, 255, 1);
@@ -88,7 +109,6 @@
     color: #000000;
     text-decoration: none;
   }
-
   ::-webkit-scrollbar {
     width: 10px;
     background-color: #FFCB4C;

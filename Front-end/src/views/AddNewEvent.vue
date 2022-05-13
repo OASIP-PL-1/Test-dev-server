@@ -31,74 +31,107 @@ const newEvent = ref({
 }) 
 
 // --- check if the information is filled out ---
-const checkData = computed(()=>{ 
+const checkBeforeAdd = computed(()=>{ 
     return newEvent.value.bookingName === "" 
-    || newEvent.value.email === "" 
+    || newEvent.value.email === "" || !emailValidation(newEvent.value.email)
     || Object.keys(newEvent.value.category).length === 0 
     || newEvent.value.dateTime === ""
     || new Date(newEvent.value.dateTime) < new Date()
-    ||  newEvent.value.category.id === undefined
+    || newEvent.value.category.id === undefined
 })
 
+{{new Date()}}
+// --- check overlap ---
+const overlapStatus = ref(true)
+const checkOverlap = async(newEvent) => {
+    // console.log("checkOverlap")
+    console.log(newEvent)
+    const categoryId = newEvent.category.id
+    const dateTime = new Date(newEvent.dateTime)
+    const startTime = dateTime.getFullYear() + "-" + (dateTime.getMonth()+1) + "-" + dateTime.getDate() + "-" 
+        + dateTime.getHours() + "-" + dateTime.getMinutes() + "-" + dateTime.getSeconds()
+    // console.log(startTime)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`)
+        .catch(()=> {
+        message.value = "Not Found Backend Server!!!"
+    });
+    overlapStatus.value = await res.json()
+    return overlapStatus.value
+}
+
 // --- Create New Event ---
-const createNewNote = async (newEvent)=>{
+const createNewEvent = async (newEvent)=>{
+    // console.log(newEvent)
+    const status = await checkOverlap(newEvent)
+    console.log(status)
+    //false = ใส่ไม่ได้
+    if(!status){
+        // true จะเข้ามาในนี้
+        console.log('error, cannot create this event')
+    }else{
         const dataTime = new Date(newEvent.dateTime)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`,{
-        method:'POST',
-        headers:{
-        'content-type':'application/json'
-        },
-        body: JSON.stringify({
-            bookingName: newEvent.bookingName,
-            bookingEmail: newEvent.email,
-            startTime: dataTime.toISOString(),
-            notes:newEvent.notes.length === 0 ? null : newEvent.notes,
-            eventCategoryId: newEvent.category.id
-        })
-    }).catch(error => console.log(error) );
-        console.log(res.status)
-    if(res.status===200){
-        const addedEvent = await res.json()           
-        console.log(addedEvent)
-        goBack()
-    }else {
-        console.log('error, cannot create')
+            method:'POST',
+            headers:{
+            'content-type':'application/json'
+            },
+            body: JSON.stringify({
+                bookingName: newEvent.bookingName,
+                bookingEmail: newEvent.email,
+                startTime: dataTime.toISOString(),
+                notes:newEvent.notes.length === 0 ? null : newEvent.notes,
+                eventCategoryId: newEvent.category.id
+            })
+        }).catch(error => console.log(error));
+        if(res.status===200){
+            const newId = await res.json()         
+            goThisEvent(newId)
+        }else {
+            console.log('error, cannot create')
+        }
     }
 }
 
-// --- show Date --- 
-// const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-// const months = ['01','02','03','04','05','06','07','08','09','10','11','12']
-// const a = new Date('2022-05-04')
-const timeUnits = ['AM','PM']
-const getDate = (givenDate) => {
-        // console.log(givenDate)
-        // const day = days[givenDate.getDay()]
-        // const date = givenDate.getDate()
-        // const month = givenDate.getMonth()+1
-        // const year = givenDate.getFullYear()
-    const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
-    const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
-    const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
-    return hour + ':' + minute + ' ' + timeUnit
+
+// --- check validate Email ---
+const emailValidation = (inputEmail) => {
+    const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    return inputEmail.match(mailformat) ? true : false
+}
+
+// --- get Today for min DateTime input --- ('2022-05-12T00:00')
+const getToday = (currentDate) => {
+    const date = currentDate.getDate() <= 9 ? '0'+ currentDate.getDate() : currentDate.getDate()
+    const month = (currentDate.getMonth()+1) <= 9 ? '0'+ (currentDate.getMonth()+1) : (currentDate.getMonth()+1)
+    const year = currentDate.getFullYear()
+    console.log(year +'-'+ month +'-'+ date +'T00:00')
+    return year +'-'+ month +'-'+ date +'T00:00'
 }
 
 // --- calculate End time --- 
 const addMinutes = (date,duration) => {
     const changeDate = date
     changeDate.setMinutes(changeDate.getMinutes()+duration)
-    // console.log(changeDate)
     return changeDate
 }
+// --- show End Time --- (16:30 AM)
+const timeUnits = ['AM','PM']
+const getEndTime = (givenDate) => {
+    const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
+    const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
+    const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
+    return hour + ':' + minute + ' ' + timeUnit
+}
 
 
-    
 const myRouter = useRouter()
 const goBack = () => myRouter.go(-1)
+const goThisEvent = (newId) => myRouter.push({name: 'ThisEvent', params:{eventId:newId}})
 
-const clearForm = () => {
-    newEvent.value = { bookingName : "", email : "", category : {}, dateTime : "", notes : ""} 
-}
+const clearForm = () => newEvent.value = { bookingName : "", email : "", category : {}, dateTime : "", notes : ""} 
+
+
+
 </script>
  
 <template>
@@ -110,17 +143,20 @@ const clearForm = () => {
             <table>
                 <tr>
                     <th><label for="bName">Booking name :</label></th>
-                    <td><input type="text" id="bName" name="bName" v-model="newEvent.bookingName" maxlength="100"></td>
+                    <td><input type="text" id="bName" name="bName" v-model="newEvent.bookingName" maxlength="100" size="50"></td>
                 </tr>
                 <tr>
                     <th><label for="bEmail">Your email :</label></th>
-                    <td><input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" pattern=".+@globex\.com" required></td>
+                    <td>
+                        <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" pattern=".+@globex\.com" required size="50">
+                    <br><span v-show="!emailValidation(newEvent.email) && newEvent.email != ''" class="warning">Sorry! an invalid email!</span>
+                    </td>
                 </tr>
                 <tr>
                     <th><label> Category :</label></th>
                     <td>
                         <select v-model="newEvent.category">
-                            <option selected>--Not selected--</option>
+                            <option selected value={}>--Not selected--</option>
                             <option v-for="category in eventCategories" :value="category" >
                                 {{ category.categoryName}}
                             </option>
@@ -131,36 +167,38 @@ const clearForm = () => {
                         </span>
                     </td>
                 </tr>
-                <!-- <tr v-show="newEvent.category.id > 0">
-                    <th><label> Duration: </label></th>
-                    <td><span>{{newEvent.category.duration}}</span></td>
-                </tr> -->
                 <tr>
                     <th><label for="bDate">Start Time :</label></th>
                     <td>
-                        <input type="datetime-local" id="bTime" name="bTime" v-model="newEvent.dateTime">
+                        <input type="datetime-local" id="bTime" name="bTime" v-model="newEvent.dateTime" :min="getToday(new Date())">
                         &emsp;
                         <span v-show="newEvent.category.id > 0 && newEvent.dateTime !== ''"> 
                         <b for="bDate" >End Time : </b>&ensp;
-                            <span>{{ getDate(addMinutes(new Date(newEvent.dateTime),newEvent.category.duration)) }}</span>
+                            <span>{{ getEndTime(addMinutes(new Date(newEvent.dateTime),newEvent.category.duration))}}</span>
                         </span> 
                         <br>
                         <span v-show="new Date(newEvent.dateTime) < new Date()" class="warning">
-                            <span class="warning">&#9888;</span> The choosen date is in the past, choose again
+                            <span class="warning">&#9888;</span> The choosen time is in the past, choose again
                         </span>
+                        <span v-show="false">Overlap นะจ๊ะ</span>
                         <!-- <span v-show="checkFuture">The choosen date is in the past, choose again</span> -->
                     </td>
+                    <!-- <td style="width: 20%;">
+                        <button class="button-18" :disabled="checkButton" @click="checkOverlap">Check</button>
+                    </td> -->
                 </tr>
                 <tr>
                     <th><label for="bNotes">Notes :</label></th>
                     <td><textarea v-model="newEvent.notes" rows="7" cols="50" maxlength="500"></textarea></td>
                 </tr>
             </table>
+            <span style="color:red" v-show="!overlapStatus">It seems that you choose the time that overlap other previous events. Please choose another time.</span>
         </div>
     </div>
         <div class="button-right">
-            <button @click="createNewNote(newEvent)" :disabled="checkData" class="button-18" role="button" type="submit">Save</button> &ensp;
+            <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button> &ensp;
             <button @click="clearForm" class="button-18" role="button" >Clear</button>
+            <br>
         </div>
 
 </template>
@@ -176,9 +214,10 @@ const clearForm = () => {
         background-color: #3333A3;
         padding: 1em 2em 3em 2em;
         border-radius: 30px;
-        margin: 1em 2em;
+        margin: 1em 10em;
         text-align: center;
-        min-width: 600px;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     .thisEvent{
         padding-left: 2em;
@@ -188,34 +227,43 @@ const clearForm = () => {
         border-radius: 10px;
         padding: 0.5em;
         margin: 0.25em 0;
+        text-rendering: auto;
+        overflow: visible;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     .button-right {
         float: right;
         margin-right: 2em;
     }
     .warning{
-        color:red
+        color: orangered;
     }
     table {
         margin-left: auto;
         margin-right: auto;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     tr {
         padding: auto;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     th {
         vertical-align: top;
         text-align: right;
-        width: 20%;
+        width: 19%;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     td {
         text-align: left;
-        width: 50%;
+        width: 30%;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     .bt-save {
         background-color: rgb(173, 67, 169);
     }
-
-    
-
 </style>
