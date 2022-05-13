@@ -11,8 +11,8 @@
   const getEvents = async () => {
     loading.value = true
     message.value = "loading..."
-    const res = await fetch('http://localhost:8080/api/events')
-    // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`)
+    // const res = await fetch('http://localhost:8080/api/events')
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`)
       .catch(()=> {
         message.value = "Not Found Backend Server!!!"
     });
