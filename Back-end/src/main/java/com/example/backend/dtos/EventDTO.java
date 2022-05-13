@@ -1,10 +1,13 @@
 package com.example.backend.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.time.Instant;
 
@@ -13,11 +16,15 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDTO {
-    private Integer id;
+    private int id;
     private String bookingName;
     private String bookingEmail;
     private String categoryName;
-    private Integer duration;
+    private int duration;
     private String notes;
     private Date startTime;
+
+    public LocalDateTime getStartTime(){
+        return startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
 }
