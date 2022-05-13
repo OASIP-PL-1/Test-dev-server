@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class Event {
     private String bookingEmail;
 
     @Column(name = "eventStartTime", nullable = false)
-    private Instant eventStartTime;
+    private Date eventStartTime;
 
     @Column(name = "eventDuration", nullable = false)
     private Integer eventDuration;

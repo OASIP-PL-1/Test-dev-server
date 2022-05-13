@@ -132,7 +132,7 @@ volumes:
 ```Dockerfile
 # build stage
 FROM node:lts-alpine as build-stage
-WORKDIR /app
+WORKDIR /vue_app
 COPY package*.json ./
 RUN npm install
 COPY . .
@@ -140,23 +140,48 @@ RUN npm run build
 
 # production stage
 FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY --from=build-stage /vue_app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 ### 5. สร้าง frontend container ใน docker-compose.yml
 ```yml
-frontend-app:
+  frontend-app:
     depends_on:
       - backend-app
     build: ./Front-end
-    restart: on-failure
     ports:
       - 80:80
     container_name: frontend-app
+    env_file: 
+      - ./Front-end/.env.production
+    tty: true
+    volumes:
+      - ./Front-end:/vue_app
 ```
 ### 6. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
 - ต้องเปลี่ยนเลขเป็นเลข ip บนเครื่อง VM
 ```
 VITE_BASE_URL=http://10.4.84.106:8080/api
 ```
+### 7. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
+```
+sudo docker exec -it frontend-app sh
+cd /etc/nginx/conf.d
+cat default.conf
+
+vi default.conf
+```
+เพิ่ม `try_files $uri $uri/ /index.html;`
+Esc :w :q 
+exit;
+
+```
+location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+```
+จากนั้น restart container
+sudo docker-compose restart

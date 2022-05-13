@@ -1,7 +1,9 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.EventCategoryAllDTO;
 import com.example.backend.entities.EventCategory;
 import com.example.backend.repositories.EventCategoryRepository;
+import com.example.backend.services.EventCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +16,14 @@ import java.util.List;
 @RequestMapping("api/eventcategories")
 @CrossOrigin(origins = "*")
 public class EventCategoryController {
-
     @Autowired
-    private EventCategoryRepository repository;
+    EventCategoryService service;
+    @Autowired
+    EventCategoryRepository repository;
 
     @GetMapping("")
-    public List<EventCategory> getAllEventCategory(){
-        return repository.findAll();
+    public List<EventCategoryAllDTO> getAllEventCategory(){
+        return service.getEventCategoryAllDTO();
     }
 //
 //    @GetMapping("/{id}")
