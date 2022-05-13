@@ -1,7 +1,7 @@
 <script setup>
     import {useRouter} from 'vue-router'
     const myRouter = useRouter()
-    const goAddNewEvent = () => myRouter.push({name: 'AddNewEvent'})
+    const goToAddNewEvent = () => myRouter.push({name: 'AddNewEvent'})
 </script>
  
 <template>
@@ -23,7 +23,7 @@
         </h4>
         <h4 style="padding-left: 10%; padding-right: 10%;">This wil give user convenience for consulting with their Product Owner or the teachers</h4>
         <!-- <form action="/create-new-event"> -->
-            <button @click="goAddNewEvent" class="button-18" role="button" style="font-size:1.5em">Book Now</button>
+            <button @click="goToAddNewEvent" class="button-18" role="button" style="font-size:1.5em">Book Now</button>
         <!-- </form> -->
     </div>
 </template>

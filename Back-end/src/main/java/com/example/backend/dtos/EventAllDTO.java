@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Getter
@@ -13,9 +15,14 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAllDTO {
-    private Integer id;
+    private int id;
     private String bookingName;
     private String categoryName;
     private Date startTime;
     private int duration;
+
+
+    public LocalDateTime getStartTime(){
+        return startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
 }

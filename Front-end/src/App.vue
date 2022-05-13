@@ -7,7 +7,7 @@
         <!-- <h1 style="font-size: 2em; display: inline;">BOOKING. </h1> 
         <span><strong> OASIP - PL1</strong></span> -->
         <img src="./assets/logo.png" alt="logo"
-            style="padding-left: 4em; padding-top: 5px; max-width: 500px; min-width: 300px; width: 20%;">
+            style="padding-left: 2em; padding-top: 5px; max-width: 500px; min-width: 300px; width: 20%;">
         <span class="navtop" style="display: inline;">
             <span class="navhover">
                 <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
@@ -28,7 +28,6 @@
  
 <style>
     @import url('https://fonts.googleapis.com/css2?family=K2D&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
     template {
         padding: 0;
@@ -46,24 +45,8 @@
         margin-top: 10em;
         margin-left: 0;
         overflow-x: hidden;
-    }
-    button {
-        background-color: #3333A3;
-        border-radius: 10px;
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
-        padding: 5px 10px;
-        color: white;
-        font-size: 1.5em;
-    }
-    button:hover:not([disabled]) {
-        background-color: #FFA21A;
-        color: white;
-        transition-duration: .1s;
-    }
-    button:active:not([disabled]){
-        background-color: #3333A3;
-        color: white;
-        transition-duration: .1s;
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     .bg-home {
         align-items: center;
@@ -77,7 +60,6 @@
         background-color: #3333A3;
         top: 0;
         width: 100%;
-        /* border-bottom: 1px solid #e7e7e7; */
         color: white;
         padding-top: 1em;
         padding-bottom: 1em;
@@ -104,7 +86,20 @@
     .router-link-active {
         color: #FFCB4C;
     }
-        /* CSS */
+    button {
+        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
+        color: white;
+    }
+    button:hover:not([disabled]) {
+        background-color: #FFA21A;
+        color: white;
+        transition-duration: .1s;
+    }
+    button:active:not([disabled]){
+        background-color: #3333A3;
+        color: white;
+        transition-duration: .1s;
+    }
     .button-18 {
         align-items: center;
         background-color: #5C5CFF;
@@ -133,22 +128,8 @@
         -webkit-user-select: none;
         vertical-align: middle;
     }
-
-    .button-18:hover,
-    .button-18:focus { 
-        background-color: #16437E;
-        color: #ffffff;
-    }
-
-    .button-18:active {
-        background: #09223b;
-        color: rgb(255, 255, 255, .7);
-    }
-
-    .button-18:disabled { 
-        cursor: not-allowed;
-        background: rgba(0, 0, 0, .08);
-        color: rgba(0, 0, 0, .3);
+    .button-18:disabled {
+         background-color: #c2c2ff;
     }
     hr {
         border: 1px solid #5C5CFF;
