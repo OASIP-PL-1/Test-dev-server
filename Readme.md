@@ -88,6 +88,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 ```
 cd Test-dev-server/Back-end/
 ./mvnw package
+mvn -f pom.xml clean package
 mvn -Dmaven.test.skip package
 ```
 > เมื่อรันแล้ว จะขึ้น `BUILD SUCCESS` และมีโฟลเดอร์ `target` ขึ้นมา (ควร bulid project ใหม่ทุกครั้งที่มีการแก้ไข code ใน backend)
