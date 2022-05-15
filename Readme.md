@@ -67,6 +67,10 @@ mysqldb:
     - ./db/data:/var/lib/mysql               # path ของ data directory (ที่เก็บข้อมูล)
     - ./db/:/docker-entrypoint-initdb.d      # path ที่มี .sql ไฟล์ไว้รัน script            
 ``` 
+* ใน `my.cnf` เพิ่ม `default-time-zone` ด้วยเพื่อกำหนด timezone ของ mysql container
+``` 
+`default-time-zone` = "Asia/Bangkok" 
+``` 
 
 ### 2. สร้าง `Dockerfile` ใน `./Back-end` เพื่อใช้ bulid image ก่อนสร้าง container
 ```dockerfile
@@ -88,6 +92,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 ```
 cd Test-dev-server/Back-end/
 ./mvnw package
+mvn -f pom.xml clean package
 mvn -Dmaven.test.skip package
 ```
 > เมื่อรันแล้ว จะขึ้น `BUILD SUCCESS` และมีโฟลเดอร์ `target` ขึ้นมา (ควร bulid project ใหม่ทุกครั้งที่มีการแก้ไข code ใน backend)
@@ -115,7 +120,8 @@ backend-app:
         "spring.jpa.hibernate.ddl-auto" : "update",
         "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
         "spring.data.rest.default-media-type" : "application/json",
-        "spring.hateoas.use-hal-as-default-json-media-type" : "false"
+        "spring.hateoas.use-hal-as-default-json-media-type" : "false",
+        "spring.jackson.time-zone" : "Asia/Bangkok"                      # เพิ่ม timezone ให้กับ Backend container
       }'
     volumes:
       - .m2:/root/.m2

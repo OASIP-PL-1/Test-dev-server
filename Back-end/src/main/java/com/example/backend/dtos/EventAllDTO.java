@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Getter
@@ -15,14 +16,14 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAllDTO {
-    private int id;
+    private Integer id;
     private String bookingName;
     private String categoryName;
     private Date startTime;
     private int duration;
 
 
-    public LocalDateTime getStartTime(){
-        return startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    public ZonedDateTime getStartTime(){
+        return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
     }
 }

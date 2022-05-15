@@ -1,30 +1,28 @@
 package com.example.backend.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
-import java.time.Instant;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDTO {
-    private int id;
+    private Integer id;
     private String bookingName;
     private String bookingEmail;
     private String categoryName;
-    private int duration;
+    private Integer duration;
     private String notes;
     private Date startTime;
 
-    public LocalDateTime getStartTime(){
-        return startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    public ZonedDateTime getStartTime(){
+        return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
     }
 }

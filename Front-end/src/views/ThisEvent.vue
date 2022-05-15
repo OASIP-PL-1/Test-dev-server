@@ -80,34 +80,38 @@
         if(!status){
             // true เข้ามาในนี้ แปลว่า overlap 2 ใส่ไม่ได้
             console.log("This event is overlap")
-            return 
-        }
-        // false ไม่เข้า ส่งไป backend
-        const dataTime = new Date(editingEvent.dateTime)
-        if(editingEvent.notes !== null){
-            if(editingEvent.notes.length === 0){
-                editingEvent.notes = null
+        }else{
+            // false ไม่เข้า ส่งไป backend
+            const dataTime = new Date(editingEvent.dateTime)
+            if(editingEvent.notes !== null){
+                if(editingEvent.notes.length === 0){
+                    editingEvent.notes = null
+                }
             }
-        }
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`, 
-        {
-            method:'PUT',
-            headers:{
-            'content-type':'application/json'
-            },
-            body: JSON.stringify({
-                id : editingEvent.id,
-                startTime: dataTime.toISOString(),
-                notes: editingEvent.notes
-            })
-        }).catch(error => console.log(error) );
-        if(res.status===200){
-            console.log('edited successfully')
-            thisEvent.value = await res.json()         
-            hideEditMode()
-        }else {
-            console.log('error, cannot update')
-            console.log(res.status)
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`, 
+            {
+                method:'PUT',
+                headers:{
+                'content-type':'application/json'
+                },
+                body: JSON.stringify({
+                    id : editingEvent.id,
+                    startTime: dataTime.toISOString().replace(".000Z", "Z"),
+                    notes: editingEvent.notes
+                })
+            }).catch(error => console.log(error) );
+            if(res.status===200){
+                console.log('edited successfully')
+                thisEvent.value = await res.json()
+                console.log(thisEvent.value)         
+                hideEditMode()
+            }else if(res.status===400){
+                console.log("This event is overlap")
+                overlapStatus.value = false
+            }else{
+                console.log('error, cannot update')
+                console.log(res.status)
+            }
         }
   }
 

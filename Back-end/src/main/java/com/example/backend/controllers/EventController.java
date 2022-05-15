@@ -4,7 +4,6 @@ import com.example.backend.dtos.EventAddDTO;
 import com.example.backend.dtos.EventAllDTO;
 import com.example.backend.dtos.EventDTO;
 import com.example.backend.dtos.EventUpdateDTO;
-import com.example.backend.entities.Event;
 import com.example.backend.repositories.EventRepository;
 import com.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +31,6 @@ public class EventController {
         return service.getEventDTOById(eventId);
     }
 
-    @PostMapping("")
-    public int createEvent(@RequestBody EventAddDTO newEvent) {
-        return service.createEvent(newEvent);
-    }
-
-    @DeleteMapping("/{eventId}")
-    public void deleteEvent(@PathVariable int eventId) {
-        service.deleteEvent(eventId);
-    }
 
     @GetMapping("/category/{categoryId}")
     public List<EventAllDTO> getEventDTOByCategory(@PathVariable int categoryId) {
@@ -64,16 +54,26 @@ public class EventController {
 
     @GetMapping("/book/{categoryId}/{dateTime}")
     public boolean checkBookOverlap(@PathVariable int categoryId, @PathVariable String dateTime) throws ParseException {
-        return service.checkBookOverlapForFrontEnd(categoryId,dateTime);
+        return service.checkBookOverlapForFrontEnd(categoryId, dateTime);
     }
 
     @GetMapping("/edit/{eventId}/{dateTime}")
     public boolean checkEditOverlap(@PathVariable int eventId, @PathVariable String dateTime) throws ParseException {
-        return service.checkEditOverlapForFrontEnd(eventId,dateTime);
+        return service.checkEditOverlapForFrontEnd(eventId, dateTime);
+    }
+
+    @PostMapping("")
+    public int createEvent(@RequestBody EventAddDTO newEvent) {
+        return service.createEvent(newEvent);
+    }
+
+    @DeleteMapping("/{eventId}")
+    public void deleteEvent(@PathVariable int eventId) {
+        service.deleteEvent(eventId);
     }
 
     @PutMapping("")
-    public EventDTO editEvent(@RequestBody EventUpdateDTO updateEvent){
+    public EventDTO editEvent(@RequestBody EventUpdateDTO updateEvent) {
         return service.editEvent(updateEvent);
     }
 

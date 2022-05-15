@@ -61,7 +61,7 @@ const checkOverlap = async(newEvent) => {
 
 // --- Create New Event ---
 const createNewEvent = async (newEvent)=>{
-    // console.log(newEvent)
+    console.log(newEvent)
     const status = await checkOverlap(newEvent)
     console.log(status)
     //false = ใส่ไม่ได้
@@ -78,7 +78,7 @@ const createNewEvent = async (newEvent)=>{
             body: JSON.stringify({
                 bookingName: newEvent.bookingName,
                 bookingEmail: newEvent.email,
-                startTime: dataTime.toISOString(),
+                startTime: dataTime.toISOString().replace(".000Z", "Z"),
                 notes:newEvent.notes.length === 0 ? null : newEvent.notes,
                 eventCategoryId: newEvent.category.id
             })
