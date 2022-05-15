@@ -1,16 +1,5 @@
 version: '3'
 services:
-
-  proxy:
-    container_name: proxy
-    image: nginx
-    restart: always
-    depends_on:
-      - front
-    ports:
-      - "80:80"
-    volumes:
-      - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
   
   mysqldb:
     container_name: mysqldb
@@ -59,12 +48,17 @@ services:
     container_name: frontend-app
     volumes:
       - ./nginx-frontend.conf:/etc/nginx/conf.d/default.conf
-    # env_file: 
-    #   - ./Front-end/.env.production
-    # tty: true
-    
-      # - ./Front-end:/vue_app
-      
+
+  proxy:
+    container_name: reverse-proxy
+    image: nginx
+    restart: always
+    depends_on:
+      - frontend-app
+    ports:
+      - 80:80
+    volumes:
+      - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
     
       
    
