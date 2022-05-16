@@ -33,7 +33,7 @@
       await getThisEvent()
     })
 // -- random image --
-    const pathImg = `/humans/human${(params.eventId%8)+1}.png`
+    const pathImg = `${import.meta.env.BASE_URL}humans/human${(params.eventId%8)+1}.png`
 
 // --- Go back --- 
     const myRouter = useRouter()
