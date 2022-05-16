@@ -33,14 +33,15 @@ const newEvent = ref({
 // --- check if the information is filled out ---
 const checkBeforeAdd = computed(()=>{ 
     return newEvent.value.bookingName === "" 
-    || newEvent.value.email === "" || !emailValidation(newEvent.value.email)
+    || newEvent.value.email === "" 
+    || emailStatus.value
+    // || !emailValidation(newEvent.value.email)
     || Object.keys(newEvent.value.category).length === 0 
     || newEvent.value.dateTime === ""
     || new Date(newEvent.value.dateTime) < new Date()
     || newEvent.value.category.id === undefined
 })
 
-{{new Date()}}
 // --- check overlap ---
 const overlapStatus = ref(true)
 const checkOverlap = async(newEvent) => {
@@ -50,7 +51,7 @@ const checkOverlap = async(newEvent) => {
     const dateTime = new Date(newEvent.dateTime)
     const startTime = dateTime.getFullYear() + "-" + (dateTime.getMonth()+1) + "-" + dateTime.getDate() + "-" 
         + dateTime.getHours() + "-" + dateTime.getMinutes() + "-" + dateTime.getSeconds()
-    // console.log(startTime)
+    console.log(startTime)
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`)
         .catch(()=> {
         message.value = "Not Found Backend Server!!!"
@@ -86,18 +87,29 @@ const createNewEvent = async (newEvent)=>{
         if(res.status===200){
             const newId = await res.json()       
             goThisEvent(newId)
-        }else {
+        }else if(res.status===400){
+            console.log("This event is overlap")
+            overlapStatus.value = false
+        }
+        else {
             console.log(res.status)
             console.log('error, cannot create')
         }
+        console.log(res.message)
     }
 }
 
 
 // --- check validate Email ---
+const emailStatus = ref(false)
 const emailValidation = (inputEmail) => {
-    const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    return inputEmail.match(mailformat) ? true : false
+    if(inputEmail !== ""){
+        const mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+        emailStatus.value =  inputEmail.match(mailformat) ? false : true
+    }else{
+        emailStatus.value = false
+    }
+    
 }
 
 // --- get Today for min DateTime input --- ('2022-05-12T00:00')
@@ -105,7 +117,7 @@ const getToday = (currentDate) => {
     const date = currentDate.getDate() <= 9 ? '0'+ currentDate.getDate() : currentDate.getDate()
     const month = (currentDate.getMonth()+1) <= 9 ? '0'+ (currentDate.getMonth()+1) : (currentDate.getMonth()+1)
     const year = currentDate.getFullYear()
-    console.log(year +'-'+ month +'-'+ date +'T00:00')
+    // console.log(year +'-'+ month +'-'+ date +'T00:00')
     return year +'-'+ month +'-'+ date +'T00:00'
 }
 
@@ -149,8 +161,8 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
                 <tr>
                     <th><label for="bEmail">Your email :</label></th>
                     <td>
-                        <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" pattern=".+@globex\.com" required size="50">
-                    <br><span v-show="!emailValidation(newEvent.email) && newEvent.email != ''" class="warning">Sorry! an invalid email!</span>
+                        <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">
+                    <br><span v-show="emailStatus" class="warning">Sorry! an invalid email!</span>
                     </td>
                 </tr>
                 <tr>
@@ -193,12 +205,12 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
                     <td><textarea v-model="newEvent.notes" rows="7" cols="50" maxlength="500"></textarea></td>
                 </tr>
             </table>
-            <span style="color:red" v-show="!overlapStatus">It seems that you choose the time that overlap other previous events. Please choose another time.</span>
+            <span class="warning" v-show="!overlapStatus">It seems that you choose the time that overlap other previous events. Please choose another time.</span>
         </div>
     </div>
         <div class="button-right">
-            <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button> &ensp;
-            <button @click="clearForm" class="button-18" role="button" >Clear</button>
+            <button @click="clearForm" class="button-18" role="button" >Clear</button> &ensp;
+            <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button>
             <br>
         </div>
 

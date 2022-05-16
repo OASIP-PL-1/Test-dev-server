@@ -127,8 +127,8 @@
     </div>
 
         <div class="button-right">
-            <button @click="$emit('save',editingEvent)" class="button-18" role="button" :disabled="checkDate">Save</button> &ensp;
-            <button @click="$emit('hideEditMode')" class="button-18" role="button">Cancal</button>     
+            <button @click="$emit('hideEditMode')" class="button-18" role="button">Cancal</button> &ensp;
+            <button @click="$emit('save',editingEvent)" class="button-18" role="button" :disabled="checkDate">Save</button>
         </div>    
 </template>
  
