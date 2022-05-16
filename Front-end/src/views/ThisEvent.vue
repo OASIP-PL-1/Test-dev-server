@@ -107,6 +107,7 @@
                 hideEditMode()
             }else if(res.status===400){
                 console.log("This event is overlap")
+                console.log(res.message)
                 overlapStatus.value = false
             }else{
                 console.log('error, cannot update')

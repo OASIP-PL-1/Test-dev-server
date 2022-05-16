@@ -100,7 +100,7 @@ public class EventService {
 
     public List<EventAllDTO> getEventALLDTOByDate(String dateString) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Thailand"));
+//        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Thailand"));
         Date date = sdf.parse(dateString);
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
         List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);

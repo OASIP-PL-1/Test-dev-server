@@ -84,9 +84,10 @@ const createNewEvent = async (newEvent)=>{
             })
         }).catch(error => console.log(error));
         if(res.status===200){
-            const newId = await res.json()         
+            const newId = await res.json()       
             goThisEvent(newId)
         }else {
+            console.log(res.status)
             console.log('error, cannot create')
         }
     }
