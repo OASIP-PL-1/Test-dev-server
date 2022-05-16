@@ -22,7 +22,7 @@ public class EventDTO {
     private String notes;
     private Date startTime;
 
-    public ZonedDateTime getStartTime(){
-        return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
-    }
+    // public ZonedDateTime getStartTime(){
+    //     return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
+    // }
 }
