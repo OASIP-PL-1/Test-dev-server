@@ -32,6 +32,8 @@
     onBeforeMount(async () => {
       await getThisEvent()
     })
+// -- random image --
+    const pathImg = `/humans/human${(params.eventId%8)+1}.png`
 
 // --- Go back --- 
     const myRouter = useRouter()
@@ -70,7 +72,7 @@
     const editMode = ref(false)
     const showEditMode = () => editMode.value = true
     const hideEditMode = () => editMode.value = false
-    const checkDateTime = computed(() => new Date(thisEvent.value.startTime) < new Date())
+    // const checkDateTime = computed(() => new Date(thisEvent.value.startTime) < new Date())
 
 // --- Edit---
     const updateEvent = async (editingEvent)=>{
@@ -149,6 +151,8 @@
             goToViewEvent()
         } else console.log('error, cannot delete')
     }
+
+
     
 </script> 
 
@@ -166,7 +170,8 @@
             <div class="header">
                 <div class="grid-container">
                     <span class="grid-item-pic">
-                        <img src="../assets/humans/human1.png" alt="human">
+                        <!-- <img src="/humans/human1.png" alt="human"> -->
+                        <img :src="pathImg" alt="human">
                     </span>
                     <span class="grid-item">
                         <h3>Booking Name : {{thisEvent.bookingName}}</h3>
@@ -206,8 +211,8 @@
         </div>            
             </div>
             <div class="button-right">
-                <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp;
-                <button @click="showEditMode()" class="button-18" role="button" :disabled="checkDateTime">Edit</button> &ensp;
+                <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
+                <button @click="showEditMode()" class="button-18" role="button">Edit</button> &ensp;
                 <button @click="showDeleteModal()" class="button-18" role="button">Delete</button>     
             </div>
         </div>
