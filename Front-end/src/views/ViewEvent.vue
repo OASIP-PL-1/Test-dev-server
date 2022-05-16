@@ -75,7 +75,7 @@
     .catch(()=> {
         message.value = "Not Found Backend Server!!!"
     });
-    events.value = await res.json()
+      events.value = await res.json()
     }else{
       getEvents()
     }
@@ -93,7 +93,8 @@
             @past="getPastEvent"
             @upcoming="getUpcomingEvent"
             @selectDay="getEventByDate"
-            @categoryName="getEventByCategory"/>
+            @categoryName="getEventByCategory"
+            @reset="getEvents"/>
           </td>
           <td>
             <ShowListEvent :events="events"/>
@@ -117,10 +118,14 @@
   table {
     margin-left: auto;
     margin-right: auto;
+    -o-object-fit: cover;
+    object-fit: cover;
   }
   td {
     padding: 0px 20px;
     width: auto;
+    -o-object-fit: cover;
+    object-fit: cover;
   }
   input .text {
     height: 20px;

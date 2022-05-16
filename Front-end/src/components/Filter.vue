@@ -1,6 +1,6 @@
 <script setup>
     import { ref } from 'vue'
-    defineEmits(['past','upcoming','selectDay','categoryName'])
+    defineEmits(['past','upcoming','selectDay','categoryName','reset'])
     defineProps({
       eventCategories:{
           type: Array,
@@ -41,19 +41,20 @@
                 </div>
 
                 <div v-show="filterMode=='category'">
-                <b>Filter by category name: </b>
-                <hr>
-                <span>Choose a category:</span><br>
-                <select v-model="selectedCategory" @change="($emit('categoryName', selectedCategory))">
-                    <option selected value="0">--Not selected--</option>
-                    <option v-for="category in eventCategories" :value="category.id">
-                        {{ category.categoryName }}
-                    </option>
-                </select>
+                    <b>Filter by category name: </b>
+                    <hr>
+                    <span>Choose a category:</span><br>
+                    <select v-model="selectedCategory" @change="($emit('categoryName', selectedCategory))">
+                        <option selected value="0">--Not selected--</option>
+                        <option v-for="category in eventCategories" :value="category.id">
+                            {{ category.categoryName }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>
         <hr>
+        <button @click="($emit('reset'))" class="button-18" style="float: right">Reset</button>
     </div>
 </template>
 
@@ -69,11 +70,13 @@
     }
     .filter {
         background-color: #3333A3;
-        border-radius: 20px;
+        border-radius: 30px;
         padding: 4px 20px 20px 20px;
-        height: 540px;
+        height: 600px;
         width: 200px;
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        -o-object-fit: cover;
+        object-fit: cover;
     }
     .choices{
         padding: 0;
@@ -89,9 +92,6 @@
         padding: 0.5em;
         margin: 0.25em 0;
     }
-    
-
-
 </style>
 
 

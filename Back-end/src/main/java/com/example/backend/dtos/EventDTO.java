@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
-import java.time.Instant;
 
 @Getter
 @Setter
@@ -20,4 +21,8 @@ public class EventDTO {
     private Integer duration;
     private String notes;
     private Date startTime;
+
+    public ZonedDateTime getStartTime(){
+        return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
+    }
 }

@@ -1,4 +1,4 @@
-# วิธี run dev server
+# วิธี run dev server (แบบมี Reverse Proxy แล้ว)
 *ช่วงแรก* : ที่เข้า vm ให้ `ssh-keygen` แล้ว copy `id_rsa.pub` ใน `~/.ssh` ไปใส่ใน link git ที่จะ pull project 
 ``` 
 git clone git@github.com:OASIP-PL-1/Test-dev-server.git
@@ -53,6 +53,70 @@ sudo docker rmi [contianer_id1] [contianer_id2]
 ---
 
 ## วิธีสร้าง docker-compose.yml + Dockerfile
+```yml
+version: '3'
+services:
+  
+  mysqldb:
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: '123'
+    image: mysql
+    ports:
+    - 13306:3306
+    volumes:
+    - ./db/my.cnf:/etc/my.cnf
+    - ./db/data:/var/lib/mysql
+    - ./db/:/docker-entrypoint-initdb.d
+    restart: on-failure
+
+  backend-app:
+    depends_on:
+      - mysqldb
+    build: ./Back-end
+    restart: on-failure
+    container_name: backend-app
+    # ports:
+    #   - 8080:8080
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver",
+        "spring.datasource.username" : "root",
+        "spring.datasource.password" : "123",
+        "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/bookingmodels?allowPublicKeyRetrieval=true&useSSL=false",
+        "spring.jpa.hibernate.ddl-auto" : "update",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
+        "spring.data.rest.default-media-type" : "application/json",
+        "spring.hateoas.use-hal-as-default-json-media-type" : "false",
+        "spring.jackson.time-zone" : "Asia/Bangkok" 
+      }'
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+
+  frontend-app:
+    depends_on:
+      - backend-app
+    build: ./Front-end
+    # ports:
+    #   - 80:80
+    container_name: frontend-app
+    volumes:
+      - ./nginx-frontend.conf:/etc/nginx/conf.d/default.conf
+
+  proxy:
+    container_name: reverse-proxy
+    image: nginx
+    restart: always
+    depends_on:
+      - frontend-app
+    ports:
+      - 80:80
+    volumes:
+      - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+```    
+      
 ### 1. สร้าง database container ใน docker-compose.yml
 ```yml
 mysqldb:
@@ -61,11 +125,15 @@ mysqldb:
       MYSQL_ROOT_PASSWORD: '123'
     image: mysql
     ports:
-    - 13306:3306
+    - 13306:3306                             # กำหนด port ไว้ต่อผ่าน MySQL Workbench
     volumes:
     - ./db/my.cnf:/etc/my.cnf                # path ที่มี my.cnf
     - ./db/data:/var/lib/mysql               # path ของ data directory (ที่เก็บข้อมูล)
     - ./db/:/docker-entrypoint-initdb.d      # path ที่มี .sql ไฟล์ไว้รัน script            
+``` 
+* ใน `my.cnf` เพิ่ม `default-time-zone` ด้วยเพื่อกำหนด timezone ของ mysql container
+``` 
+`default-time-zone` = "Asia/Bangkok" 
 ``` 
 
 ### 2. สร้าง `Dockerfile` ใน `./Back-end` เพื่อใช้ bulid image ก่อนสร้าง container
@@ -88,6 +156,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 ```
 cd Test-dev-server/Back-end/
 ./mvnw package
+mvn -f pom.xml clean package
 mvn -Dmaven.test.skip package
 ```
 > เมื่อรันแล้ว จะขึ้น `BUILD SUCCESS` และมีโฟลเดอร์ `target` ขึ้นมา (ควร bulid project ใหม่ทุกครั้งที่มีการแก้ไข code ใน backend)
@@ -98,14 +167,14 @@ mvn -Dmaven.test.skip package
 
 ### 3. สร้าง backend container ใน docker-compose.yml
 ```yml
-backend-app:
+  backend-app:
     depends_on:
       - mysqldb
     build: ./Back-end
     restart: on-failure
     container_name: backend-app
-    ports:
-      - 8080:8080
+    # ports:
+    #   - 8080:8080   # ถ้ามี reverse proxy ให้เอา port ออกได้
     environment:
       SPRING_APPLICATION_JSON: '{
         "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver",
@@ -115,14 +184,13 @@ backend-app:
         "spring.jpa.hibernate.ddl-auto" : "update",
         "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
         "spring.data.rest.default-media-type" : "application/json",
-        "spring.hateoas.use-hal-as-default-json-media-type" : "false"
+        "spring.hateoas.use-hal-as-default-json-media-type" : "false",
+        "spring.jackson.time-zone" : "Asia/Bangkok"         # กำหนด Timezone
       }'
     volumes:
       - .m2:/root/.m2
     stdin_open: true
     tty: true
-volumes:
-  db:
 ```
 > ไม่ต้องแก้อะไร `application.properties` ใน project backend เพราะ `docker-compose.yml` จะ set ให้ใหม่ 
 
@@ -150,21 +218,99 @@ CMD ["nginx", "-g", "daemon off;"]
     depends_on:
       - backend-app
     build: ./Front-end
-    ports:
-      - 80:80
+    # ports:
+    #   - 80:80                         # ถ้ามี reverse proxy ให้เอา port ออกได้
     container_name: frontend-app
-    env_file: 
-      - ./Front-end/.env.production
-    tty: true
     volumes:
-      - ./Front-end:/vue_app
+      - ./nginx-frontend.conf:/etc/nginx/conf.d/default.conf
 ```
-### 6. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
+### 6. แก้ไฟล์ `.env` , `.env.production` ในโฟลเดอร์ frontend
 - ต้องเปลี่ยนเลขเป็นเลข ip บนเครื่อง VM
+```env
+ //ถ้ามี reverse proxy
+VITE_BASE_URL=/pl1/api
+
+//ถ้าไม่มี reverse proxy
+VITE_BASE_URL=http://202.44.9.103:8080/pl1/api
 ```
-VITE_BASE_URL=http://10.4.84.106:8080/api
+### 7. config vite base
+`package.json`
+```json
+    "build": "vite build --base=/pl1/",
 ```
-### 7. แก้ไฟล์ `.env` ในโฟลเดอร์ frontend
+
+```js
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [vue()],
+    base: '/pl1/'
+    ,
+    server: {
+        // proxy: {
+        //     "^/api": {
+        //         target: "http://ip21pl1.sit.kmutt.ac.th/api",
+        //         changeOrigin: true,
+        //         secure: false,
+        //         rewrite: (path) => path.replace(/^\/api/, ''),
+        //         ws: true,
+        //     }
+        // },
+        port : 80
+    }
+})
+```
+
+#### เพิ่มไฟล์ `nginx-forntend.conf` 
+- เพื่อแก้ปัญหา refresh หน้า web ไม่ได้ ต้องเพิ่ม `try_files $uri $uri/ /index.html;` ใน nignx ที่ใช้รัน frontend
+```conf
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+```
+#### อีกวิธี คือ เข้าไปตั้งค่า nginx ใน container frontend
+- ทำต่อรัน container frontend แล้ว
 ```
 sudo docker exec -it frontend-app sh
 cd /etc/nginx/conf.d
@@ -173,15 +319,56 @@ cat default.conf
 vi default.conf
 ```
 เพิ่ม `try_files $uri $uri/ /index.html;`
-Esc :w :q 
-exit;
-
-```
+- `Esc` = ออกจากโหมดแก้ไข
+- `:w` = save
+- `:q` = ออกจาก vi 
+- `exit;` = ออกจาก container frontend
+```conf
 location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
         try_files $uri $uri/ /index.html;
     }
 ```
-จากนั้น restart container
-sudo docker-compose restart
+จากนั้น restart container `sudo docker-compose restart`
+
+
+### 8. reverse Proxy 
+```yml
+  proxy:
+    container_name: reverse-proxy
+    image: nginx
+    restart: always
+    depends_on:
+      - frontend-app
+    ports:
+      - 80:80
+    volumes:
+      - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+```
+
+### 9. `nginx.conf` กำหนดการตั้งค่าของ reverse Proxy 
+```conf 
+    upstream frontend-server {
+        server frontend-app:80 ;
+    }
+
+    upstream backend-server {
+        server backend-app:8080 ;
+    }
+
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name localhost;
+        
+
+        location / {
+            proxy_pass http://frontend-server;
+        }
+
+        location /api {
+            proxy_pass http://backend-server;
+        }
+    }
+```
