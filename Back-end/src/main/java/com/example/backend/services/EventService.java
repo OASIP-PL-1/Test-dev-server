@@ -33,7 +33,7 @@ public class EventService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private ListMapper listMapper = ListMapper.getInstance();
+    private ListMapper listMapper;
 
     @Autowired
     public EventService(EventRepository repository, ModelMapper modelMapper){

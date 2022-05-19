@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class EventController {
     @Autowired
     private EventRepository repository;
