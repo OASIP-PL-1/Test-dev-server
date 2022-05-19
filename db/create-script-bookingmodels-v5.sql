@@ -82,3 +82,14 @@ values
 update eventCategories set eventCategoryDuration = 20 where eventCategoryId=2;
 select * from eventCategories;
 select * from events;
+
+-- DROP USER 'dev'@'%';
+CREATE USER 'dev'@'%' IDENTIFIED BY 'int221';
+GRANT CREATE, DROP, DELETE, INSERT, SELECT, UPDATE, REFERENCES ON bookingmodels.* TO 'dev'@'%';
+
+-- DROP USER 'admin'@'%';
+CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';
+GRANT SELECT, UPDATE ON bookingmodels.eventCategories TO 'admin'@'%';
+GRANT DELETE, INSERT, SELECT, UPDATE ON bookingmodels.events TO 'admin'@'%';
+
+

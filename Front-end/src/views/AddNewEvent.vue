@@ -6,11 +6,11 @@ import {useRouter} from 'vue-router'
 const eventCategories = ref()
 const loading =ref()
 const message = ref()
-const getEventCategories = async () => {
+const getEventCategoryName = async () => {
     loading.value = true
     message.value = "loading..."
     // const res = await fetch('http://localhost:8080/api/eventCategories')
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`)
       .catch(()=> {
         message.value = "Not Found Backend Server!!!"
     });
@@ -19,7 +19,7 @@ const getEventCategories = async () => {
 }
 
 onMounted(async () => {
-    await getEventCategories()
+    await getEventCategoryName()
 })
 
 const newEvent = ref({
@@ -77,10 +77,10 @@ const createNewEvent = async (newEvent)=>{
             'content-type':'application/json'
             },
             body: JSON.stringify({
-                bookingName: newEvent.bookingName,
+                bookingName: newEvent.bookingName.trim(),
                 bookingEmail: newEvent.email,
                 startTime: dataTime.toISOString().replace(".000Z", "Z"),
-                notes:newEvent.notes.length === 0 ? null : newEvent.notes,
+                notes:newEvent.notes.length === 0 ? null : newEvent.notes.trim(),
                 eventCategoryId: newEvent.category.id
             })
         }).catch(error => console.log(error));
@@ -95,7 +95,6 @@ const createNewEvent = async (newEvent)=>{
             console.log(res.status)
             console.log('error, cannot create')
         }
-        console.log(res.message)
     }
 }
 
@@ -127,13 +126,22 @@ const addMinutes = (date,duration) => {
     changeDate.setMinutes(changeDate.getMinutes()+duration)
     return changeDate
 }
-// --- show End Time --- (16:30 AM)
+// --- show End Time --- (12:30 AM)
 const timeUnits = ['AM','PM']
 const getEndTime = (givenDate) => {
-    const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
-    const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
-    const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
-    return hour + ':' + minute + ' ' + timeUnit
+    if(givenDate != 'Invalid Date'){
+         // const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
+        let hour = givenDate.getHours()%12
+        if(hour == 0){
+            hour = 12
+        } else if(hour <= 9){
+            hour = '0' + hour
+        }
+        const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
+        const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
+        return hour + ':' + minute + ' ' + timeUnit
+    }
+    
 }
 
 
@@ -156,12 +164,16 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
             <table>
                 <tr>
                     <th><label for="bName">Booking name :</label></th>
-                    <td><input type="text" id="bName" name="bName" v-model="newEvent.bookingName" maxlength="100" size="50"></td>
+                    <td>
+                        <input type="text" id="bName" name="bName" v-model="newEvent.bookingName" maxlength="100" size="50">&ensp;
+                        <span class="subText">{{newEvent.bookingName.trim().length}} / 100</span>
+                    </td>
                 </tr>
                 <tr>
                     <th><label for="bEmail">Your email :</label></th>
                     <td>
-                        <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">
+                        <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">&ensp;
+                        <span class="subText">{{newEvent.email.trim().length}} / 50</span>
                     <br><span v-show="emailStatus" class="warning">Sorry! an invalid email!</span>
                     </td>
                 </tr>
@@ -176,7 +188,7 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
                         </select>
                         &emsp;
                         <span v-show="newEvent.category.id > 0">
-                        <b> Duration : </b>  &ensp; {{newEvent.category.duration}} mins
+                        <b> Duration : </b>  &ensp; {{newEvent.category.duration}} min.
                         </span>
                     </td>
                 </tr>
@@ -202,14 +214,16 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
                 </tr>
                 <tr>
                     <th><label for="bNotes">Notes :</label></th>
-                    <td><textarea v-model="newEvent.notes" rows="7" cols="50" maxlength="500"></textarea></td>
+                    <td><textarea v-model="newEvent.notes" rows="7" cols="50" maxlength="500"></textarea>&ensp;
+                        <span class="subText">{{newEvent.notes.trim().length}} / 500</span>
+                    </td>
                 </tr>
             </table>
             <span class="warning" v-show="!overlapStatus">It seems that you choose the time that overlap other previous events. Please choose another time.</span>
         </div>
     </div>
         <div class="button-right">
-            <button @click="clearForm" class="button-18" role="button" >Clear</button> &ensp;
+            <button @click="clearForm" :class="['button-18','negative']" role="button">Clear</button> &ensp;
             <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button>
             <br>
         </div>
@@ -217,6 +231,10 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
 </template>
 
 <style scoped>
+    .subText{
+        color:rgb(199, 199, 199);
+        font-size: smaller;
+    }
     h2 {
         color: #FFCB4C;
     }
@@ -247,7 +265,7 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
     }
     .button-right {
         float: right;
-        margin-right: 2em;
+        margin: 0 12% 2em 0;
     }
     .warning{
         color: orangered;
@@ -267,12 +285,14 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
         vertical-align: top;
         text-align: right;
         width: 19%;
+        padding: 5px 2px;
         -o-object-fit: cover;
         object-fit: cover;
     }
     td {
         text-align: left;
         width: 30%;
+        padding: 5px 2px;
         -o-object-fit: cover;
         object-fit: cover;
     }

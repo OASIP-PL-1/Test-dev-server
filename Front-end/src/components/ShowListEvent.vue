@@ -3,6 +3,10 @@
       events:{
           type: Object,
           require: true
+      },
+      filterMode:{
+          type: String,
+          require: true
       }
   })
   
@@ -29,7 +33,11 @@ const showTime = (givenDate) => {
         <h2>List All Event</h2>
         <div class="grid-container">
           <div v-if="events == 0" class="centerText">
-            <span class="emptyText"> --- No Scheduled Events --- </span>
+            <span v-if="filterMode === ''" class="emptyText"> --- No Scheduled Events --- </span>
+            <span v-else-if="filterMode === 'past'" class="emptyText"> --- No Past Events --- </span>
+            <span v-else-if="filterMode === 'upcoming'" class="emptyText"> --- No On-going or upcoming Events --- </span>
+            <span v-else-if="filterMode === 'date'" class="emptyText"> --- No Scheduled Events for This Date --- </span>
+            <span v-else-if="filterMode === 'category'" class="emptyText"> --- No Scheduled Events for This Category --- </span>
           </div>
           <div v-else v-for="(event,index) in events" :key="index" class="grid-item">
             <router-link :to="{ name: 'ThisEvent', params:{eventId:event.id}}">

@@ -5,8 +5,6 @@
 </script>
  
 <template>
-    <!-- <h1>Appointment</h1>
-    <h1>Booking</h1> -->
     <img class="object-cover w-6/12" src="../assets/phone.png" alt="phone" style="display:inline">
         <!-- style="padding-left: 2em; height: 20%; margin-top: -5em; max-height: 800px; min-height: 200px;"> -->
         <!-- <img src="../assets/head.png" alt="head" style="max-width: 500px; min-width: 300px; width: 70%; display:inline"> -->

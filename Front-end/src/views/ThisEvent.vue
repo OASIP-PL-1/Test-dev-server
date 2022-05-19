@@ -1,5 +1,4 @@
 <script setup>
-    import { computed } from '@vue/reactivity';
     import {ref, onBeforeMount} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import EditEvent from '../components/EditEvent.vue';
@@ -39,6 +38,7 @@
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
     const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
+    // const goThisEvent= () => myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId}})
     // const goNext = () => {
     //     myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId++}})
     //     getThisEvent()
@@ -78,7 +78,7 @@
     const updateEvent = async (editingEvent)=>{
         const status = await checkOverlap(editingEvent)
         console.log(status)
-        console.log(editingEvent)
+        // console.log(editingEvent)
         if(!status){
             // true เข้ามาในนี้ แปลว่า overlap 2 ใส่ไม่ได้
             console.log("This event is overlap")
@@ -86,8 +86,10 @@
             // false ไม่เข้า ส่งไป backend
             const dataTime = new Date(editingEvent.dateTime)
             if(editingEvent.notes !== null){
-                if(editingEvent.notes.length === 0){
+                if(editingEvent.notes.trim().length === 0){
                     editingEvent.notes = null
+                }else{
+                    editingEvent.notes = editingEvent.notes.trim()
                 }
             }
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`, 
@@ -208,11 +210,11 @@
                 </div>
         </div>
         </div>            
-            </div>
+        </div>
             <div class="button-right">
                 <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
-                <button @click="showEditMode()" class="button-18" role="button">Edit</button> &ensp;
-                <button @click="showDeleteModal()" class="button-18" role="button">Delete</button>     
+                <button @click="showDeleteModal()" :class="['button-18','negative']" role="button">Delete</button>  &ensp;  
+                <button @click="showEditMode()" class="button-18" role="button">Edit</button>
             </div>
         </div>
 
@@ -233,8 +235,8 @@
                     <h3>Do you want to delete this event ?</h3>
                 </div>
                 <div class="modal-button">
-                    <button @click="removeEvent()" class="button-18">Confirm</button>&ensp;
-                    <button @click="hideDeleteModal()" class="button-18" style="background-color: orangered;">Cancel</button>
+                    <button @click="removeEvent()" :class="['button-18', 'confirmbt']">Confirm</button>
+                    &ensp;<button @click="hideDeleteModal()" class="button-18">Cancel</button>
                 </div>
             </div>
         </div>
@@ -309,6 +311,7 @@
     }
     .button-right {
         float: right;
+        margin: 0 10% 2em 0;
     }
     .thisEvent { 
         margin-left: 1em;
@@ -331,12 +334,13 @@
         vertical-align: middle; 
     }
     .modal-container {
-        width: 300px;
+        width: 400px;
         padding: 20px 30px;
         background-color: #fff;
-        border-radius: 10px;
+        border-radius: 20px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         margin: auto;
+        text-align: center;
     }
     .modal-header h3 {
         color: rgb(0, 0, 0);
@@ -376,5 +380,13 @@
         -o-object-fit: cover;
         object-fit: cover;
         padding-left: 20px;
+    }
+    .confirmbt {
+        background-color: #fd7038;
+    }
+    .confirmbt:hover:not([disabled]) {
+        background-color: #FFA21A;
+        color: white;
+        transition-duration: .1s;
     }
 </style>

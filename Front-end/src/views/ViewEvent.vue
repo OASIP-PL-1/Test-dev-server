@@ -21,22 +21,25 @@
   }
 
   const eventCategories = ref()
-  const getEventCategories = async () => {
+  const getEventCategoryName = async () => {
     loading.value = true
     message.value = "loading..."
     // const res = await fetch('http://localhost:8080/api/eventCategories')
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`)
       .catch(()=> {
         message.value = "Not Found Backend Server!!!"
     });
     eventCategories.value = await res.json()
     loading.value = false
+    filterMode.value = ''
   }
 
   onMounted(async () => {
       await getEvents()
-      await getEventCategories()
+      await getEventCategoryName()
   })
+
+  const filterMode = ref('')
 
 // --- Filter ---
   const getPastEvent = async () => {
@@ -46,6 +49,7 @@
         message.value = "Not Found Backend Server!!!"
     });
     events.value = await res.json()
+    filterMode.value = 'past'
   }
 
   const getUpcomingEvent = async () => {
@@ -55,6 +59,7 @@
         message.value = "Not Found Backend Server!!!"
     });
     events.value = await res.json()
+    filterMode.value = 'upcoming'
   }
 
   const getEventByDate = async (date) => {
@@ -65,7 +70,7 @@
         message.value = "Not Found Backend Server!!!"
     });
     events.value = await res.json()
-    console.log(events.value)
+    filterMode.value = 'date'
   }
 
   const getEventByCategory = async (id) => {
@@ -76,6 +81,7 @@
         message.value = "Not Found Backend Server!!!"
     });
       events.value = await res.json()
+      filterMode.value = 'category'
     }else{
       getEvents()
     }
@@ -97,7 +103,7 @@
             @reset="getEvents"/>
           </td>
           <td>
-            <ShowListEvent :events="events"/>
+            <ShowListEvent :events="events" :filterMode="filterMode"/>
           </td>
         </tr>
       </table>
@@ -105,9 +111,6 @@
 </template>
  
 <style scoped>
-  .emptyText{
-    color: red;
-  }
   .subText{
     color: gray;
     text-align: center;

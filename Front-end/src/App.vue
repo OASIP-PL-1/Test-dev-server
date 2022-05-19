@@ -11,6 +11,7 @@
         <span class="navtop" style="display: inline;">
             <span class="navhover">
                 <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
+                <router-link :to="{name:'ViewEventCategory'}"><p style="float:right;">Category</p></router-link>
                 <router-link :to="{name:'AddNewEvent'}"><p style="float:right;">Book</p></router-link>
                 <router-link :to="{name:'ViewEvent'}"><p style="float:right;">Event</p></router-link>
                 <router-link :to="{name:'Home'}"><p style="float:right;">Home</p></router-link>
@@ -129,7 +130,11 @@
         vertical-align: middle;
     }
     .button-18:disabled {
-         background-color: #c2c2ff;
+        background-color: #c2c2ff;
+    }
+    .negative {
+        background-color: #fff3d5;
+        color: orangered;
     }
     hr {
         border: 1px solid #5C5CFF;

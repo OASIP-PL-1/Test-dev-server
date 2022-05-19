@@ -20,7 +20,6 @@
             time : props.thisEvent.startTime.substring(11, 16),
             notes : props.thisEvent.notes
         })
-    console.log(editingEvent.value)
 
     // --- get Today for min Date input --- 2022-05-12
     const getToday = (currentDate) => {
@@ -33,8 +32,13 @@
 
     // -- date past ? ---
     const checkDate = computed(()=>{ 
+        //true = เวลาเป็นอดีต
         editingEvent.value.dateTime = editingEvent.value.date + 'T' + editingEvent.value.time
         return new Date(editingEvent.value.dateTime) < new Date()
+    })
+    const checkEdited = computed(()=>{
+        //true = ยังไม่แก้ข้อมูล
+        return String(props.thisEvent.startTime).substring(0,16) === editingEvent.value.dateTime && props.thisEvent.notes === editingEvent.value.notes
     })
 
     // -- calculate End time ---
@@ -46,22 +50,25 @@
     // --- show End Time --- 
     const timeUnits = ['AM','PM']
     const getEndTime = (givenDate) => {
-            // console.log(givenDate)
-            // const day = days[givenDate.getDay()]
-            // const date = givenDate.getDate()
-            // const month = givenDate.getMonth()+1
-            // const year = givenDate.getFullYear()
-        const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
-        const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
-        const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
-        return hour + ':' + minute + ' ' + timeUnit
+        if(givenDate != 'Invalid Date'){
+            // const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
+            let hour = givenDate.getHours()%12
+            if(hour == 0){
+                hour = 12
+            } else if(hour <= 9){
+                hour = '0' + hour
+            }
+            const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
+            const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
+            return hour + ':' + minute + ' ' + timeUnit
+        }
     }
 
     // --- show Date Time ---
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
     const monthsName = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
     const a = new Date('2022-05-04')
-    const getDateTime = (givenDate) => {
+    const showDateTime = (givenDate) => {
         const day = days[givenDate.getDay()]
         const date = givenDate.getDate()
         const month = monthsName[givenDate.getMonth()]
@@ -93,13 +100,13 @@
             </tr>
             <tr class="subText">
                 <th>Same Date-Time : </th>
-                <td colspan="2">{{getDateTime(new Date(String(thisEvent.startTime).substring(0,16)))}}</td>
+                <td colspan="2">{{showDateTime(new Date(String(thisEvent.startTime).substring(0,16)))}}</td>
             </tr>
             <tr>
                 <th>New Date-Time : </th>
                 <td colspan="3">
-                    {{getDateTime(new Date(editingEvent.dateTime))}}  &ensp;
-                    <span v-show="new Date(editingEvent.dateTime) < new Date()" class="warning">
+                    {{showDateTime(new Date(editingEvent.dateTime))}}  &ensp;
+                    <span v-show="checkDate" class="warning">
                         <span class="warning">&#9888;</span> The choosen time is in the past, choose again
                     </span>
                 </td>
@@ -127,8 +134,8 @@
     </div>
 
         <div class="button-right">
-            <button @click="$emit('hideEditMode')" class="button-18" role="button">Cancal</button> &ensp;
-            <button @click="$emit('save',editingEvent)" class="button-18" role="button" :disabled="checkDate">Save</button>
+            <button @click="$emit('hideEditMode')" :class="['button-18','negative']" role="button">Cancal</button> &ensp;
+            <button @click="$emit('save',editingEvent)" class="button-18" role="button" :disabled="checkDate || checkEdited">Save</button>
         </div>    
 </template>
  
@@ -170,11 +177,12 @@
     .header{
         margin: 1em 3em;
     }
-     .warning{
+    .warning{
         color: orangered;
     }
     .button-right {
         float: right;
+        margin: 0 10% 2em 0;
     }
     .subText{
         color: rgb(129, 111, 143);
