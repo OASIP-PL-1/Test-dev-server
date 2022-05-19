@@ -14,11 +14,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDTO {
-    private int id;
+    private Integer id;
     private String bookingName;
     private String bookingEmail;
     private String categoryName;
-    private int duration;
+    private Integer duration;
     private String notes;
     private Date startTime;
 

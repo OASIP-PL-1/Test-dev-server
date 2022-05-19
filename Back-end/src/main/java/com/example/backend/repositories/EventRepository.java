@@ -15,18 +15,29 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     public List<Event> findByEventStartTimeLessThanOrderByEventStartTimeDesc(Date currentDate);
     public List<Event> findByEventStartTimeGreaterThanOrderByEventStartTimeAsc(Date currentDate);
     public List<Event> findByEventStartTimeGreaterThanAndEventStartTimeLessThan(Date starDateTime, Date endDateTime);
-    public List<Event> findAllByEventStartTimeBetween(Date startTime, Date endTime);
-    public List<Event> findAllByEventStartTimeBetweenOrEventStartTimeBetweenAndEventCategory(Date startTime, Date endTime, Date startTimeMinus, Date endTimeMinus, EventCategory eventCategory);
-    public List<Event> findAllByEventStartTimeBetweenOrEventStartTimeBetween(Date startTime, Date endTime, Date startTimeMinus, Date endTimeMinus);
     public Event findTopByOrderByIdDesc();
-    public List<Event> findAllByEventCategoryId(int id);
 
-//    @Query (value = "select e from Event e")
-//    public boolean test();
-    @Query(value = "select e from Event e where (e.eventCategory = :eventCategory) AND ((e.eventStartTime BETWEEN :startTime AND :endTime) OR (e.eventStartTime BETWEEN :startTimeMinus AND :startTime))")
+    @Query(value = "select e.* from Events e " +
+            "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) <= :currentTime",
+            nativeQuery = true)
+    public List<Event> filterPastEvent(@Param("currentTime")Date currentTime);
+
+    @Query(value = "select e.* from Events e " +
+            "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) >= :currentTime",
+            nativeQuery = true)
+    public List<Event> filterUpcomingEvent(@Param("currentTime")Date currentTime);
+
+    @Query(value = "select distinct e.* from Events e where (e.eventCategoryId = :eventCategoryId)" +
+            "AND ((:startTime > e.eventStartTime AND :startTime < DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))" +
+            "OR (:endTime > e.eventStartTime AND :endTime < DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))" +
+            "OR (e.eventStartTime > :startTime AND e.eventStartTime < :endTime)" +
+            "OR (DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) > :startTime AND DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) < :endTime)" +
+            "OR ((:startTime = e.eventStartTime) OR (:endTime = DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))))",
+            nativeQuery = true)
     public List<Event> overlap(
-            @Param("eventCategory")EventCategory eventCategory,
+            @Param("eventCategoryId") Integer categoryId,
             @Param("startTime") Date startTime,
-            @Param("endTime") Date endTime,
-            @Param("startTimeMinus") Date startTimeMinus);
+            @Param("endTime") Date endTime
+    );
+
 }

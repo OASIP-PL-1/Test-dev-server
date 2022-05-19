@@ -1,14 +1,13 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dtos.EventCategoryAllDTO;
-import com.example.backend.entities.EventCategory;
+import com.example.backend.dtos.EventCategoryNameDTO;
 import com.example.backend.repositories.EventCategoryRepository;
 import com.example.backend.services.EventCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,10 +20,21 @@ public class EventCategoryController {
     @Autowired
     EventCategoryRepository repository;
 
+    @GetMapping("/name")
+    public List<EventCategoryNameDTO> getAllEventCategoryName(){
+        return service.getEventCategoryNameDTO();
+    }
+
     @GetMapping("")
     public List<EventCategoryAllDTO> getAllEventCategory(){
         return service.getEventCategoryAllDTO();
     }
+
+    @PutMapping("")
+    public EventCategoryAllDTO editEventCategory(@RequestBody EventCategoryAllDTO editCategory){
+        return service.editCategory(editCategory);
+    }
+
 //
 //    @GetMapping("/{id}")
 //    public EventCategory getE(@PathVariable int id){

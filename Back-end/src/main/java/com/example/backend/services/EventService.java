@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -32,7 +33,7 @@ public class EventService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private ListMapper listMapper = ListMapper.getInstance();
+    private ListMapper listMapper;
 
     @Autowired
     public EventService(EventRepository repository, ModelMapper modelMapper){
@@ -87,13 +88,15 @@ public class EventService {
      
      public List<EventAllDTO> getPastEventAllDTO(){
         Date currentDate = new Date(System.currentTimeMillis());
-        List<Event> events = repository.findByEventStartTimeLessThanOrderByEventStartTimeDesc(currentDate);
+//        List<Event> events = repository.findByEventStartTimeLessThanOrderByEventStartTimeDesc(currentDate);
+        List<Event> events = repository.filterPastEvent(currentDate);
         return listMapper.mapList(events, EventAllDTO.class,modelMapper);
      }
 
      public List<EventAllDTO> getUpcomingEventAllDTO(){
-         Date currentDate = new Date(System.currentTimeMillis());
-         List<Event> events = repository.findByEventStartTimeGreaterThanOrderByEventStartTimeAsc(currentDate);
+        Date currentDate = new Date(System.currentTimeMillis());
+//         List<Event> events = repository.findByEventStartTimeGreaterThanOrderByEventStartTimeAsc(currentDate);
+        List<Event> events = repository.filterUpcomingEvent(currentDate);
         return listMapper.mapList(events, EventAllDTO.class,modelMapper);
      }
 
@@ -149,24 +152,23 @@ public class EventService {
 
     private boolean checkEditOverlap(Event event, Date editTime){
         int eventSize = checkOverlap(event.getEventCategory().getId(), editTime).size();
-
         //check self overlap
         int minutesBetweenDate = (int) TimeUnit.MINUTES.convert((Math.abs(editTime.getTime() - event.getEventStartTime().getTime())), TimeUnit.MILLISECONDS);
         System.out.println("Minute between date : " +  minutesBetweenDate);
         if(minutesBetweenDate < event.getEventDuration()){
             eventSize--;
         }
-
         return eventSize == 0;
     }
 
    public List<Event> checkOverlap(int categoryId, Date date) {
-        EventCategory e1 = categoryRepository.findById(categoryId).orElseThrow();
-        int duration = e1.getEventCategoryDuration();
-        Date endTime = new Date(date.getTime() + (1000 * 60 * duration));
-        Date startTimeMinus = new Date(date.getTime() - (1000 * 60 * duration));
-        List<Event> events = repository.overlap(e1, date, endTime,startTimeMinus);
-        return listMapper.mapList(events,EventAllDTO.class,modelMapper);
+       EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category is not exist"); });
+       System.out.println(eventCategory.getEventCategoryDuration());
+       Date startTime = date;
+       Date endTime = new Date(startTime.getTime() + 1000*60*eventCategory.getEventCategoryDuration());
+       System.out.println(startTime+ "*********" +endTime);
+       List<Event> event = repository.overlap(categoryId,startTime,endTime);
+       return event;
     };
 }
 
