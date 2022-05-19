@@ -16,14 +16,14 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAllDTO {
-    private Integer id;
+    private int id;
     private String bookingName;
     private String categoryName;
     private Date startTime;
     private int duration;
 
 
-   public ZonedDateTime getStartTime(){
-       return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
-   }
+    public ZonedDateTime getStartTime(){
+        return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
+    }
 }
