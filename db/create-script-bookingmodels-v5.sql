@@ -85,7 +85,7 @@ select * from events;
 
 -- DROP USER 'dev'@'%';
 CREATE USER 'dev'@'%' IDENTIFIED BY 'int221';
-GRANT CREATE, DROP, DELETE, INSERT, SELECT, UPDATE, REFERENCES ON bookingmodels.* TO 'dev'@'%';
+GRANT CREATE, DROP, DELETE, INSERT, SELECT, UPDATE, REFERENCES, RELOAD ON bookingmodels.* TO 'dev'@'%';
 
 -- DROP USER 'admin'@'%';
 CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';
