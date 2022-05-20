@@ -64,11 +64,12 @@
         }
     }
 
-    // --- show Date Time ---
+    // --- show Date Time --- ( Mon 23 May 2022 | 16:30 )
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
     const monthsName = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
     const a = new Date('2022-05-04')
     const showDateTime = (givenDate) => {
+        if(givenDate != 'Invalid Date'){
         const day = days[givenDate.getDay()]
         const date = givenDate.getDate()
         const month = monthsName[givenDate.getMonth()]
@@ -77,6 +78,7 @@
         // const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
         // const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
         return day + ' ' + date + ' ' + month + ' ' + year + ' | ' + givenDate.toLocaleTimeString('th-TH').substring(0,5)
+        }
     }
 
 </script>

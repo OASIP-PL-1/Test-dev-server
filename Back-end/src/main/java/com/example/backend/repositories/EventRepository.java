@@ -12,22 +12,20 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository <Event, Integer>, CrudRepository<Event, Integer> {
     public List<Event> findByEventCategoryIdOrderByEventStartTimeDesc(Integer id);
-    public List<Event> findByEventStartTimeLessThanOrderByEventStartTimeDesc(Date currentDate);
-    public List<Event> findByEventStartTimeGreaterThanOrderByEventStartTimeAsc(Date currentDate);
     public List<Event> findByEventStartTimeGreaterThanAndEventStartTimeLessThan(Date starDateTime, Date endDateTime);
     public Event findTopByOrderByIdDesc();
 
-    @Query(value = "select e.* from Events e " +
+    @Query(value = "select e.* from events e " +
             "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) <= :currentTime",
             nativeQuery = true)
     public List<Event> filterPastEvent(@Param("currentTime")Date currentTime);
 
-    @Query(value = "select e.* from Events e " +
+    @Query(value = "select e.* from events e " +
             "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) >= :currentTime",
             nativeQuery = true)
     public List<Event> filterUpcomingEvent(@Param("currentTime")Date currentTime);
 
-    @Query(value = "select distinct e.* from Events e where (e.eventCategoryId = :eventCategoryId)" +
+    @Query(value = "select distinct e.* from events e where (e.eventCategoryId = :eventCategoryId)" +
             "AND ((:startTime > e.eventStartTime AND :startTime < DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))" +
             "OR (:endTime > e.eventStartTime AND :endTime < DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))" +
             "OR (e.eventStartTime > :startTime AND e.eventStartTime < :endTime)" +

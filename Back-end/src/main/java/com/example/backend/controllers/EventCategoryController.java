@@ -35,11 +35,4 @@ public class EventCategoryController {
         return service.editCategory(editCategory);
     }
 
-//
-//    @GetMapping("/{id}")
-//    public EventCategory getE(@PathVariable int id){
-//        return repository.findById(id).orElseThrow(
-//
-//        );
-//    }
 }

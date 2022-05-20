@@ -133,8 +133,7 @@
                 message.value = "Not Found Backend Server!!!"
             });
         overlapStatus.value = await res.json()
-        // console.log(await res.json())
-        console.log( overlapStatus.value)
+        // console.log( overlapStatus.value)
         return overlapStatus.value
     }
     
