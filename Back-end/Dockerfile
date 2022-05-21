@@ -42,5 +42,5 @@ FROM openjdk:11-jdk-slim
 ARG JAR_FILE=/app/target/*.jar
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-Duser.timezone=ICT","-jar","app.jar"]
+ENTRYPOINT ["java","-Duser.timezone=Asia/Bangkok","-jar","app.jar"]
 
