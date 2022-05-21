@@ -143,11 +143,10 @@ const getListOverlap = async (editingEvent) => {
     const overlapStatus = ref(true)
     const checkOverlap = async(editingEvent) => {
         const id = params.eventId
-        const date = new Date(editingEvent.dateTime)
-        const dateFormat = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + "-"
-            + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds()
-        console.log(date)
-        console.log(dateFormat)
+        const dateTime = new Date(editingEvent.dateTime).toISOString()
+        console.log(dateTime)
+        const dateFormat = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19) 
+        console.log(dateFormat) //2022-05-26-04-00-00 (-7)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/edit/${id}/${dateFormat}`)
             .catch(()=> {
                 message.value = "Not Found Backend Server!!!"

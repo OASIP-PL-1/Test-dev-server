@@ -49,10 +49,7 @@ const checkOverlap = async(newEvent) => {
     const dateTime = new Date(newEvent.dateTime).toISOString()
     console.log(dateTime)
     const startTime = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19)  
-    console.log(startTime)
-    //  const startTime = dateTime.getFullYear() + "-" + (dateTime.getMonth()+1) + "-" + dateTime.getDate() + "-" 
-    //     + dateTime.getHours() + "-" + dateTime.getMinutes() + "-" + dateTime.getSeconds()
-    // console.log(startTime) //2022-05-26-04-00-00 (-7)
+    console.log(startTime)  //2022-05-26-04-00-00 (-7)
 
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`)
         .catch(()=> {
@@ -110,6 +107,8 @@ const createNewEvent = async (newEvent)=>{
         await getListOverlap(newEvent)
     }else{
         const dataTime = new Date(newEvent.dateTime)
+        console.log(dataTime)
+        console.log(dataTime.toISOString().replace(".000Z", "Z"))
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`,{
             method:'POST',
             headers:{

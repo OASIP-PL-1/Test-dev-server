@@ -147,27 +147,17 @@
         </div>
         <div class="overlap-bar" v-show="!overlapStatus">
             <div class="warning">It seems that you choose the time that overlap other previous events. These are the <b>exist</b> event in the day you choose.</div>
-            <div class="overlap-detail">
-                <div v-show="listOverlap.length > 0"> 
+            <div class="overlap-detail" v-show="listOverlap.length > 0">
+                <div> 
                     <b>Category : </b> {{selectedCategory}} &ensp; <b> Date : </b> {{selectedDate}}
                 </div>
                 <br>
-                <span v-for="(event,index) in listOverlap" :key="index" class="span-time" 
-                      v-if="!(event.startTime.substring(11,16) === thisEvent.startTime.substring(11,16))">
+                <span v-for="(event,index) in listOverlap" :key="index" class="span-time"
+                      v-show="!(event.startTime.substring(11,16) === thisEvent.startTime.substring(11,16))">
                     {{showRangeTime(event)}}
                 </span> 
             </div>
         </div>
-        <!-- <div class="overlap-bar" v-show="!overlapStatus">
-                <span class="warning" >It seems that you choose the time that overlap other previous events. These are the event in the day you choose.</span>
-                <div class="overlap-detail">
-                    <div v-show="listOverlap.length > 0"> 
-                        <b>Category : </b> {{selectedCategory}} &ensp; <b> Date : </b> {{selectedDate}}
-                    </div>
-                    <br> 
-                        <span v-for="(event,index) in listOverlap" :key="index" class="span-time">{{showRangeTime(event)}}</span>               
-                </div>
-            </div> -->
     </div>
     </div>
 
