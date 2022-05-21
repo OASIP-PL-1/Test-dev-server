@@ -152,7 +152,7 @@
             <textarea v-model="editingEvent.notes" maxlength="500" >{{editingEvent.notes}}</textarea>
         </div>
         <div class="overlap-bar" v-show="!overlapStatus">
-            <div class="warning">It seems that you choose the time that overlap other previous events. These are the <b>exist</b> event in the day you choose.</div>
+            <div class="warning">It seems that you choose the time that overlap other previous events. These are the <strong>exist</strong> event in the day you choose.</div>
             <div class="overlap-detail" v-show="listOverlap.length > 0">
                 <div> 
                     <b>Category : </b> {{selectedCategory}} &ensp; <b> Date : </b> {{selectedDate}}
@@ -236,25 +236,26 @@
     }
     .overlap-bar {
         text-align: center;
-        background-color: white;
-        padding: 1em 2em;
-        border-radius: 10px;
+        padding: 1em;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
     }
     .overlap-detail b{
-        color: black;
+        color: #FFCB4C;
         padding: 1em;
     }
     .overlap-detail {
-        color: black;
-        padding: 1em 2em 2em 1em;
+        color: #FFCB4C;
+        padding: 1em 1em 0em 1em;
         font-weight: 0;
     }
-    .span-time{
-        background-color: rgb(255, 194, 194);
-        color: red ;
+    .span-time {
+        color: #FFA21A;
         margin: 4px 10px;
         padding: 4px 10px;
         border-radius: 10px;
+        border-style: dashed;
         display: inline-block;
         word-wrap: break-word;
         overflow-wrap: break-word;
