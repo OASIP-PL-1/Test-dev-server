@@ -12,5 +12,6 @@ import lombok.Setter;
 public class EventCategoryAllDTO {
     private int id;
     private String categoryName;
+    private String categoryDescription;
     private int duration;
 }

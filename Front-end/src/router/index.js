@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import ViewEvent from '../views/ViewEvent.vue'
+import ViewEventCategory from '../views/ViewEventCategory.vue'
 import NotFoundPage from '../views/NotFoundPage.vue'
 import ThisEvent from '../views/ThisEvent.vue'
 import AddNewEvent from '../views/AddNewEvent.vue'
@@ -22,6 +23,11 @@ const routes = [
     path: '/view-event',
     name: 'ViewEvent',
     component: ViewEvent
+  },
+  {
+    path: '/view-event-category',
+    name: 'ViewEventCategory',
+    component: ViewEventCategory
   },
   {
     path: '/view-event/:eventId',

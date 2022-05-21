@@ -1,5 +1,4 @@
 <script setup>
-    import { computed } from '@vue/reactivity';
     import {ref, onBeforeMount} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import EditEvent from '../components/EditEvent.vue';
@@ -39,6 +38,7 @@
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
     const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
+    // const goThisEvent= () => myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId}})
     // const goNext = () => {
     //     myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId++}})
     //     getThisEvent()
@@ -48,7 +48,6 @@
 // --- show Date --- (Sun 1 Jan 2022)
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
     const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-    const a = new Date('2022-05-04')
     const showDate = (givenDate) => {
         // console.log(givenDate)
         const day = days[givenDate.getDay()]
@@ -68,26 +67,49 @@
         return changeDate
     }
 
+// --- GET List Overlap ---    
+const listOverlap = ref([])
+const selectedCategory = ref('')
+const selectedDate = ref('')
+    
+const getListOverlap = async (editingEvent) => {
+    // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/listoverlap/${newEvent.category.id}/2565-05-26`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-edit-overlap/${editingEvent.id}/${editingEvent.date}`)
+                            .catch((error)=> console.log(error));
+    listOverlap.value = await res.json()
+    console.log(listOverlap.value)
+    selectedCategory.value = thisEvent.value.categoryName
+    selectedDate.value = showDate(new Date(editingEvent.date)).substring(4,15)
+}
+
 // --- Edit Mode ---
     const editMode = ref(false)
     const showEditMode = () => editMode.value = true
-    const hideEditMode = () => editMode.value = false
+    const hideEditMode = () => {
+        editMode.value = false
+        overlapStatus.value = true
+        listOverlap.value = []
+    }
     // const checkDateTime = computed(() => new Date(thisEvent.value.startTime) < new Date())
 
 // --- Edit---
     const updateEvent = async (editingEvent)=>{
+        /* id: 9, dateTime: '2022-05-26T22:00', date: '2022-05-26', time: '22:00', notes: null*/
         const status = await checkOverlap(editingEvent)
         console.log(status)
-        console.log(editingEvent)
+        // console.log(editingEvent)
         if(!status){
             // true เข้ามาในนี้ แปลว่า overlap 2 ใส่ไม่ได้
             console.log("This event is overlap")
+            await getListOverlap(editingEvent)
         }else{
             // false ไม่เข้า ส่งไป backend
             const dataTime = new Date(editingEvent.dateTime)
             if(editingEvent.notes !== null){
-                if(editingEvent.notes.length === 0){
+                if(editingEvent.notes.trim().length === 0){
                     editingEvent.notes = null
+                }else{
+                    editingEvent.notes = editingEvent.notes.trim()
                 }
             }
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`, 
@@ -108,8 +130,8 @@
                 console.log(thisEvent.value)         
                 hideEditMode()
             }else if(res.status===400){
-                console.log("This event is overlap")
-                overlapStatus.value = false
+                console.log("Bad request")
+                console.log(res.status)
             }else{
                 console.log('error, cannot update')
                 console.log(res.status)
@@ -121,18 +143,16 @@
     const overlapStatus = ref(true)
     const checkOverlap = async(editingEvent) => {
         const id = params.eventId
-        const date = new Date(editingEvent.dateTime)
-        const dateFormat = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + "-"
-            + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds()
-        console.log(date)
-        console.log(dateFormat)
+        const dateTime = new Date(editingEvent.dateTime).toISOString()
+        console.log(dateTime)
+        const dateFormat = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19) 
+        console.log(dateFormat) //2022-05-26-04-00-00 (-7)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/edit/${id}/${dateFormat}`)
             .catch(()=> {
                 message.value = "Not Found Backend Server!!!"
             });
         overlapStatus.value = await res.json()
-        // console.log(await res.json())
-        console.log( overlapStatus.value)
+        // console.log( overlapStatus.value)
         return overlapStatus.value
     }
     
@@ -208,17 +228,20 @@
                 </div>
         </div>
         </div>            
-            </div>
+        </div>
             <div class="button-right">
                 <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
-                <button @click="showEditMode()" class="button-18" role="button">Edit</button> &ensp;
-                <button @click="showDeleteModal()" class="button-18" role="button">Delete</button>     
+                <button @click="showDeleteModal()" :class="['button-18','negative']" role="button">Delete</button>  &ensp;  
+                <button @click="showEditMode()" class="button-18" role="button">Edit</button>
             </div>
         </div>
 
         <div v-else>
             <EditEvent :thisEvent="thisEvent"
                 :overlapStatus="overlapStatus"
+                :listOverlap="listOverlap"
+                :selectedCategory="selectedCategory"
+                :selectedDate="selectedDate"
                 @hideEditMode="hideEditMode"
                 @save="updateEvent"/>
         </div>
@@ -233,8 +256,8 @@
                     <h3>Do you want to delete this event ?</h3>
                 </div>
                 <div class="modal-button">
-                    <button @click="removeEvent()" class="button-18">Confirm</button>&ensp;
-                    <button @click="hideDeleteModal()" class="button-18" style="background-color: orangered;">Cancel</button>
+                    <button @click="removeEvent()" :class="['button-18', 'confirmbt']">Confirm</button>
+                    &ensp;<button @click="hideDeleteModal()" class="button-18">Cancel</button>
                 </div>
             </div>
         </div>
@@ -309,6 +332,7 @@
     }
     .button-right {
         float: right;
+        margin: 0 10% 2em 0;
     }
     .thisEvent { 
         margin-left: 1em;
@@ -331,12 +355,13 @@
         vertical-align: middle; 
     }
     .modal-container {
-        width: 300px;
+        width: 400px;
         padding: 20px 30px;
         background-color: #fff;
-        border-radius: 10px;
+        border-radius: 20px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         margin: auto;
+        text-align: center;
     }
     .modal-header h3 {
         color: rgb(0, 0, 0);
@@ -376,5 +401,13 @@
         -o-object-fit: cover;
         object-fit: cover;
         padding-left: 20px;
+    }
+    .confirmbt {
+        background-color: #fd7038;
+    }
+    .confirmbt:hover:not([disabled]) {
+        background-color: #FFA21A;
+        color: white;
+        transition-duration: .1s;
     }
 </style>
