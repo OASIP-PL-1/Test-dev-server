@@ -1,9 +1,6 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.EventAddDTO;
-import com.example.backend.dtos.EventAllDTO;
-import com.example.backend.dtos.EventDTO;
-import com.example.backend.dtos.EventUpdateDTO;
+import com.example.backend.dtos.*;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
 import com.example.backend.repositories.EventCategoryRepository;
@@ -17,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -33,7 +29,7 @@ public class EventService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private ListMapper listMapper = ListMapper.getInstance();
+    private ListMapper listMapper;
 
     @Autowired
     public EventService(EventRepository repository, ModelMapper modelMapper){
@@ -41,6 +37,7 @@ public class EventService {
         this.modelMapper = modelMapper;
     }
 
+    //GET method
     public List<EventAllDTO> getEventAllDTO(){
         List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
@@ -51,6 +48,50 @@ public class EventService {
         return modelMapper.map(event, EventDTO.class);
      }
 
+     public List<EventListOverlapDTO> listEditOverlap(int eventId, String dateTime) throws ParseException {
+        int categoryId = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"This event is not existed.")).getEventCategory().getId();
+        return getEventOverlapList(categoryId, dateTime);
+     }
+
+    public List<EventListOverlapDTO> getEventOverlapList(int categoryId, String dateString) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(dateString);
+        Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
+        System.out.println(categoryId + "---" + date + "----" + dateEnd);
+        EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"CategoryId is not existed."));
+        List<Event> events = repository.findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(categoryId,date, dateEnd);
+//        List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
+        return listMapper.mapList(events, EventListOverlapDTO.class,modelMapper);
+    }
+
+     //GET method - filter
+    public List<EventAllDTO> getEventAllDTOByCategory(int id){
+        List<Event> events = repository.findByEventCategoryIdOrderByEventStartTimeDesc(id);
+        return listMapper.mapList(events, EventAllDTO.class, modelMapper);
+    }
+
+    public List<EventAllDTO> getPastEventAllDTO(){
+        Date currentDate = new Date(System.currentTimeMillis());
+        List<Event> events = repository.filterPastEvent(currentDate);
+        return listMapper.mapList(events, EventAllDTO.class,modelMapper);
+    }
+
+    public List<EventAllDTO> getUpcomingEventAllDTO(){
+        Date currentDate = new Date(System.currentTimeMillis());
+        List<Event> events = repository.filterUpcomingEvent(currentDate);
+        return listMapper.mapList(events, EventAllDTO.class,modelMapper);
+    }
+
+    public List<EventAllDTO> getEventALLDTOByDate(String dateString) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(dateString);
+        Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
+        List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
+        return listMapper.mapList(events,EventAllDTO.class,modelMapper);
+    }
+
+
+    //POST method
      public int createEvent(EventAddDTO newEvent){
         if(newEvent==null){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The data wasn't fulfilled");}
         if(newEvent.getBookingName()==null){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The booking name is required.");}
@@ -62,6 +103,7 @@ public class EventService {
         if(!checkEmail(newEvent.getBookingEmail())){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is not valid");}
         if(checkStartDate(newEvent.getStartTime())){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking date is in the past.");}
         if(newEvent.getNotes() != null) { if (newEvent.getNotes().length() > 500) { throw new ResponseStatusException(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Notes is too long. Maximum length is 500.");} }
+         System.out.println("New Event getStartTime : "+newEvent.getStartTime());
         if(!(checkOverlap(newEvent.getEventCategoryId(), newEvent.getStartTime()).size()==0)){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The choosen time is overlap other events");}
         EventCategory eventCategory = categoryRepository.findById(newEvent.getEventCategoryId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This category is not existed."));
         Event event = new Event();
@@ -76,40 +118,13 @@ public class EventService {
         return repository.findTopByOrderByIdDesc().getId();
      }
 
+     //DELETE method
     public void deleteEvent(int eventId){
         repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed"));
         repository.deleteById(eventId);
     }
 
-     public List<EventAllDTO> getEventAllDTOByCategory(int id){
-        List<Event> events = repository.findByEventCategoryIdOrderByEventStartTimeDesc(id);
-        return listMapper.mapList(events, EventAllDTO.class, modelMapper);
-     }
-     
-     public List<EventAllDTO> getPastEventAllDTO(){
-        Date currentDate = new Date(System.currentTimeMillis());
-//        List<Event> events = repository.findByEventStartTimeLessThanOrderByEventStartTimeDesc(currentDate);
-        List<Event> events = repository.filterPastEvent(currentDate);
-        return listMapper.mapList(events, EventAllDTO.class,modelMapper);
-     }
-
-     public List<EventAllDTO> getUpcomingEventAllDTO(){
-        Date currentDate = new Date(System.currentTimeMillis());
-//         List<Event> events = repository.findByEventStartTimeGreaterThanOrderByEventStartTimeAsc(currentDate);
-        List<Event> events = repository.filterUpcomingEvent(currentDate);
-        return listMapper.mapList(events, EventAllDTO.class,modelMapper);
-     }
-
-
-    public List<EventAllDTO> getEventALLDTOByDate(String dateString) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Thailand"));
-        Date date = sdf.parse(dateString);
-        Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-        List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
-        return listMapper.mapList(events,EventAllDTO.class,modelMapper);
-    }
-
+    //PUT method
     public EventDTO editEvent(EventUpdateDTO updateEvent){
         if(updateEvent==null){ throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"The data wasn't fulfilled.");}
         if(updateEvent.getStartTime()==null){ throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Date must be chosen.");}
@@ -123,6 +138,35 @@ public class EventService {
         return modelMapper.map(event,EventDTO.class);
     }
 
+
+    //Checkoverlap part------------------
+
+    public boolean checkBookOverlapForFrontEnd(int categoryId, String dateTime) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Thailand"));
+        Date startTime = sdf.parse(dateTime);
+        System.out.println("StartTime :" + startTime);
+        return checkOverlap(categoryId, startTime).size() == 0;
+    }
+
+    public boolean checkEditOverlapForFrontEnd(int eventId, String dateTime) throws ParseException {
+        Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The choosen event is not existed."));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        Date editTime = sdf.parse(dateTime);
+        return checkEditOverlap(event, editTime);
+    }
+
+   public List<Event> checkOverlap(int categoryId, Date date) {
+       EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category is not exist"); });
+       System.out.println(eventCategory.getEventCategoryDuration());
+       Date startTime = date;
+       Date endTime = new Date(startTime.getTime() + 1000*60*eventCategory.getEventCategoryDuration());
+       System.out.println(startTime+ "*********" +endTime);
+       List<Event> event = repository.overlap(categoryId,startTime,endTime);
+       return event;
+    };
+
+    //Private method for validation
     private boolean checkEmail(String email){
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
         Pattern pat = Pattern.compile(emailRegex);
@@ -132,22 +176,6 @@ public class EventService {
     private boolean checkStartDate(Date startDate){
         Date currentDate = new Date();
         return startDate.before(currentDate);
-    }
-
-    //Checkoverlap part------------------
-
-    public boolean checkBookOverlapForFrontEnd(int categoryId, String dateTime) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        Date startTime = sdf.parse(dateTime);
-        System.out.println(dateTime);
-        return checkOverlap(categoryId, startTime).size() == 0;
-    }
-
-    public boolean checkEditOverlapForFrontEnd(int eventId, String dateTime) throws ParseException {
-        Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The choosen event is not existed."));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        Date editTime = sdf.parse(dateTime);
-        return checkEditOverlap(event, editTime);
     }
 
     private boolean checkEditOverlap(Event event, Date editTime){
@@ -160,15 +188,5 @@ public class EventService {
         }
         return eventSize == 0;
     }
-
-   public List<Event> checkOverlap(int categoryId, Date date) {
-       EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category is not exist"); });
-       System.out.println(eventCategory.getEventCategoryDuration());
-       Date startTime = date;
-       Date endTime = new Date(startTime.getTime() + 1000*60*eventCategory.getEventCategoryDuration());
-       System.out.println(startTime+ "*********" +endTime);
-       List<Event> event = repository.overlap(categoryId,startTime,endTime);
-       return event;
-    };
 }
 

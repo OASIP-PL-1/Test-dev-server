@@ -46,10 +46,14 @@ const overlapStatus = ref(true)
 const checkOverlap = async(newEvent) => {
     // console.log(newEvent)
     const categoryId = newEvent.category.id
-    const dateTime = new Date(newEvent.dateTime)
-    const startTime = dateTime.getFullYear() + "-" + (dateTime.getMonth()+1) + "-" + dateTime.getDate() + "-" 
-        + dateTime.getHours() + "-" + dateTime.getMinutes() + "-" + dateTime.getSeconds()
+    const dateTime = new Date(newEvent.dateTime).toISOString()
+    console.log(dateTime)
+    const startTime = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19)  
     console.log(startTime)
+    //  const startTime = dateTime.getFullYear() + "-" + (dateTime.getMonth()+1) + "-" + dateTime.getDate() + "-" 
+    //     + dateTime.getHours() + "-" + dateTime.getMinutes() + "-" + dateTime.getSeconds()
+    // console.log(startTime) //2022-05-26-04-00-00 (-7)
+
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`)
         .catch(()=> {
         message.value = "Not Found Backend Server!!!"
