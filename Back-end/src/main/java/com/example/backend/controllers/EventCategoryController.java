@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/eventcategories")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class EventCategoryController {
     @Autowired
     EventCategoryService service;

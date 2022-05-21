@@ -94,7 +94,13 @@
         return showTime(new Date(eventOverlap.startTime)) + ' - ' + showTime(addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
         }
     }
-
+    // --- not show Time overlap of ThisEvent 
+    const checkThisTime = (event) => {
+        if(new Date(editingEvent.value.dateTime) !== new Date(String(props.thisEvent.startTime).substring(0,16))){
+            return !(event.startTime.substring(11,16) === props.thisEvent.startTime.substring(11,16))
+        }
+    }
+   
 </script>
  
 <template>
@@ -153,11 +159,12 @@
                 </div>
                 <br>
                 <span v-for="(event,index) in listOverlap" :key="index" class="span-time"
-                      v-show="!(event.startTime.substring(11,16) === thisEvent.startTime.substring(11,16))">
+                      v-show="checkThisTime(event)">
                     {{showRangeTime(event)}}
                 </span> 
             </div>
         </div>
+
     </div>
     </div>
 
