@@ -145,7 +145,7 @@ public class EventService {
 
     public boolean checkBookOverlapForFrontEnd(int categoryId, String dateTime) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        // sdf.setTimeZone(TimeZone.getTimeZone("Asia/ฺBangkok"));
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/ฺBangkok"));
         Date startTime = sdf.parse(dateTime);
         System.out.println("check BookOverlap StartTime : "+ startTime);
         return checkOverlap(categoryId, startTime).size() == 0;
@@ -154,7 +154,7 @@ public class EventService {
     public boolean checkEditOverlapForFrontEnd(int eventId, String dateTime) throws ParseException {
         Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The choosen event is not existed."));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        // sdf.setTimeZone(TimeZone.getTimeZone("Asia/ฺBangkok"));
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/ฺBangkok"));
         Date editTime = sdf.parse(dateTime);
         System.out.println("check EditOverlap StartTime : "+ editTime);
         return checkEditOverlap(event, editTime);
