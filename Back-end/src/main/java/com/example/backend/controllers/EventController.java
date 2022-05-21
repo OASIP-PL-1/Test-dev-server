@@ -1,9 +1,6 @@
 package com.example.backend.controllers;
 
-import com.example.backend.dtos.EventAddDTO;
-import com.example.backend.dtos.EventAllDTO;
-import com.example.backend.dtos.EventDTO;
-import com.example.backend.dtos.EventUpdateDTO;
+import com.example.backend.dtos.*;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
 import com.example.backend.repositories.EventCategoryRepository;
@@ -14,19 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/events")
-// @CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class EventController {
-    @Autowired
-    private EventRepository repository;
-    @Autowired
-    private EventCategoryRepository eventCategoryRepository;
     @Autowired
     private EventService service;
 
@@ -71,6 +62,17 @@ public class EventController {
         return service.checkEditOverlapForFrontEnd(eventId, dateTime);
     }
 
+    @GetMapping("/list-book-overlap/{categoryId}/{dateTime}")
+    public List<EventListOverlapDTO> listBookOverlap(@PathVariable int categoryId, @PathVariable String dateTime) throws ParseException {
+        System.out.println(categoryId + "-----" + dateTime);
+        return service.getEventOverlapList(categoryId, dateTime);
+    }
+
+    @GetMapping("/list-edit-overlap/{eventId}/{dateTime}")
+    public List<EventListOverlapDTO> lisEditOverlap(@PathVariable int eventId, @PathVariable String dateTime) throws ParseException {
+        return service.listEditOverlap(eventId, dateTime);
+    }
+
     @PostMapping("")
     public int createEvent(@RequestBody EventAddDTO newEvent) {
         return service.createEvent(newEvent);
@@ -87,17 +89,6 @@ public class EventController {
     }
 
 
-    @GetMapping("/test2/{categoryId}/{dateTime}")
-    public List<Event> test2(@PathVariable int categoryId, @PathVariable String dateTime) throws ParseException {
-        EventCategory eventCategory = eventCategoryRepository.findById(categoryId).orElseThrow();
-        System.out.println(eventCategory.getEventCategoryDuration());
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        Date startTime = formatter.parse(dateTime);
-        Date endTime = new Date(startTime.getTime() + 1000*60*eventCategory.getEventCategoryDuration());
-        System.out.println(startTime+ "*********" +endTime);
-        List<Event> event = repository.overlap(categoryId,startTime,endTime);
-        return event;
-    }
 
 
 }

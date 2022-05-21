@@ -13,15 +13,13 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventAllDTO {
-    private Integer id;
-    private String bookingName;
-    private String categoryName;
+public class EventListOverlapDTO {
+//    private int id;
+//    private String bookingName;
     private Date startTime;
     private int duration;
 
-
-   public ZonedDateTime getStartTime(){
-       return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
-   }
+    public ZonedDateTime getStartTime(){
+        return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));
+    }
 }

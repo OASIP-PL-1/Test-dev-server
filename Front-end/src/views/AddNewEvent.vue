@@ -2,14 +2,13 @@
 import {ref, onMounted, computed} from 'vue'
 import {useRouter} from 'vue-router'
 
-// --- Get Event Category to drop down list ---
+// --- GET Event Category Name to drop down list ---
 const eventCategories = ref()
 const loading =ref()
 const message = ref()
 const getEventCategoryName = async () => {
     loading.value = true
     message.value = "loading..."
-    // const res = await fetch('http://localhost:8080/api/eventCategories')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`)
       .catch(()=> {
         message.value = "Not Found Backend Server!!!"
@@ -45,8 +44,7 @@ const checkBeforeAdd = computed(()=>{
 // --- check overlap ---
 const overlapStatus = ref(true)
 const checkOverlap = async(newEvent) => {
-    // console.log("checkOverlap")
-    console.log(newEvent)
+    // console.log(newEvent)
     const categoryId = newEvent.category.id
     const dateTime = new Date(newEvent.dateTime)
     const startTime = dateTime.getFullYear() + "-" + (dateTime.getMonth()+1) + "-" + dateTime.getDate() + "-" 
@@ -60,15 +58,52 @@ const checkOverlap = async(newEvent) => {
     return overlapStatus.value
 }
 
+// --- GET List Overlap ---
+const listOverlap = ref([])
+const selectedCategory = ref('')
+const selectedDate = ref('')
+
+const getListOverlap = async (newEvent) => {
+    // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/2565-05-26`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/${newEvent.dateTime.substring(0,10)}`)
+                            .catch((error)=> console.log(error));
+    listOverlap.value = await res.json()
+    console.log(listOverlap.value)
+    selectedCategory.value = (eventCategories.value.find((category)=> category.id === newEvent.category.id)).categoryName
+    selectedDate.value = showDate(new Date(newEvent.dateTime))
+}
+
+// --- show Time --- (16:30)
+    const showTime = (givenDate) => {
+    return givenDate.toLocaleTimeString('th-TH').substring(0,5)
+}
+
+// --- show Time for list Overlap --- (10:00 - 10:30)
+const showRangeTime = (eventOverlap) => {
+    if(listOverlap.value.length > 0){
+        return showTime(new Date(eventOverlap.startTime)) + ' - ' + showTime(addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
+    }
+}
+
+// --- show Date for list Overlap --- (26 May 2022)
+  const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
+  const showDate = (givenDate) => {
+      // console.log(givenDate)
+      const date = givenDate.getDate()
+      const month = months[givenDate.getMonth()]
+      const year = givenDate.getFullYear()
+      return date + ' ' + month + ' ' + year
+  }
+
 // --- Create New Event ---
 const createNewEvent = async (newEvent)=>{
     console.log(newEvent)
     const status = await checkOverlap(newEvent)
-    console.log(status)
-    //false = ใส่ไม่ได้
+    console.log(status)    //false = overlap = เพิ่มไม่ได้
     if(!status){
-        // true จะเข้ามาในนี้
-        console.log('error, cannot create this event')
+    // true จะเข้ามาในนี้ 
+        console.log('error, cannot create this event overlap')
+        await getListOverlap(newEvent)
     }else{
         const dataTime = new Date(newEvent.dateTime)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`,{
@@ -88,8 +123,10 @@ const createNewEvent = async (newEvent)=>{
             const newId = await res.json()       
             goThisEvent(newId)
         }else if(res.status===400){
-            console.log("This event is overlap")
-            overlapStatus.value = false
+            console.log("Bad request")
+            // await getListOverlap(newEvent)
+            // overlapStatus.value = false
+            console.log('error, cannot create')
         }
         else {
             console.log(res.status)
@@ -108,7 +145,6 @@ const emailValidation = (inputEmail) => {
     }else{
         emailStatus.value = false
     }
-    
 }
 
 // --- get Today for min DateTime input --- ('2022-05-12T00:00')
@@ -141,15 +177,18 @@ const getEndTime = (givenDate) => {
         const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
         return hour + ':' + minute + ' ' + timeUnit
     }
-    
 }
+
 
 
 const myRouter = useRouter()
 const goBack = () => myRouter.go(-1)
 const goThisEvent = (newId) => myRouter.push({name: 'ThisEvent', params:{eventId:newId}})
 
-const clearForm = () => newEvent.value = { bookingName : "", email : "", category : {}, dateTime : "", notes : ""} 
+const clearForm = () => {
+    newEvent.value = { bookingName : "", email : "", category : {}, dateTime : "", notes : ""} 
+    overlapStatus.value = true
+}
 
 
 
@@ -219,7 +258,17 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
                     </td>
                 </tr>
             </table>
-            <span class="warning" v-show="!overlapStatus">It seems that you choose the time that overlap other previous events. Please choose another time.</span>
+            <br> 
+            <div class="overlap-bar" v-show="!overlapStatus">
+                <span class="warning" >It seems that you choose the time that overlap other previous events. These are the <strong>exist</strong> event in the day you choose.</span>
+                <div class="overlap-detail">
+                    <div v-show="listOverlap.length > 0"> 
+                        <b>Category : </b> {{selectedCategory}} &ensp; <b> Date : </b> {{selectedDate}}
+                    </div>
+                    <br> 
+                    <span v-for="(event,index) in listOverlap" :key="index" class="span-time">{{showRangeTime(event)}}</span>              
+                </div>
+            </div>
         </div>
     </div>
         <div class="button-right">
@@ -296,7 +345,30 @@ const clearForm = () => newEvent.value = { bookingName : "", email : "", categor
         -o-object-fit: cover;
         object-fit: cover;
     }
-    .bt-save {
-        background-color: rgb(173, 67, 169);
+
+    .overlap-bar {
+        background-color: white;
+        padding: 1em 2em;
+        border-radius: 10px;
     }
+    .overlap-detail b{
+        color: black;
+        padding: 1em;
+    }
+    .overlap-detail {
+        color: black;
+        padding: 1em 2em 2em 1em;
+        font-weight: 0;
+    }
+    .span-time{
+        background-color: rgb(255, 194, 194);
+        color: red ;
+        margin: 4px 10px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
 </style>

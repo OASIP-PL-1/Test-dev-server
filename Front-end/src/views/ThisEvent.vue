@@ -48,7 +48,6 @@
 // --- show Date --- (Sun 1 Jan 2022)
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
     const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-    const a = new Date('2022-05-04')
     const showDate = (givenDate) => {
         // console.log(givenDate)
         const day = days[givenDate.getDay()]
@@ -68,20 +67,41 @@
         return changeDate
     }
 
+// --- GET List Overlap ---    
+const listOverlap = ref([])
+const selectedCategory = ref('')
+const selectedDate = ref('')
+    
+const getListOverlap = async (editingEvent) => {
+    // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/listoverlap/${newEvent.category.id}/2565-05-26`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-edit-overlap/${editingEvent.id}/${editingEvent.date}`)
+                            .catch((error)=> console.log(error));
+    listOverlap.value = await res.json()
+    console.log(listOverlap.value)
+    selectedCategory.value = thisEvent.value.categoryName
+    selectedDate.value = showDate(new Date(editingEvent.date)).substring(4,15)
+}
+
 // --- Edit Mode ---
     const editMode = ref(false)
     const showEditMode = () => editMode.value = true
-    const hideEditMode = () => editMode.value = false
+    const hideEditMode = () => {
+        editMode.value = false
+        overlapStatus.value = true
+        listOverlap.value = []
+    }
     // const checkDateTime = computed(() => new Date(thisEvent.value.startTime) < new Date())
 
 // --- Edit---
     const updateEvent = async (editingEvent)=>{
+        /* id: 9, dateTime: '2022-05-26T22:00', date: '2022-05-26', time: '22:00', notes: null*/
         const status = await checkOverlap(editingEvent)
         console.log(status)
         // console.log(editingEvent)
         if(!status){
             // true เข้ามาในนี้ แปลว่า overlap 2 ใส่ไม่ได้
             console.log("This event is overlap")
+            await getListOverlap(editingEvent)
         }else{
             // false ไม่เข้า ส่งไป backend
             const dataTime = new Date(editingEvent.dateTime)
@@ -110,8 +130,8 @@
                 console.log(thisEvent.value)         
                 hideEditMode()
             }else if(res.status===400){
-                console.log("This event is overlap")
-                overlapStatus.value = false
+                console.log("Bad request")
+                console.log(res.status)
             }else{
                 console.log('error, cannot update')
                 console.log(res.status)
@@ -220,6 +240,9 @@
         <div v-else>
             <EditEvent :thisEvent="thisEvent"
                 :overlapStatus="overlapStatus"
+                :listOverlap="listOverlap"
+                :selectedCategory="selectedCategory"
+                :selectedDate="selectedDate"
                 @hideEditMode="hideEditMode"
                 @save="updateEvent"/>
         </div>

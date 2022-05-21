@@ -125,7 +125,9 @@ const checkName = (id,name) => {
           <td v-if="category.categoryDescription !== null">{{category.categoryDescription}}</td>
           <td v-else>-</td>
           <td style="vertical-align: middle;">
+          <div class="editbt">
             <button class="button-18"  @click="edit(category)">Edit</button>
+          </div>
           </td>
         </tr>
       </table>
@@ -198,7 +200,6 @@ const checkName = (id,name) => {
     text-align: center;
   }
   .box {    
-    padding: 1em 2em 3em 2em;
     border-radius: 30px;
     margin: 1em 8%;
     text-align: center;
@@ -207,11 +208,13 @@ const checkName = (id,name) => {
     text-align: left;
     width:100%;
     border-collapse: collapse;
+    border-radius: 30px;
+    overflow: hidden;
   }
   
   #listAll td{
-    padding: 5px 15px 10px 15px;
-    vertical-align: text-top;
+    padding: 10px 20px 10px 20px;
+    vertical-align: center;
     max-width: 500px;
   }
 
@@ -224,7 +227,11 @@ const checkName = (id,name) => {
     text-align: center;
     background-color: #3333A3;
     color: #FFCB4C;
-    padding: 5px 10px;
+    padding: 15px;
+    font-size: 19px;
+  }
+  .editbt {
+    text-align: right;
   }
 
   /* -- part modal -- */
@@ -246,7 +253,7 @@ const checkName = (id,name) => {
         width: 600px;
         padding: 20px 30px;
         background-color: #fff;
-        border-radius: 10px;
+        border-radius: 20px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         margin: auto;
     }

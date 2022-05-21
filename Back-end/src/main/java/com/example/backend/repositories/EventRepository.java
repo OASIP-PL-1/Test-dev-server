@@ -1,7 +1,6 @@
 package com.example.backend.repositories;
 
 import com.example.backend.entities.Event;
-import com.example.backend.entities.EventCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,9 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository <Event, Integer>, CrudRepository<Event, Integer> {
-    public List<Event> findByEventCategoryIdOrderByEventStartTimeDesc(Integer id);
-    public List<Event> findByEventStartTimeGreaterThanAndEventStartTimeLessThan(Date starDateTime, Date endDateTime);
+    public List<Event> findByEventCategoryIdOrderByEventStartTimeDesc(int id);
+    public List<Event> findByEventStartTimeGreaterThanAndEventStartTimeLessThan(Date startDateTime, Date endDateTime);
     public Event findTopByOrderByIdDesc();
+    public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
 
     @Query(value = "select e.* from events e " +
             "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) <= :currentTime",
@@ -33,7 +33,7 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
             "OR ((:startTime = e.eventStartTime) OR (:endTime = DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))))",
             nativeQuery = true)
     public List<Event> overlap(
-            @Param("eventCategoryId") Integer categoryId,
+            @Param("eventCategoryId") int categoryId,
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime
     );

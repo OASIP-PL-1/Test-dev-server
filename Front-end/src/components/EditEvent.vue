@@ -9,7 +9,10 @@
         overlapStatus:{
             type: Boolean,
             require: true
-        }
+        },
+        listOverlap:{ type: Object , default:[]},
+        selectedCategory:{ type: String},
+        selectedDate:{ type: String }
     })
     console.log(props.thisEvent)
 
@@ -80,6 +83,17 @@
         return day + ' ' + date + ' ' + month + ' ' + year + ' | ' + givenDate.toLocaleTimeString('th-TH').substring(0,5)
         }
     }
+    // --- show Time --- (16:30)
+    const showTime = (givenDate) => {
+        return givenDate.toLocaleTimeString('th-TH').substring(0,5)
+    }
+
+    // --- show Time for list Overlap --- (10:00 - 10:30)
+    const showRangeTime = (eventOverlap) => {
+    if(props.listOverlap.length > 0){
+        return showTime(new Date(eventOverlap.startTime)) + ' - ' + showTime(addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
+        }
+    }
 
 </script>
  
@@ -131,7 +145,29 @@
             <br>
             <textarea v-model="editingEvent.notes" maxlength="500" >{{editingEvent.notes}}</textarea>
         </div>
-        <div style="text-align: center;" class="warning" v-show="!overlapStatus">It seems that you choose the time that overlap other previous events. Please choose another time.</div>
+        <div class="overlap-bar" v-show="!overlapStatus">
+            <div class="warning">It seems that you choose the time that overlap other previous events. These are the <b>exist</b> event in the day you choose.</div>
+            <div class="overlap-detail">
+                <div v-show="listOverlap.length > 0"> 
+                    <b>Category : </b> {{selectedCategory}} &ensp; <b> Date : </b> {{selectedDate}}
+                </div>
+                <br>
+                <span v-for="(event,index) in listOverlap" :key="index" class="span-time" 
+                      v-if="!(event.startTime.substring(11,16) === thisEvent.startTime.substring(11,16))">
+                    {{showRangeTime(event)}}
+                </span> 
+            </div>
+        </div>
+        <!-- <div class="overlap-bar" v-show="!overlapStatus">
+                <span class="warning" >It seems that you choose the time that overlap other previous events. These are the event in the day you choose.</span>
+                <div class="overlap-detail">
+                    <div v-show="listOverlap.length > 0"> 
+                        <b>Category : </b> {{selectedCategory}} &ensp; <b> Date : </b> {{selectedDate}}
+                    </div>
+                    <br> 
+                        <span v-for="(event,index) in listOverlap" :key="index" class="span-time">{{showRangeTime(event)}}</span>               
+                </div>
+            </div> -->
     </div>
     </div>
 
@@ -200,5 +236,30 @@
         margin: 0.25em 0;
         text-rendering: auto;
         overflow: visible;
+    }
+    .overlap-bar {
+        text-align: center;
+        background-color: white;
+        padding: 1em 2em;
+        border-radius: 10px;
+    }
+    .overlap-detail b{
+        color: black;
+        padding: 1em;
+    }
+    .overlap-detail {
+        color: black;
+        padding: 1em 2em 2em 1em;
+        font-weight: 0;
+    }
+    .span-time{
+        background-color: rgb(255, 194, 194);
+        color: red ;
+        margin: 4px 10px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 </style>

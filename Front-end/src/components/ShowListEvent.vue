@@ -13,7 +13,6 @@
 // --- show Date --- 
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-  const a = new Date('2022-05-04')
   const showDate = (givenDate) => {
       // console.log(givenDate)
       const day = days[givenDate.getDay()]
