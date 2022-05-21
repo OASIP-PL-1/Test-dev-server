@@ -57,7 +57,7 @@ public class EventService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(dateString);
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-        System.out.println(categoryId + "---" + date + "----" + dateEnd);
+        System.out.println("getEventOverlapList : " + categoryId + "---" + date + "---" + dateEnd);
         EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"CategoryId is not existed."));
         List<Event> events = repository.findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(categoryId,date, dateEnd);
 //        List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
@@ -84,8 +84,9 @@ public class EventService {
 
     public List<EventAllDTO> getEventALLDTOByDate(String dateString) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = sdf.parse(dateString);
+        Date date = sdf.parse(dateString);    
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
+        System.out.println("Filter Date :" + date+ "---" +dateEnd);
         List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
         return listMapper.mapList(events,EventAllDTO.class,modelMapper);
     }
