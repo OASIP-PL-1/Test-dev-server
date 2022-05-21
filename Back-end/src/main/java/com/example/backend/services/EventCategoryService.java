@@ -1,11 +1,13 @@
 package com.example.backend.services;
 
+import com.example.backend.dtos.EventAllDTO;
 import com.example.backend.dtos.EventCategoryAllDTO;
 import com.example.backend.dtos.EventCategoryNameDTO;
 import com.example.backend.entities.EventCategory;
 import com.example.backend.repositories.EventCategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,7 +23,6 @@ public class EventCategoryService {
     @Autowired
     ModelMapper modelMapper;
 
-    //GET method
     public List<EventCategoryNameDTO> getEventCategoryNameDTO() {
         List<EventCategory> eventCategories = repository.findAll();
         return listMapper.mapList(eventCategories, EventCategoryNameDTO.class, modelMapper);
@@ -32,7 +33,6 @@ public class EventCategoryService {
         return listMapper.mapList(eventCategories, EventCategoryAllDTO.class, modelMapper);
     }
 
-    //PUT method
     public EventCategoryAllDTO editCategory(EventCategoryAllDTO editCategory){
         if(editCategory.getId() == 0){throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"categoryId is required");}
         if(editCategory.getCategoryName() == null){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"categoryName is required.");}
