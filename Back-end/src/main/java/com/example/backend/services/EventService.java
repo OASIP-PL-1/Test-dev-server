@@ -89,14 +89,14 @@ public class EventService {
     public List<EventAllDTO> getEventALLDTOByDate(String dateString) throws ParseException {
         System.out.println("dateString recieve from front end : " + dateString);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
+//       sdf.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
         Date date = sdf.parse(dateString);
 //        LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("Asia/Bangkok"));
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
         System.out.println("Filter Date :" + date+ "---" +dateEnd);
 //        LocalDateTime ldtEnd = LocalDateTime.ofInstant(dateEnd.toInstant(), ZoneId.of("Asia/Bangkok"));
-//        List<Event> events = repository.filterSelectDate(date, dateEnd);
-        List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
+//        System.out.println("endDate to UTC : " + zdtEnd);
+        List<Event> events = repository.findByEventStartTimeBetweenOrderByEventStartTimeAsc(date, dateEnd);
         return listMapper.mapList(events,EventAllDTO.class,modelMapper);
     }
 
@@ -192,13 +192,18 @@ public class EventService {
     }
 
     private boolean checkEditOverlap(Event event, Date editTime) throws ParseException {
-        int eventSize = checkOverlap(event.getEventCategory().getId(), editTime).size();
+        Date startTime = editTime;
+        Date endTime = new Date(startTime.getTime() + 1000*60*event.getEventDuration());
+        System.out.println("checkEditOverlap :"+startTime+ "*********" +endTime);
+        int eventSize = repository.overlap(event.getEventCategory().getId(),startTime,endTime).size();
         //check self overlap
         int minutesBetweenDate = (int) TimeUnit.MINUTES.convert((Math.abs(editTime.getTime() - event.getEventStartTime().getTime())), TimeUnit.MILLISECONDS);
         System.out.println("Minute between date : " +  minutesBetweenDate);
         if(minutesBetweenDate < event.getEventDuration()){
+            System.out.println("match last event");
             eventSize--;
         }
+        System.out.println(eventSize);
         return eventSize == 0;
     }
 

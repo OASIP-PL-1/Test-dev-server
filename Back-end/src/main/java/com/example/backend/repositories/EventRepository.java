@@ -13,9 +13,17 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository <Event, Integer>, CrudRepository<Event, Integer> {
     public List<Event> findByEventCategoryIdOrderByEventStartTimeDesc(int id);
-    public List<Event> findByEventStartTimeGreaterThanAndEventStartTimeLessThan(Date startDateTime, Date endDateTime);
+    public List<Event> findByEventStartTimeBetweenOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime);
     public Event findTopByOrderByIdDesc();
     public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
+
+//    @Query(value="select e.* from Events e " +
+//            "where e.eventStartTime >= :startDateTime AND e.eventStartTime < :endDateTime",
+//            nativeQuery = true)
+//    public List<Event> filterSelectDate(
+//            @Param("startDateTime") Date startDateTime,
+//            @Param("endDateTime") Date endDateTime
+//            );
 
     @Query(value = "select e.* from events e " +
             "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) <= :currentTime " +
