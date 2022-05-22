@@ -4,7 +4,11 @@ import com.example.backend.services.EventService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
+import java.util.TimeZone;
 
 
 @SpringBootApplication
@@ -41,6 +45,16 @@ public class BackEndApplication {
 //        Instant instant2 = date2.toInstant();
 //        System.out.println(date2);
 //        System.out.println(instant2);
+
+//        Date date = new Date();
+//        System.out.println(date);
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:sss");
+//        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        System.out.println(dateFormat.format(date));
+//
+//        Instant instant = date.toInstant();
+//        System.out.println(instant);
+
     }
 
 }

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -16,12 +18,14 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
 
     @Query(value = "select e.* from events e " +
-            "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) <= :currentTime",
+            "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) <= :currentTime " +
+            "order by e.eventStartTime desc",
             nativeQuery = true)
     public List<Event> filterPastEvent(@Param("currentTime")Date currentTime);
 
     @Query(value = "select e.* from events e " +
-            "where DATE_ADD(e.eventStartTIme, INTERVAL e.eventDuration MINUTE) >= :currentTime",
+            "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) >= :currentTime " +
+            "order by e.eventStartTime asc",
             nativeQuery = true)
     public List<Event> filterUpcomingEvent(@Param("currentTime")Date currentTime);
 

@@ -13,6 +13,8 @@
         <div class="grid-cols-3">
             <div>
                 <p>
+                    <img src="../assets/dev-panalee.png" width="250px">
+                <br>
                 Panalee Palasri
                 <br>
                 63130500075
@@ -20,6 +22,8 @@
             </div>
             <div>
                 <p>
+                    <img src="../assets/dev-piraya.png" width="250px">
+                <br>  
                 Piraya Sutthiparinyanon
                 <br>
                 63130500087
@@ -27,6 +31,8 @@
             </div>
             <div>
                 <p>
+                    <img src="../assets/dev-vichuta.png" width="250px">
+                <br>    
                 Vichuta Pipoppinyo
                 <br>
                 6310500106

@@ -18,6 +18,12 @@
     });
     events.value = await res.json()
     loading.value = false
+    if(res.status==200){
+      console.log(`GET List All Event OK`)
+      console.log(res.status)
+    }else{
+      console.log(res.status)
+    }
   }
 
   const eventCategories = ref()
@@ -32,6 +38,12 @@
     eventCategories.value = await res.json()
     loading.value = false
     filterMode.value = ''
+    if(res.status==200){
+      console.log(`GET List All CategoryName OK`)
+      console.log(res.status)
+    }else{
+      console.log(res.status)
+    }
   }
 
   onMounted(async () => {
@@ -50,6 +62,12 @@
     });
     events.value = await res.json()
     filterMode.value = 'past'
+    if(res.status==200){
+      console.log(`Filter Mode : ${filterMode.value}`)
+      console.log(res.status)
+    }else{
+      console.log(res.status)
+    }
   }
 
   const getUpcomingEvent = async () => {
@@ -60,10 +78,16 @@
     });
     events.value = await res.json()
     filterMode.value = 'upcoming'
+    console.log(res.status)
+    if(res.status==200){
+      console.log(`Filter Mode : ${filterMode.value}`)
+      console.log(res.status)
+    }else{
+      console.log(res.status)
+    }
   }
 
   const getEventByDate = async (date) => {
-    console.log(date)
     // const res = await fetch('http://localhost:8080/api/events/upcoming')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/date/${date}`)
     .catch(()=> {
@@ -71,6 +95,13 @@
     });
     events.value = await res.json()
     filterMode.value = 'date'
+    console.log(res.status)
+    if(res.status==200){
+      console.log(`Filter Mode : ${filterMode.value} = ${date}`)
+      console.log(res.status)
+    }else{
+      console.log(res.status)
+    }
   }
 
   const getEventByCategory = async (id) => {
@@ -82,6 +113,12 @@
     });
       events.value = await res.json()
       filterMode.value = 'category'
+      if(res.status==200){
+        console.log(`Filter Mode : ${filterMode.value} = ${(eventCategories.value.find((category)=> id === category.id)).categoryName}`)
+        console.log(res.status)
+      }else{
+        console.log(res.status)
+      }
     }else{
       getEvents()
     }

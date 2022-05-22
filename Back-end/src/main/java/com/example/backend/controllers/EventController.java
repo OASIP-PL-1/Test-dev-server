@@ -74,7 +74,7 @@ public class EventController {
     }
 
     @PostMapping("")
-    public int createEvent(@RequestBody EventAddDTO newEvent) {
+    public int createEvent(@RequestBody EventAddDTO newEvent) throws ParseException {
         return service.createEvent(newEvent);
     }
 
@@ -84,7 +84,7 @@ public class EventController {
     }
 
     @PutMapping("")
-    public EventDTO editEvent(@RequestBody EventUpdateDTO updateEvent) {
+    public EventDTO editEvent(@RequestBody EventUpdateDTO updateEvent) throws ParseException {
         return service.editEvent(updateEvent);
     }
 

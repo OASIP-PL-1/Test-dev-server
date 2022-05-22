@@ -15,6 +15,12 @@
         });
         eventCategories.value = await res.json()
         loading.value = false
+        if(res.status==200){
+            console.log(`GET List All CategoryName OK`)
+            console.log(res.status)
+        }else{
+            console.log(res.status)
+        }
     }
 
     onMounted(async () => {
