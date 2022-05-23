@@ -21,7 +21,7 @@ services:
     restart: on-failure
     container_name: backend-app
     # ports:
-    #   - 8080:8080       # ถ้ามี reverse proxy ให้เอา port ออกได้
+    #   - 8080:8080 
     environment:
       SPRING_APPLICATION_JSON: '{
         "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver",
