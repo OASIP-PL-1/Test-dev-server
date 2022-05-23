@@ -82,7 +82,6 @@ const showTime = (givenDate) => {
     border-radius: 30px;
     padding: 4px 24px 24px;
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-    /* min-width: 1000px; */
     -o-object-fit: cover;
     object-fit: cover;
  }

@@ -64,7 +64,6 @@ public class EventService {
         System.out.println("getEventOverlapList : " + categoryId + "---" + date + "---" + dateEnd);
         EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"CategoryId is not existed."));
         List<Event> events = repository.findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(categoryId,date, dateEnd);
-//        List<Event> events = repository.findByEventStartTimeGreaterThanAndEventStartTimeLessThan(date, dateEnd);
         return listMapper.mapList(events, EventListOverlapDTO.class,modelMapper);
     }
 
@@ -91,11 +90,8 @@ public class EventService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 //       sdf.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
         Date date = sdf.parse(dateString);
-//        LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("Asia/Bangkok"));
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
         System.out.println("Filter Date :" + date+ "---" +dateEnd);
-//        LocalDateTime ldtEnd = LocalDateTime.ofInstant(dateEnd.toInstant(), ZoneId.of("Asia/Bangkok"));
-//        System.out.println("endDate to UTC : " + zdtEnd);
         List<Event> events = repository.findByEventStartTimeBetweenOrderByEventStartTimeAsc(date, dateEnd);
         return listMapper.mapList(events,EventAllDTO.class,modelMapper);
     }
@@ -108,11 +104,11 @@ public class EventService {
         if(newEvent.getBookingEmail()==null){throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The booking emil is required.");}
         if(newEvent.getEventCategoryId()==0){throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"The category must be choosen.");}
         if(newEvent.getStartTime()==null){ throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Date must be chosen.");}
-        if(newEvent.getBookingName().length() > 100){ throw new ResponseStatusException(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Booking name is too long. Maximum length is 100."); }
-        if(newEvent.getBookingEmail().length() > 50){ throw new ResponseStatusException(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Booking email is too long. Maximum length is 50."); }
+        if(newEvent.getBookingName().length() > 100){ throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Booking name is too long. Maximum length is 100."); }
+        if(newEvent.getBookingEmail().length() > 50){ throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Booking email is too long. Maximum length is 50."); }
         if(!checkEmail(newEvent.getBookingEmail())){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is not valid");}
         if(checkStartDate(newEvent.getStartTime())){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking date is in the past.");}
-        if(newEvent.getNotes() != null) { if (newEvent.getNotes().length() > 500) { throw new ResponseStatusException(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Notes is too long. Maximum length is 500.");} }
+        if(newEvent.getNotes() != null) { if (newEvent.getNotes().length() > 500) { throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Notes is too long. Maximum length is 500.");} }
         System.out.println("New Event getStartTime :" + newEvent.getStartTime());
         if(!(checkOverlap(newEvent.getEventCategoryId(), newEvent.getStartTime()).size()==0)){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The choosen time is overlap other events");}
         EventCategory eventCategory = categoryRepository.findById(newEvent.getEventCategoryId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This category is not existed."));
@@ -139,7 +135,7 @@ public class EventService {
         if(updateEvent==null){ throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"The data wasn't fulfilled.");}
         if(updateEvent.getStartTime()==null){ throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Date must be chosen.");}
         if(checkStartDate(updateEvent.getStartTime())){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking date is in the past.");}
-        if(updateEvent.getNotes() != null) { if (updateEvent.getNotes().length() > 500) { throw new ResponseStatusException(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Notes is too long. Maximum length is 500.");} }
+        if(updateEvent.getNotes() != null) { if (updateEvent.getNotes().length() > 500) { throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Notes is too long. Maximum length is 500.");} }
         Event event = repository.findById(updateEvent.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " event not found.") );
         System.out.println("Update Event getStartTime :" + updateEvent.getStartTime());
         if(!checkEditOverlap(event,updateEvent.getStartTime())){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");}

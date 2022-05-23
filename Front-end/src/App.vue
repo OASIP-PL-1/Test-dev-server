@@ -4,8 +4,6 @@
 <template>
 <div class="bg-home">
     <div class="navbar">
-        <!-- <h1 style="font-size: 2em; display: inline;">BOOKING. </h1> 
-        <span><strong> OASIP - PL1</strong></span> -->
         <img src="./assets/logo.png" alt="logo"
             style="padding-left: 2em; padding-top: 5px; max-width: 500px; min-width: 300px; width: 20%;">
         <span class="navtop" style="display: inline;">
@@ -18,9 +16,6 @@
             </span>
         </span>
     </div>
-    <!-- <div> -->
-        <!-- <router-link :to="{name:'ViewEvent'}">View Event</router-link> -->
-    <!-- </div> -->
     <div>
         <router-view></router-view>
     </div>

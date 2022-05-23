@@ -15,14 +15,17 @@
         loading.value = true
         message.value = "loading..."
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`)
-    .catch(()=> {
+    .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
     });
         thisEvent.value = await res.json()
         console.log(res.status)
         if(res.status===200){
+            console.log(`GET This Event id: ${params.eventId} OK`)
             showDetail.value = true
         }else if(res.status===404){
+            console.log(`Not Found! This Event id: ${params.eventId}`)
             showDetail.value = false
         }
         loading.value = false
@@ -38,11 +41,6 @@
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
     const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
-    // const goThisEvent= () => myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId}})
-    // const goNext = () => {
-    //     myRouter.push({ name: 'ThisEvent', params:{eventId:params.eventId++}})
-    //     getThisEvent()
-    // }
 
 
 // --- show Date --- (Sun 1 Jan 2022)
@@ -73,10 +71,16 @@ const selectedCategory = ref('')
 const selectedDate = ref('')
     
 const getListOverlap = async (editingEvent) => {
-    // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/listoverlap/${newEvent.category.id}/2565-05-26`)
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-edit-overlap/${editingEvent.id}/${editingEvent.date}`)
                             .catch((error)=> console.log(error));
     listOverlap.value = await res.json()
+    console.log(res.status)
+    if(res.status==200){
+        console.log(`-- Get List Overlap Times --`)
+        console.log(listOverlap.value)
+    }else if(res.status===404){
+        console.log(`Not Found This Event id: ${params.eventId}`)
+    }
     console.log(listOverlap.value)
     selectedCategory.value = thisEvent.value.categoryName
     selectedDate.value = showDate(new Date(editingEvent.date)).substring(4,15)
@@ -90,17 +94,14 @@ const getListOverlap = async (editingEvent) => {
         overlapStatus.value = true
         listOverlap.value = []
     }
-    // const checkDateTime = computed(() => new Date(thisEvent.value.startTime) < new Date())
 
 // --- Edit---
     const updateEvent = async (editingEvent)=>{
-        /* id: 9, dateTime: '2022-05-26T22:00', date: '2022-05-26', time: '22:00', notes: null*/
         const status = await checkOverlap(editingEvent)
         console.log(status)
-        // console.log(editingEvent)
         if(!status){
             // true เข้ามาในนี้ แปลว่า overlap 2 ใส่ไม่ได้
-            console.log("This event is overlap")
+            console.log("Can't Edit Event : This event is Overlap!")
             await getListOverlap(editingEvent)
         }else{
             // false ไม่เข้า ส่งไป backend
@@ -124,17 +125,22 @@ const getListOverlap = async (editingEvent) => {
                     notes: editingEvent.notes
                 })
             }).catch(error => console.log(error) );
+            console.log(res.status)
             if(res.status===200){
-                console.log('edited successfully')
+                console.log('PUT This Event Updated')
                 thisEvent.value = await res.json()
                 console.log(thisEvent.value)         
                 hideEditMode()
             }else if(res.status===400){
-                console.log("Bad request")
-                console.log(res.status)
-            }else{
-                console.log('error, cannot update')
-                console.log(res.status)
+                console.log("Cannot Edit This Event : The data is incorrect")
+            }else if(res.status===414){
+                console.log("Cannot Edit This Event  : The data length in the input field is too large. Please try again.")
+            }
+            else if(res.status===404){
+                console.log("Cannot Edit This Event : Not Found! Event id")
+            }
+            else{
+                console.log("Error, Cannot Create New Event")
             }
         }
   }
@@ -148,11 +154,15 @@ const getListOverlap = async (editingEvent) => {
         const dateFormat = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19) 
         console.log(dateFormat) //2022-05-26-04-00-00 (-7)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/edit/${id}/${dateFormat}`)
-            .catch(()=> {
+            .catch((error)=> {
                 message.value = "Not Found Backend Server!!!"
+                console.log(error)
             });
         overlapStatus.value = await res.json()
-        // console.log( overlapStatus.value)
+        console.log(res.status)
+        if(res.status==200){
+            console.log(`--- Check Overlap Status ---`)
+        }
         return overlapStatus.value
     }
     
@@ -164,11 +174,18 @@ const getListOverlap = async (editingEvent) => {
     const removeEvent = async () => {
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}` , {
             method: 'DELETE'
-        })
+        }).catch(error => console.log(error) );
+        console.log(res.status)
         if (res.status===200) {
-            console.log('deleted successfully')
+            console.log('DELETE successfully')
             goToViewEvent()
-        } else console.log('error, cannot delete')
+        }else if(res.status===404){
+            console.log(`Not Found! This Event id: ${params.eventId}`)
+        }
+        else{
+            console.log('Error, Cannot Delete This Event')
+            console.log(res.status)
+        }
     }
 
 
@@ -321,7 +338,6 @@ const getListOverlap = async (editingEvent) => {
         margin-bottom: 1em;
         margin-left: auto;
         margin-right: auto;
-        /* min-width: 600px; */
         color: white;
         -o-object-fit: cover;
         object-fit: cover;

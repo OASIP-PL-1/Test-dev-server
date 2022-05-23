@@ -11,17 +11,16 @@
   const getEvents = async () => {
     loading.value = true
     message.value = "loading..."
-    // const res = await fetch('http://localhost:8080/api/events')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`)
-      .catch(()=> {
+      .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
+        console.log('GET List All Event Fail')
     });
     events.value = await res.json()
     loading.value = false
     if(res.status==200){
       console.log(`GET List All Event OK`)
-      console.log(res.status)
-    }else{
       console.log(res.status)
     }
   }
@@ -30,18 +29,17 @@
   const getEventCategoryName = async () => {
     loading.value = true
     message.value = "loading..."
-    // const res = await fetch('http://localhost:8080/api/eventCategories')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`)
-      .catch(()=> {
+      .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
+        console.log('GET List All CategoryName Fail')
     });
     eventCategories.value = await res.json()
     loading.value = false
     filterMode.value = ''
     if(res.status==200){
       console.log(`GET List All CategoryName OK`)
-      console.log(res.status)
-    }else{
       console.log(res.status)
     }
   }
@@ -55,26 +53,26 @@
 
 // --- Filter ---
   const getPastEvent = async () => {
-    // const res = await fetch('http://localhost:8080/api/events/past')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/past`)
-    .catch(()=> {
+    .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
+        console.log(`GET Filter Mode : Past Fail`)
     });
     events.value = await res.json()
     filterMode.value = 'past'
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value}`)
       console.log(res.status)
-    }else{
-      console.log(res.status)
     }
   }
 
   const getUpcomingEvent = async () => {
-    // const res = await fetch('http://localhost:8080/api/events/upcoming')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/upcoming`)
-    .catch(()=> {
+    .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
+        console.log(`GET Filter Mode : Upcoming Fail`)
     });
     events.value = await res.json()
     filterMode.value = 'upcoming'
@@ -82,16 +80,15 @@
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value}`)
       console.log(res.status)
-    }else{
-      console.log(res.status)
     }
   }
 
   const getEventByDate = async (date) => {
-    // const res = await fetch('http://localhost:8080/api/events/upcoming')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/date/${date}`)
-    .catch(()=> {
+    .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
+        console.log(`GET Filter Mode : Date Fail`)
     });
     events.value = await res.json()
     filterMode.value = 'date'
@@ -99,24 +96,21 @@
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value} = ${date}`)
       console.log(res.status)
-    }else{
-      console.log(res.status)
     }
   }
 
   const getEventByCategory = async (id) => {
     if(id > 0){
-    // const res = await fetch('http://localhost:8080/api/events/upcoming')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/category/${id}`)
-    .catch(()=> {
+    .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
+        console.log(`GET Filter Mode : Category Fail`)
     });
       events.value = await res.json()
       filterMode.value = 'category'
       if(res.status==200){
         console.log(`Filter Mode : ${filterMode.value} = ${(eventCategories.value.find((category)=> id === category.id)).categoryName}`)
-        console.log(res.status)
-      }else{
         console.log(res.status)
       }
     }else{
