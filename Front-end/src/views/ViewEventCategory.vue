@@ -4,27 +4,33 @@ import {ref, computed, onMounted} from 'vue'
 const eventCategories = ref()
 const loading =ref()
 const message = ref()
-
+// --- GET List All Event Category ---
 const getEventCategories = async () => {
     loading.value = true
     message.value = "loading..."
-    // const res = await fetch('http://localhost:8080/api/events')
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`)
-      .catch(()=> {
+      .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
+        console.log(error)
     });
     eventCategories.value = await res.json()
     loading.value = false
+    console.log(res.status)
+    if(res.status==200){
+      console.log(`GET List All Category OK`)
+    }
 }
 onMounted(async () => {
       await getEventCategories()
   })
- 
+
+// --- Edit Mode (Modal) ---
 const editMode = ref(false)
 const showModalEdit = () => editMode.value = true
 const hideModalEdit = () => editMode.value = false
 const editingCategory = ref({})
 
+// --- Editing Event Category ---
 const edit = (editCategory) => {
   showModalEdit()
   editingCategory.value = {
@@ -35,8 +41,7 @@ const edit = (editCategory) => {
   }
 }
 
-const errorText = ref(false)
-
+// --- PUT Update Event Category ---
 const updateCategory = async (category)=>{
   if(category.description !== null){
     if(category.description.trim().length === 0){
@@ -45,7 +50,6 @@ const updateCategory = async (category)=>{
       category.description = category.description.trim()
     }
   }
-  
   const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`, 
   {
     method:'PUT',
@@ -59,8 +63,9 @@ const updateCategory = async (category)=>{
       duration: category.duration
     })
   }).catch(error => console.log(error));
+      console.log(res.status)
       if(res.status===200){
-        console.log('edited successfully')
+        console.log('PUT Category Updated')
         const updatedCategory = await res.json()
         console.log(updatedCategory)      
         eventCategories.value = eventCategories.value.map((thisCategory) => thisCategory.id === updatedCategory.id ? 
@@ -71,14 +76,13 @@ const updateCategory = async (category)=>{
           } : thisCategory 
         ) 
         hideModalEdit()
+      }else if(res.status===400){
+        console.log("Cannot Edit This Event : The data is incorrect")
+      }else if(res.status===414){
+        console.log("Cannot Edit Category : The data length in the input field is too large. Please try again.")
       }else if(res.status===500){
-        errorText.value = true
-        console.log('error, cannot update')
-        console.log(res.status)
-      }else{
-        console.log('error, cannot update')
-        console.log(res.status)
-      }
+        console.log('Error, Internal Server Error')
+      }else{console.log('Error, Cannot Edit Category')}
 }
 
 // --- Validate ---
@@ -99,18 +103,11 @@ const checkName = (id,name) => {
     return otherCategories.find((category) => category.categoryName.trim().toLowerCase() === name.trim().toLowerCase())
   }
 }
-
-/* { "id": 101, 
-      "categoryName": "Advisor - Achara", 
-      "categoryDescription": "Aj.Achara group for consultation", 
-      "duration": 20 }
-    */
 </script>
  
 <template>
 <div v-if="loading" class="subText">{{message}}</div>
   <div v-else class="center">
-    <!-- <h2> -- List All Event Categories -- </h2> -->
     <div class="box">
       <table id="listAll">
         <tr>

@@ -10,16 +10,16 @@
         loading.value = true
         message.value = "loading..."
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`)
-        .catch(()=> {
+        .catch((error)=> {
             message.value = "Not Found Backend Server!!!"
+            console.log(error)
+            console.log(`GET List All CategoryName Fail`)
         });
         eventCategories.value = await res.json()
         loading.value = false
+        console.log(res.status)
         if(res.status==200){
             console.log(`GET List All CategoryName OK`)
-            console.log(res.status)
-        }else{
-            console.log(res.status)
         }
     }
 
@@ -37,10 +37,9 @@
 
     // --- check if the information is filled out ---
     const checkBeforeAdd = computed(()=>{ 
-        return newEvent.value.bookingName === "" 
+        return newEvent.value.bookingName.trim() === "" 
         || newEvent.value.email === "" 
         || emailStatus.value
-        // || !emailValidation(newEvent.value.email)
         || Object.keys(newEvent.value.category).length === 0 
         || newEvent.value.dateTime === ""
         || new Date(newEvent.value.dateTime) < new Date()
@@ -50,18 +49,20 @@
     // --- check overlap ---
     const overlapStatus = ref(true)
     const checkOverlap = async(newEvent) => {
-        // console.log(newEvent)
         const categoryId = newEvent.category.id
         const dateTime = new Date(newEvent.dateTime).toISOString()
-        console.log(dateTime)
         const startTime = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19)  
-        console.log(startTime)  //2022-05-26-04-00-00 (-7)
-
+        //console.log(startTime)  //2022-05-26-04-00-00 (-7)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`)
-            .catch(()=> {
+            .catch((error)=> {
             message.value = "Not Found Backend Server!!!"
+            console.log(error)
         });
         overlapStatus.value = await res.json()
+        console.log(res.status)
+        if(res.status==200){
+            console.log(`--- Check Overlap Status ---`)
+        }
         return overlapStatus.value
     }
 
@@ -71,11 +72,14 @@
     const selectedDate = ref('')
 
     const getListOverlap = async (newEvent) => {
-        // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/2565-05-26`)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/${newEvent.dateTime.substring(0,10)}`)
                                 .catch((error)=> console.log(error));
         listOverlap.value = await res.json()
-        console.log(listOverlap.value)
+        console.log(res.status)
+        if(res.status==200){
+            console.log(`-- Get List Overlap Times --`)
+            console.log(listOverlap.value)
+        }
         selectedCategory.value = (eventCategories.value.find((category)=> category.id === newEvent.category.id)).categoryName
         selectedDate.value = showDate(new Date(newEvent.dateTime))
     }
@@ -95,7 +99,6 @@
     // --- show Date for list Overlap --- (26 May 2022)
     const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
     const showDate = (givenDate) => {
-        // console.log(givenDate)
         const date = givenDate.getDate()
         const month = months[givenDate.getMonth()]
         const year = givenDate.getFullYear()
@@ -106,14 +109,13 @@
     const createNewEvent = async (newEvent)=>{
         console.log(newEvent)
         const status = await checkOverlap(newEvent)
-        console.log(status)    //false = overlap = เพิ่มไม่ได้
+        console.log(status)    // false = overlap = เพิ่มไม่ได้
         if(!status){
         // true จะเข้ามาในนี้ 
-            console.log('error, cannot create this event overlap')
+            console.log("Can't Create New Event : This event is Overlap!")
             await getListOverlap(newEvent)
         }else{
             const dataTime = new Date(newEvent.dateTime)
-            console.log(dataTime)
             console.log(dataTime.toISOString().replace(".000Z", "Z"))
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`,{
                 method:'POST',
@@ -128,18 +130,19 @@
                     eventCategoryId: newEvent.category.id
                 })
             }).catch(error => console.log(error));
+            console.log(res.status)
             if(res.status===200){
-                const newId = await res.json()       
+                const newId = await res.json()
                 goThisEvent(newId)
+                console.log('Create New Event OK')
             }else if(res.status===400){
-                console.log("Bad request")
-                // await getListOverlap(newEvent)
-                // overlapStatus.value = false
-                console.log('error, cannot create')
-            }
-            else {
-                console.log(res.status)
-                console.log('error, cannot create')
+                console.log("Cannot Create New Event : The data is incorrect")
+            }else if(res.status===414){
+                console.log("Cannot Create New Event : The data length in the input field is too large. Please try again.")
+            }else if(res.status===404){
+                console.log("Cannot Create New Event : Not Found! Category id")
+            }else{
+                console.log("Error, Cannot Create New Event")
             }
         }
     }
@@ -160,7 +163,6 @@
         const date = currentDate.getDate() <= 9 ? '0'+ currentDate.getDate() : currentDate.getDate()
         const month = (currentDate.getMonth()+1) <= 9 ? '0'+ (currentDate.getMonth()+1) : (currentDate.getMonth()+1)
         const year = currentDate.getFullYear()
-        // console.log(year +'-'+ month +'-'+ date +'T00:00')
         return year +'-'+ month +'-'+ date +'T00:00'
     }
 
@@ -174,7 +176,6 @@
     const timeUnits = ['AM','PM']
     const getEndTime = (givenDate) => {
         if(givenDate != 'Invalid Date'){
-            // const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
             let hour = givenDate.getHours()%12
             if(hour == 0){
                 hour = 12
@@ -248,11 +249,7 @@
                             <span class="warning">&#9888;</span> The choosen time is in the past, choose again
                         </span>
                         <span v-show="false">Overlap นะจ๊ะ</span>
-                        <!-- <span v-show="checkFuture">The choosen date is in the past, choose again</span> -->
                     </td>
-                    <!-- <td style="width: 20%;">
-                        <button class="button-18" :disabled="checkButton" @click="checkOverlap">Check</button>
-                    </td> -->
                 </tr>
                 <tr>
                     <th><label for="bNotes">Notes :</label></th>
@@ -315,8 +312,7 @@
     }
     .button-right {
         float: right;
-        /* margin: 0 12% 2em 0; */
-        margin-right: 2em;
+        margin: 0 12% 2em 0;
     }
     .warning{
         color: orangered;

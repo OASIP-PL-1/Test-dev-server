@@ -1,17 +1,11 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dtos.*;
-import com.example.backend.entities.Event;
-import com.example.backend.entities.EventCategory;
-import com.example.backend.repositories.EventCategoryRepository;
-import com.example.backend.repositories.EventRepository;
 import com.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController

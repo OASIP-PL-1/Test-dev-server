@@ -29,7 +29,6 @@
         const date = currentDate.getDate() <= 9 ? '0'+ currentDate.getDate() : currentDate.getDate()
         const month = (currentDate.getMonth()+1) <= 9 ? '0'+ (currentDate.getMonth()+1) : (currentDate.getMonth()+1)
         const year = currentDate.getFullYear()
-        // console.log(year +'-'+ month +'-'+ date)
         return year +'-'+ month +'-'+ date
     }
 
@@ -41,7 +40,8 @@
     })
     const checkEdited = computed(()=>{
         //true = ยังไม่แก้ข้อมูล
-        return String(props.thisEvent.startTime).substring(0,16) === editingEvent.value.dateTime && props.thisEvent.notes === editingEvent.value.notes
+        return String(props.thisEvent.startTime).substring(0,16) === editingEvent.value.dateTime 
+                && props.thisEvent.notes === editingEvent.value.notes
     })
 
     // -- calculate End time ---
@@ -54,7 +54,6 @@
     const timeUnits = ['AM','PM']
     const getEndTime = (givenDate) => {
         if(givenDate != 'Invalid Date'){
-            // const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
             let hour = givenDate.getHours()%12
             if(hour == 0){
                 hour = 12
@@ -77,9 +76,6 @@
         const date = givenDate.getDate()
         const month = monthsName[givenDate.getMonth()]
         const year = givenDate.getFullYear()
-        // const hour = givenDate.getHours()%12 <= 9 ? '0'+ givenDate.getHours()%12 : givenDate.getHours()%12
-        // const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
-        // const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
         return day + ' ' + date + ' ' + month + ' ' + year + ' | ' + givenDate.toLocaleTimeString('th-TH').substring(0,5)
         }
     }

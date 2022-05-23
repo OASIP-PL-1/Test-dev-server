@@ -14,8 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventListOverlapDTO {
-//    private int id;
-//    private String bookingName;
     private Date startTime;
     private int duration;
 
