@@ -145,7 +145,7 @@ CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';
 GRANT SELECT, UPDATE ON bookingmodels.eventCategories TO 'admin'@'%';
 GRANT DELETE, INSERT, SELECT, UPDATE ON bookingmodels.events TO 'admin'@'%';
 ``` 
-### 1.1 การเข้าไปใช้งาน database 
+#### 1.1 การเข้าไปใช้งาน database 
 - Host : ip21pl1.sit.kmutt.ac.th
 - port : 13306
 - username : root / dev / admin
