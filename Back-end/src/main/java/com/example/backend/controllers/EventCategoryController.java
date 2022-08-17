@@ -26,7 +26,7 @@ public class EventCategoryController {
     }
 
     @PutMapping("")
-    public EventCategoryAllDTO editEventCategory(@RequestBody EventCategoryAllDTO editCategory){
+    public EventCategoryAllDTO editEventCategory(@Valid @RequestBody EventCategoryAllDTO editCategory){
         return service.editCategory(editCategory);
     }
 
