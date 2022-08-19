@@ -2,9 +2,10 @@ package com.example.backend.controllers;
 
 import com.example.backend.dtos.EventCategoryAllDTO;
 import com.example.backend.dtos.EventCategoryNameDTO;
-import com.example.backend.entities.EventCategory;
 import com.example.backend.services.EventCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,6 +31,11 @@ public class EventCategoryController {
     @PutMapping("")
     public EventCategoryAllDTO editEventCategory(@Valid @RequestBody EventCategoryAllDTO editCategory){
         return service.editCategory(editCategory);
+    }
+
+    @PutMapping("/test")
+    public ResponseEntity<EventCategoryAllDTO> test(@RequestBody @Valid EventCategoryAllDTO editCategory){
+        return new ResponseEntity<>(service.editCategory(editCategory), HttpStatus.ACCEPTED);
     }
 
 }
