@@ -1,6 +1,9 @@
 <script setup>
     import {ref, onMounted, computed} from 'vue'
     import {useRouter} from 'vue-router'
+    import {useDatetimeFormat} from '../state/datetimeFormat.js'
+    
+    const datetimeFormat = useDatetimeFormat()
 
     // --- GET Event Category Name to drop down list ---
     const eventCategories = ref()
@@ -81,28 +84,14 @@
             console.log(listOverlap.value)
         }
         selectedCategory.value = (eventCategories.value.find((category)=> category.id === newEvent.category.id)).categoryName
-        selectedDate.value = showDate(new Date(newEvent.dateTime))
-    }
-
-    // --- show Time --- (16:30)
-        const showTime = (givenDate) => {
-        return givenDate.toLocaleTimeString('th-TH').substring(0,5)
+        selectedDate.value = datetimeFormat.showDate(new Date(newEvent.dateTime)).substring(4,15)
     }
 
     // --- show Time for list Overlap --- (10:00 - 10:30)
     const showRangeTime = (eventOverlap) => {
         if(listOverlap.value.length > 0){
-            return showTime(new Date(eventOverlap.startTime)) + ' - ' + showTime(addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
+            return datetimeFormat.showTime(new Date(eventOverlap.startTime)) + ' - ' + datetimeFormat.showTime(datetimeFormat.addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
         }
-    }
-
-    // --- show Date for list Overlap --- (26 May 2022)
-    const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-    const showDate = (givenDate) => {
-        const date = givenDate.getDate()
-        const month = months[givenDate.getMonth()]
-        const year = givenDate.getFullYear()
-        return date + ' ' + month + ' ' + year
     }
 
     // --- Create New Event ---
@@ -158,36 +147,6 @@
         }
     }
 
-    // --- get Today for min DateTime input --- ('2022-05-12T00:00')
-    const getToday = (currentDate) => {
-        const date = currentDate.getDate() <= 9 ? '0'+ currentDate.getDate() : currentDate.getDate()
-        const month = (currentDate.getMonth()+1) <= 9 ? '0'+ (currentDate.getMonth()+1) : (currentDate.getMonth()+1)
-        const year = currentDate.getFullYear()
-        return year +'-'+ month +'-'+ date +'T00:00'
-    }
-
-    // --- calculate End time --- 
-    const addMinutes = (date,duration) => {
-        const changeDate = date
-        changeDate.setMinutes(changeDate.getMinutes()+duration)
-        return changeDate
-    }
-    // --- show End Time --- (12:30 AM)
-    const timeUnits = ['AM','PM']
-    const getEndTime = (givenDate) => {
-        if(givenDate != 'Invalid Date'){
-            let hour = givenDate.getHours()%12
-            if(hour == 0){
-                hour = 12
-            } else if(hour <= 9){
-                hour = '0' + hour
-            }
-            const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
-            const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
-            return hour + ':' + minute + ' ' + timeUnit
-        }
-    }
-
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
     const goThisEvent = (newId) => myRouter.push({name: 'ThisEvent', params:{eventId:newId}})
@@ -199,6 +158,7 @@
 </script>
  
 <template>
+    <div style="margin-top: 10em;">
     <div class="thisEvent">
         <button @click="goBack" class="button-18" role="button">Back</button>
         <div class="box">
@@ -238,17 +198,16 @@
                 <tr>
                     <th><label for="bDate">Start Time :</label></th>
                     <td>
-                        <input type="datetime-local" id="bTime" name="bTime" v-model="newEvent.dateTime" :min="getToday(new Date())">
+                        <input type="datetime-local" id="bTime" name="bTime" v-model="newEvent.dateTime" :min="datetimeFormat.getTodayDatetime(new Date())">
                         &emsp;
                         <span v-show="newEvent.category.id > 0 && newEvent.dateTime !== ''"> 
                         <b for="bDate" >End Time : </b>&ensp;
-                            <span>{{ getEndTime(addMinutes(new Date(newEvent.dateTime),newEvent.category.duration))}}</span>
+                            <span>{{ datetimeFormat.getEndTime(datetimeFormat.addMinutes(new Date(newEvent.dateTime),newEvent.category.duration))}}</span>
                         </span> 
                         <br>
                         <span v-show="new Date(newEvent.dateTime) < new Date()" class="warning">
                             <span class="warning">&#9888;</span> The choosen time is in the past, choose again
                         </span>
-                        <span v-show="false">Overlap นะจ๊ะ</span>
                     </td>
                 </tr>
                 <tr>
@@ -269,16 +228,16 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
         <div class="button-right">
             <button @click="clearForm" :class="['button-18','negative']" role="button">Clear</button> &ensp;
             <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button>
         </div>
-
+    </div>
 </template>
 
 <style scoped>
-    .subText{
+    .subText {
         color:rgb(199, 199, 199);
         font-size: smaller;
     }

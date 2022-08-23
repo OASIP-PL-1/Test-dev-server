@@ -6,6 +6,9 @@ import NotFoundPage from '../views/NotFoundPage.vue'
 import ThisEvent from '../views/ThisEvent.vue'
 import AddNewEvent from '../views/AddNewEvent.vue'
 import About from '../views/About.vue'
+import ViewUser from '../views/ViewUser.vue'
+import ThisUser from '../views/ThisUser.vue'
+import CreateUser from '../views/CreateUser.vue'
 
 const history = createWebHistory('/pl1/')
 const routes = [
@@ -38,6 +41,21 @@ const routes = [
     path: '/create-new-event',
     name: 'AddNewEvent',
     component: AddNewEvent
+  },
+  {
+    path: '/view-user',
+    name: 'ViewUser',
+    component: ViewUser
+  },
+  {
+    path: '/view-user/:userId',
+    name: 'ThisUser',
+    component: ThisUser
+  },
+  {
+    path: '/create-user',
+    name: 'CreateUser',
+    component: CreateUser
   },
   {
     path: '/about',

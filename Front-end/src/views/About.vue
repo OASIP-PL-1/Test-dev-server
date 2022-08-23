@@ -6,42 +6,44 @@
 </script>
  
 <template>
-    <div class="boxAbout">
-        <h2>About</h2>
-        <p>We are PL-1 CaFe Ni</p>
-        <p>school of information technology KMUTT</p>
-        <div class="grid-cols-3">
-            <div>
-                <p>
-                    <img src="../assets/dev-panalee.png" width="250px">
-                <br>
-                Panalee Palasri
-                <br>
-                63130500075
-                </p>
-            </div>
-            <div>
-                <p>
-                    <img src="../assets/dev-piraya.png" width="250px">
-                <br>  
-                Piraya Sutthiparinyanon
-                <br>
-                63130500087
-                </p>
-            </div>
-            <div>
-                <p>
-                    <img src="../assets/dev-vichuta.png" width="250px">
-                <br>    
-                Vichuta Pipoppinyo
-                <br>
-                6310500106
-                </p>
+    <div style="margin-top: 10em;">
+        <div class="boxAbout">
+            <h2>About</h2>
+            <p>We are PL-1 CaFe Ni</p>
+            <p>school of information technology KMUTT</p>
+            <div class="grid-cols-3">
+                <div>
+                    <p>
+                        <img src="../assets/dev-panalee.png" width="150px">
+                    <br>
+                    Panalee Palasri
+                    <br>
+                    63130500075
+                    </p>
+                </div>
+                <div>
+                    <p>
+                        <img src="../assets/dev-piraya.png" width="150px">
+                    <br>  
+                    Piraya Sutthiparinyanon
+                    <br>
+                    63130500087
+                    </p>
+                </div>
+                <div>
+                    <p>
+                        <img src="../assets/dev-vichuta.png" width="150px">
+                    <br>    
+                    Vichuta Pipoppinyo
+                    <br>
+                    6310500106
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="btbackAbout">
-        <button @click="goBack" class="button-18" role="button">Back</button>
+        <div class="btbackAbout">
+            <button @click="goBack" class="button-18" role="button">Back</button>
+        </div>
     </div>
 </template>
  
@@ -64,7 +66,6 @@
         text-align: center;
         -o-object-fit: cover;
         object-fit: cover;
-
     }
     .grid-cols-3 {
         display: grid;

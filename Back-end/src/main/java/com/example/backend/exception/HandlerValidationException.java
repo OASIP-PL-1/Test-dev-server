@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 @RestControllerAdvice
@@ -14,11 +15,13 @@ public class HandlerValidationException {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String,String> handleInvalidArgument(MethodArgumentNotValidException ex){
+    public ErrorDetails handleInvalidArgument(MethodArgumentNotValidException ex){
         Map<String,String> errorMap = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errorMap.put(error.getField(),error.getDefaultMessage());
         });
-        return errorMap;
+        ErrorDetails errorDetails= new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST, errorMap);
+        return errorDetails;
     }
+
 }

@@ -1,4 +1,6 @@
 <script setup>
+import {useDatetimeFormat} from '../state/datetimeFormat.js'
+const datetimeFormat = useDatetimeFormat()
   defineProps({
       events:{
           type: Object,
@@ -10,21 +12,6 @@
       }
   })
   
-// --- show Date --- 
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-  const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-  const showDate = (givenDate) => {
-      // console.log(givenDate)
-      const day = days[givenDate.getDay()]
-      const date = givenDate.getDate()
-      const month = months[givenDate.getMonth()]
-      const year = givenDate.getFullYear()
-      return day + ' ' + date + ' ' + month + ' ' + year
-  }
-// --- show start time ---
-const showTime = (givenDate) => {
-    return givenDate.toLocaleTimeString('th-TH').substring(0,5)
-}
 </script>
  
 <template>
@@ -45,9 +32,10 @@ const showTime = (givenDate) => {
                   <h4 v-if="event.bookingName.length > 50">{{event.bookingName.substring(0,50)}} ...</h4>
                   <h4 v-else>{{event.bookingName}}</h4>
               <hr>
-                  <b>Date :</b> {{ showDate(new Date(event.startTime)) }}
+                  <!-- <b>Date :</b> {{ showDate(new Date(event.startTime)) }} -->
+                  <b>Date :</b> {{ datetimeFormat.showDate(new Date(event.startTime)) }}
               <br>
-                  <b>Start Time :</b> {{ showTime(new Date(event.startTime))}}
+                  <b>Start Time :</b> {{ datetimeFormat.showTime(new Date(event.startTime))}}
               <br>
                   <strong>Category :</strong> 
               <br>

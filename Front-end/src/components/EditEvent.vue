@@ -1,5 +1,8 @@
 <script setup>
+    import {useDatetimeFormat} from '../state/datetimeFormat.js'
     import {ref, computed} from 'vue'
+    
+    const datetimeFormat = useDatetimeFormat()
     defineEmits(['hideEditMode','save'])
     const props = defineProps({
         thisEvent:{
@@ -24,14 +27,6 @@
             notes : props.thisEvent.notes
         })
 
-    // --- get Today for min Date input --- 2022-05-12
-    const getToday = (currentDate) => {
-        const date = currentDate.getDate() <= 9 ? '0'+ currentDate.getDate() : currentDate.getDate()
-        const month = (currentDate.getMonth()+1) <= 9 ? '0'+ (currentDate.getMonth()+1) : (currentDate.getMonth()+1)
-        const year = currentDate.getFullYear()
-        return year +'-'+ month +'-'+ date
-    }
-
     // -- date past ? ---
     const checkDate = computed(()=>{ 
         //true = เวลาเป็นอดีต
@@ -44,50 +39,11 @@
                 && props.thisEvent.notes === editingEvent.value.notes
     })
 
-    // -- calculate End time ---
-    const addMinutes = (date,duration) => {
-        const changeDate = date
-        changeDate.setMinutes(changeDate.getMinutes()+duration)
-        return changeDate
-    }
-    // --- show End Time --- 
-    const timeUnits = ['AM','PM']
-    const getEndTime = (givenDate) => {
-        if(givenDate != 'Invalid Date'){
-            let hour = givenDate.getHours()%12
-            if(hour == 0){
-                hour = 12
-            } else if(hour <= 9){
-                hour = '0' + hour
-            }
-            const minute = givenDate.getMinutes() <= 9 ? '0' + givenDate.getMinutes() : givenDate.getMinutes()
-            const timeUnit = timeUnits[Math.floor(givenDate.getHours()/12)]
-            return hour + ':' + minute + ' ' + timeUnit
-        }
-    }
-
-    // --- show Date Time --- ( Mon 23 May 2022 | 16:30 )
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-    const monthsName = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-    const a = new Date('2022-05-04')
-    const showDateTime = (givenDate) => {
-        if(givenDate != 'Invalid Date'){
-        const day = days[givenDate.getDay()]
-        const date = givenDate.getDate()
-        const month = monthsName[givenDate.getMonth()]
-        const year = givenDate.getFullYear()
-        return day + ' ' + date + ' ' + month + ' ' + year + ' | ' + givenDate.toLocaleTimeString('th-TH').substring(0,5)
-        }
-    }
-    // --- show Time --- (16:30)
-    const showTime = (givenDate) => {
-        return givenDate.toLocaleTimeString('th-TH').substring(0,5)
-    }
 
     // --- show Time for list Overlap --- (10:00 - 10:30)
     const showRangeTime = (eventOverlap) => {
     if(props.listOverlap.length > 0){
-        return showTime(new Date(eventOverlap.startTime)) + ' - ' + showTime(addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
+        return datetimeFormat.showTime(new Date(eventOverlap.startTime)) + ' - ' + datetimeFormat.showTime(datetimeFormat.addMinutes(new Date(eventOverlap.startTime),eventOverlap.duration))
         }
     }
     // --- not show Time overlap of ThisEvent 
@@ -118,12 +74,12 @@
             </tr>
             <tr class="subText">
                 <th>Same Date-Time : </th>
-                <td colspan="2">{{showDateTime(new Date(String(thisEvent.startTime).substring(0,16)))}}</td>
+                <td colspan="2">{{datetimeFormat.showDateTime(new Date(String(thisEvent.startTime).substring(0,16)))}}</td>
             </tr>
             <tr>
                 <th>New Date-Time : </th>
                 <td colspan="3">
-                    {{showDateTime(new Date(editingEvent.dateTime))}}  &ensp;
+                    {{datetimeFormat.showDateTime(new Date(editingEvent.dateTime))}}  &ensp;
                     <span v-show="checkDate" class="warning">
                         <span class="warning">&#9888;</span> The choosen time is in the past, choose again
                     </span>
@@ -131,7 +87,7 @@
             </tr>
             <tr>
                 <th>Date :</th>
-                <td><input type="date" v-model="editingEvent.date" :min="getToday(new Date())"> </td>
+                <td><input type="date" v-model="editingEvent.date" :min="datetimeFormat.getTodayDate(new Date())"> </td>
                 <th>Start Time :</th>
                 <td><input type="time" v-model="editingEvent.time"></td>
             </tr>
@@ -139,7 +95,7 @@
                 <th></th>
                 <td></td>
                 <th>End Time : </th>
-                <td>{{ getEndTime(addMinutes(new Date(editingEvent.dateTime),thisEvent.duration)) }}</td>
+                <td>{{ datetimeFormat.getEndTime(datetimeFormat.addMinutes(new Date(editingEvent.dateTime),thisEvent.duration)) }}</td>
             </tr>
         </table>   
         <div class="header">

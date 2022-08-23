@@ -117,27 +117,28 @@
       getEvents()
     }
   }
-
 </script>
  
 <template>
-  <div v-if="loading" class="subText">{{message}}</div>
-  <div v-else>
-      <table>
-        <tr>
-          <td style="width: 250px">
-            <Filter :eventCategories="eventCategories"
-            @past="getPastEvent"
-            @upcoming="getUpcomingEvent"
-            @selectDay="getEventByDate"
-            @categoryName="getEventByCategory"
-            @reset="getEvents"/>
-          </td>
-          <td>
-            <ShowListEvent :events="events" :filterMode="filterMode"/>
-          </td>
-        </tr>
-      </table>
+  <div style="margin-top: 10em;">
+    <div v-if="loading" class="subText">{{message}}</div>
+    <div v-else>
+        <table>
+          <tr>
+            <td style="width: 250px">
+              <Filter :eventCategories="eventCategories"
+              @past="getPastEvent"
+              @upcoming="getUpcomingEvent"
+              @selectDay="getEventByDate"
+              @categoryName="getEventByCategory"
+              @reset="getEvents"/>
+            </td>
+            <td>
+              <ShowListEvent :events="events" :filterMode="filterMode"/>
+            </td>
+          </tr>
+        </table>
+    </div>
   </div>
 </template>
  

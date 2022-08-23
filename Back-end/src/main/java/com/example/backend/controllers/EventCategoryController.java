@@ -33,9 +33,4 @@ public class EventCategoryController {
         return service.editCategory(editCategory);
     }
 
-    @PutMapping("/test")
-    public ResponseEntity<EventCategoryAllDTO> test(@RequestBody @Valid EventCategoryAllDTO editCategory){
-        return new ResponseEntity<>(service.editCategory(editCategory), HttpStatus.ACCEPTED);
-    }
-
 }

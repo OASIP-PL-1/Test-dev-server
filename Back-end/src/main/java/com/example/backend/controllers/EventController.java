@@ -5,6 +5,7 @@ import com.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.List;
 
@@ -21,13 +22,13 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventDTO getEventDTOById(@PathVariable int eventId) {
+    public EventDTO getEventDTOById(@Valid @PathVariable int eventId) {
         return service.getEventDTOById(eventId);
     }
 
 
     @GetMapping("/category/{categoryId}")
-    public List<EventAllDTO> getEventDTOByCategory(@PathVariable int categoryId) {
+    public List<EventAllDTO> getEventDTOByCategory(@Valid @PathVariable int categoryId) {
         return service.getEventAllDTOByCategory(categoryId);
     }
 
@@ -68,7 +69,7 @@ public class EventController {
     }
 
     @PostMapping("")
-    public int createEvent(@RequestBody EventAddDTO newEvent) throws ParseException {
+    public int createEvent(@Valid @RequestBody EventAddDTO newEvent) throws ParseException {
         return service.createEvent(newEvent);
     }
 
@@ -78,7 +79,7 @@ public class EventController {
     }
 
     @PutMapping("")
-    public EventDTO editEvent(@RequestBody EventUpdateDTO updateEvent) throws ParseException {
+    public EventDTO editEvent(@Valid @RequestBody EventUpdateDTO updateEvent) throws ParseException {
         return service.editEvent(updateEvent);
     }
 

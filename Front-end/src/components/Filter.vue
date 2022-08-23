@@ -18,7 +18,6 @@
     <div class="filter">
     <h2>Filter</h2>
         <hr>
-
         <div>
             <div class="choices">
                 <input type="radio" id ="past" value="past" v-model="filterMode" @click="($emit('past'))"/>
@@ -39,7 +38,6 @@
                     <span>Input a date:</span><br>
                     <input type="date" class="inputdate" v-model="selectedDay" @change="($emit('selectDay', selectedDay))">
                 </div>
-
                 <div v-show="filterMode=='category'">
                     <b>Filter by category name: </b>
                     <hr>

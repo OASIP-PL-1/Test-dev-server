@@ -106,7 +106,9 @@ const checkName = (id,name) => {
 </script>
  
 <template>
-<div v-if="loading" class="subText">{{message}}</div>
+  <div style="margin-top: 6em;">
+  <div v-if="loading" class="subText">{{message}}</div>
+  <div v-else-if="eventCategories == 0" class="center"> -- No Event Categories -- </div>
   <div v-else class="center">
     <div class="box">
       <table id="listAll">
@@ -182,6 +184,7 @@ const checkName = (id,name) => {
             </div>
         </div>
     </div>
+  </div>
 </template>
  
 <style scoped>

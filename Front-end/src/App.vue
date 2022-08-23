@@ -2,24 +2,33 @@
 </script>
  
 <template>
-<div class="bg-home">
-    <div class="navbar">
-        <img src="./assets/logo.png" alt="logo"
-            style="padding-left: 2em; padding-top: 5px; max-width: 500px; min-width: 300px; width: 20%;">
-        <span class="navtop" style="display: inline;">
-            <span class="navhover">
-                <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
-                <router-link :to="{name:'ViewEventCategory'}"><p style="float:right;">Category</p></router-link>
-                <router-link :to="{name:'AddNewEvent'}"><p style="float:right;">Book</p></router-link>
-                <router-link :to="{name:'ViewEvent'}"><p style="float:right;">Event</p></router-link>
-                <router-link :to="{name:'Home'}"><p style="float:right;">Home</p></router-link>
+    <div class="bg-home">
+        <div class="navbar">
+            <router-link :to="{name:'Home'}">
+                <img src="./assets/logo.png" alt="logo"
+                style="padding-left: 2em; padding-top: 10px; max-width: 450px; min-width: 250px; width: 10%;">
+            </router-link>
+            <span style="color: #FFCB4C; font-size: 10px">v1.1.21.6</span>
+            <span class="navtop" style="display: inline;">
+                <span class="navhover">
+                    <div class="dropdown">
+                        <p style="float:right;" class="dropbtn">///</p>
+                        <div class="dropdown-content">
+                            <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
+                            <router-link :to="{name:'CreateUser'}"><p style="float:right;">Sign Up</p></router-link>
+                            <router-link :to="{name:'ViewUser'}"><p style="float:right;">User</p></router-link>
+                            <router-link :to="{name:'AddNewEvent'}"><p style="float:right;">Book</p></router-link>
+                            <router-link :to="{name:'ViewEventCategory'}"><p style="float:right;">Category</p></router-link>
+                            <router-link :to="{name:'ViewEvent'}"><p style="float:right;">Event</p></router-link>
+                        </div>
+                    </div> 
+                </span>
             </span>
-        </span>
+        </div>
+        <div>
+            <router-view></router-view>
+        </div>
     </div>
-    <div>
-        <router-view></router-view>
-    </div>
-</div>
 </template>
  
 <style>
@@ -38,7 +47,7 @@
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
-        margin-top: 10em;
+        /* margin-top: 10em; */
         margin-left: 0;
         overflow-x: hidden;
         -o-object-fit: cover;
@@ -57,8 +66,8 @@
         top: 0;
         width: 100%;
         color: white;
-        padding-top: 1em;
-        padding-bottom: 1em;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
     }
     .navbar p {
         float: right;
@@ -68,7 +77,7 @@
         padding: 10px 30px;
         text-decoration: none;
         margin: 0;
-        font-size: 20px;
+        font-size: 18px;
     }
     .navtop {
         padding-top: 2em;
@@ -134,4 +143,53 @@
     hr {
         border: 1px solid #5C5CFF;
     }
+    /* -------- Drop down ----------- */
+    
+    @media only screen and (max-width: 720px) {
+    .dropdown {
+        float: right;
+        overflow: hidden;
+    }
+
+    .dropdown .dropbtn {
+        border: none;
+        outline: none;
+        color: white;
+        padding: 14px 16px;
+        background-color: inherit;
+        font-family: inherit;
+        margin: 0;
+    }
+
+    /* .navbar a:hover, .dropdown:hover .dropbtn {
+        background-color: red;
+    } */
+
+    .dropdown-content {
+        display: none;
+        /* position: absolute; */
+        /* background-color: #f9f9f9; */
+        /* min-width: 160px; */
+        /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        float: none;
+        /* color: black; */
+        padding: 12px 16px;
+        text-decoration: none;
+        display: inline;
+        text-align: left;
+    }
+
+    /* .dropdown-content a:hover {
+        background-color: #ddd;
+    } */
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    }
+        
 </style>

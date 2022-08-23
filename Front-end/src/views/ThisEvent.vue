@@ -2,8 +2,10 @@
     import {ref, onBeforeMount} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import EditEvent from '../components/EditEvent.vue';
-
+    import {useDatetimeFormat} from '../state/datetimeFormat.js'
+    
     const {params} = useRoute()
+    const datetimeFormat = useDatetimeFormat()
 
 // --- Get all list --- 
     const thisEvent = ref({})
@@ -42,29 +44,6 @@
     const goBack = () => myRouter.go(-1)
     const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
 
-
-// --- show Date --- (Sun 1 Jan 2022)
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-    const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
-    const showDate = (givenDate) => {
-        // console.log(givenDate)
-        const day = days[givenDate.getDay()]
-        const date = givenDate.getDate()
-        const month = months[givenDate.getMonth()]
-        const year = givenDate.getFullYear()
-        return day + ' ' + date + ' ' + month + ' ' + year
-    }
-// --- show Time --- (16:30)
-    const showTime = (givenDate) => {
-    return givenDate.toLocaleTimeString('th-TH').substring(0,5)
-}
-// --- calculate End time --- 
-    const addMinutes = (date,duration) => {
-        const changeDate = date
-        changeDate.setMinutes(changeDate.getMinutes()+duration)
-        return changeDate
-    }
-
 // --- GET List Overlap ---    
 const listOverlap = ref([])
 const selectedCategory = ref('')
@@ -83,7 +62,7 @@ const getListOverlap = async (editingEvent) => {
     }
     console.log(listOverlap.value)
     selectedCategory.value = thisEvent.value.categoryName
-    selectedDate.value = showDate(new Date(editingEvent.date)).substring(4,15)
+    selectedDate.value = datetimeFormat.showDate(new Date(editingEvent.date)).substring(4,15)
 }
 
 // --- Edit Mode ---
@@ -187,99 +166,97 @@ const getListOverlap = async (editingEvent) => {
             console.log(res.status)
         }
     }
-
-
-    
 </script> 
 
 <template>
-    <div class="thisEvent">
-        <button @click="goBack" class="button-18" role="button">Back</button>&ensp;
-        <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
-        <div v-else-if="!showDetail" class="NotFoundText" style="margin-top: 2em;">
-        -- Not Found Data --
-        </div>
-
-        <div v-else-if="!editMode">
-        <div class="center">
-        <div class="box">
-            <div class="header">
-                <div class="grid-container">
-                    <span class="grid-item-pic">
-                        <!-- <img src="/humans/human1.png" alt="human"> -->
-                        <img :src="pathImg" alt="human">
-                    </span>
-                    <span class="grid-item">
-                        <h3>Booking Name : {{thisEvent.bookingName}}</h3>
-                        <b>Email :</b> {{thisEvent.bookingEmail}}
-                    </span>
-                </div>
-                <hr>
+    <div style="margin-top: 10em;">
+        <div class="thisEvent">
+            <button @click="goBack" class="button-18" role="button">Back</button>&ensp;
+            <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
+            <div v-else-if="!showDetail" class="NotFoundText" style="margin-top: 2em;">
+            -- Not Found Data --
             </div>
-            <table>
-                <tr>
-                    <th>Category Name : </th>
-                    <td>{{thisEvent.categoryName}}</td>
-                    <th>Duration : </th>
-                    <td>{{thisEvent.duration}} min.</td>
-                </tr> 
-                <tr>
-                    <th>Date :</th>
-                    <td>{{showDate(new Date(thisEvent.startTime))}} </td>
-                    <th>Start Time :</th>
-                    <td>{{showTime(new Date(thisEvent.startTime))}}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td></td>
-                    <th>End Time : </th>
-                    <td>{{showTime(addMinutes(new Date(thisEvent.startTime),thisEvent.duration))}}</td>
-                </tr>
-            </table>
-            <div class="header">
-                <div v-if="thisEvent.notes === null">
-                    <b>Notes :</b> -
-                </div>
-                <div v-else>
-                    <b>Notes :</b> <br>{{thisEvent.notes}}
-                </div>
-        </div>
-        </div>            
-        </div>
-            <div class="button-right">
-                <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
-                <button @click="showDeleteModal()" :class="['button-18','negative']" role="button">Delete</button>  &ensp;  
-                <button @click="showEditMode()" class="button-18" role="button">Edit</button>
+
+            <div v-else-if="!editMode">
+                <div class="center">
+                <div class="box">
+                    <div class="header">
+                        <div class="grid-container">
+                            <span class="grid-item-pic">
+                            <!-- <img src="/humans/human1.png" alt="human"> -->
+                            <img :src="pathImg" alt="human">
+                            </span>
+                            <span class="grid-item">
+                            <h3>Booking Name : {{thisEvent.bookingName}}</h3>
+                            <b>Email :</b> {{thisEvent.bookingEmail}}
+                            </span>
+                        </div>
+                    <hr>
+                    </div>
+                <table>
+                    <tr>
+                        <th>Category Name : </th>
+                        <td>{{thisEvent.categoryName}}</td>
+                        <th>Duration : </th>
+                        <td>{{thisEvent.duration}} min.</td>
+                    </tr> 
+                    <tr>
+                        <th>Date :</th>
+                        <td>{{datetimeFormat.showDate(new Date(thisEvent.startTime))}} </td>
+                        <th>Start Time :</th>
+                        <td>{{datetimeFormat.showTime(new Date(thisEvent.startTime))}}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td></td>
+                        <th>End Time : </th>
+                        <td>{{datetimeFormat.showTime(datetimeFormat.addMinutes(new Date(thisEvent.startTime),thisEvent.duration))}}</td>
+                    </tr>
+                </table>
+                <div class="header">
+                    <div v-if="thisEvent.notes === null">
+                        <b>Notes :</b> -
+                    </div>
+                    <div v-else>
+                        <b>Notes :</b> <br>{{thisEvent.notes}}
+                    </div>
             </div>
-        </div>
-
-        <div v-else>
-            <EditEvent :thisEvent="thisEvent"
-                :overlapStatus="overlapStatus"
-                :listOverlap="listOverlap"
-                :selectedCategory="selectedCategory"
-                :selectedDate="selectedDate"
-                @hideEditMode="hideEditMode"
-                @save="updateEvent"/>
-        </div>
-
-    <!-- Modal Delete -->
-    <div class="modal-mask" v-show=modalStatusDelete style="display:block">
-        <div class="modal-wrapper">
-         <!-- Modal content -->
-            <div class="modal-container">
-                <span class="close" @click="hideDeleteModal()" >&times;</span>
-                <div class="modal-header">
-                    <h3>Do you want to delete this event ?</h3>
-                </div>
-                <div class="modal-button">
-                    <button @click="removeEvent()" :class="['button-18', 'confirmbt']">Confirm</button>
-                    &ensp;<button @click="hideDeleteModal()" class="button-18">Cancel</button>
+            </div>            
+            </div>
+                <div class="button-right">
+                    <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
+                    <button @click="showDeleteModal()" :class="['button-18','negative']" role="button">Delete</button>  &ensp;  
+                    <button @click="showEditMode()" class="button-18" role="button">Edit</button>
                 </div>
             </div>
+
+            <div v-else>
+                <EditEvent :thisEvent="thisEvent"
+                    :overlapStatus="overlapStatus"
+                    :listOverlap="listOverlap"
+                    :selectedCategory="selectedCategory"
+                    :selectedDate="selectedDate"
+                    @hideEditMode="hideEditMode"
+                    @save="updateEvent"/>
+            </div>
+
+        <!-- Modal Delete -->
+            <div class="modal-mask" v-show=modalStatusDelete style="display:block">
+                <div class="modal-wrapper">
+                <!-- Modal content -->
+                    <div class="modal-container">
+                        <span class="close" @click="hideDeleteModal()" >&times;</span>
+                        <div class="modal-header">
+                            <h3>Do you want to delete this event ?</h3>
+                        </div>
+                        <div class="modal-button">
+                            <button @click="removeEvent()" :class="['button-18', 'confirmbt']">Confirm</button>
+                            &ensp;<button @click="hideDeleteModal()" class="button-18">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    
     </div>
 </template>
  

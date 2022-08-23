@@ -57,6 +57,20 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`events` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+
+CREATE TABLE IF NOT EXISTS `bookingmodels`.`users` (
+  `userId` INT NOT NULL auto_increment,
+  `userName` VARCHAR(100) NOT NULL,
+  `userEmail` VARCHAR(50) NOT NULL,
+  `userRole` ENUM('admin', 'lecturer', 'student') NOT NULL DEFAULT 'student',
+  `createdOn` DATETIME NOT NULL DEFAULT now(),
+  `updatedOn` DATETIME NOT NULL DEFAULT now(),
+  PRIMARY KEY (`userId`),
+  UNIQUE INDEX `name_UNIQUE` (`userName` ASC) VISIBLE,
+  UNIQUE INDEX `email_UNIQUE` (`userEmail` ASC) VISIBLE
+)
+ENGINE = InnoDB;
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
