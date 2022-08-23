@@ -26,6 +26,16 @@ export const useDatetimeFormat = defineStore('counter', () => {
         }
     }
 
+    // 23 May 2022 | 16:30 UTC
+    const showDateTimeZone = (givenDate) => {
+        if(givenDate != 'Invalid Date'){
+        const date = givenDate.getDate()
+        const month = months[givenDate.getMonth()]
+        const year = givenDate.getFullYear()
+        return date + ' ' + month + ' ' + year + ' | ' + givenDate.toLocaleTimeString('th-TH').substring(0,5) + ' UTC'
+        }
+    }
+
     // -- calculate End time ---
     const addMinutes = (date,duration) => {
         const changeDate = date
@@ -70,5 +80,5 @@ export const useDatetimeFormat = defineStore('counter', () => {
         return year +'-'+ month +'-'+ date
     }
 
-    return { showDate, showDateTime, addMinutes, getEndTime, showTime, getTodayDatetime, getTodayDate}
+    return { showDate, showDateTime, showDateTimeZone, addMinutes, getEndTime, showTime, getTodayDatetime, getTodayDate}
 })

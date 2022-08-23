@@ -61,8 +61,8 @@
         min-height: 300px;
         /* min-width: 600px; */
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-        margin-left: 2em;
-        margin-right: 2em;
+        margin-left: 20%;
+        margin-right: 20%;
         text-align: center;
         -o-object-fit: cover;
         object-fit: cover;

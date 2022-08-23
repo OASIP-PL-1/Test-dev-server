@@ -95,7 +95,7 @@
     const checkMatchName = (name) => {
       name = name.trim()
       if(name.length > 0){
-        const matchName = users.value.filter((user) => user.userName === name)
+        const matchName = users.value.filter((user) => user.userName.replace(' ','').toLowerCase() === name.replace(' ','').toLowerCase())
         //true = ชื่อซ้ำ 
         matchName.length > 0 ? matchNameStatus.value = true : matchNameStatus.value = false
       }else{
@@ -119,6 +119,7 @@
     // - check email
     const emailStatus = ref(false)
     const emailValidation = (inputEmail) => {
+      inputEmail = inputEmail.trim()
         if(inputEmail !== ""){
             const mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
             emailStatus.value =  inputEmail.match(mailformat) ? false : true
@@ -126,59 +127,70 @@
             emailStatus.value = false
         }
     }
-    
-
-    
 </script>
  
 <template>
-  <div style="margin-top: 10em;">
-    <button @click="goBack" class="button-18" role="button">Back</button>
+  <!-- <div style="margin-top: 10em;"> -->
+    <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
+    <div v-else>
+      <span class="thisEvent">
+    <button @click="goBack" class="button-18" role="button">Back</button></span>
     <div class="box">
       <h2>Sign Up</h2>
       <p>Fill the form to create an account.</p>
       <hr>
-      <div style="color: white;">
-        <label>
-          <input type="radio" id="1" name="role" value="admin" v-model="newUser.role"> Admin
-        </label>
-        <label>
-          <input type="radio" id="2" name="role" value="lecturer" v-model="newUser.role"> Lecturer
-        </label>
-        <label>
-          <input type="radio" id="3" name="role" value="student" v-model="newUser.role" checked> Student
-        </label>
-      </div>
+      
       <table>
         <tr>
           <th><label for="username"><b>Username : </b></label></th>
-          <td>
-            <input type="text" placeholder="Enter username" name="username" 
-                  v-model="newUser.name" maxlength="100" size="50" @blur="checkMatchName(newUser.name)" required>&ensp;
-            <span class="subText">{{newUser.name.trim().length}} / 100</span>
-            <br><span v-show="matchNameStatus" class="warning">ชื่อนี้ถูกใช้ไปแล้ว! กรุณาตั้งชื่อใหม่</span>
-          </td>
+          <td style="text-align: right;"><span class="subText">{{newUser.name.length}} / 100</span></td>
         </tr>
         <tr>
-          <th><label for="email"><b>Email : </b></label></th>
-          <td>
+          <td colspan="2">
+            <input type="text" placeholder="Enter username" name="username" 
+                  v-model="newUser.name" maxlength="100" size="50" @blur="checkMatchName(newUser.name)" required>&ensp;
+            <span v-show="matchNameStatus" class="warning">Username is already existed, please try another name</span>
+          </td>
+        </tr>
+          <tr>
+            <th><label for="email"><b>Email : </b></label></th>
+            <td style="text-align: right;"><span class="subText">{{newUser.email.length}} / 50</span></td>
+          </tr>
+        <tr>
+          <td colspan="2">
             <input type="text" placeholder="Enter email" name="email" 
                   v-model="newUser.email" maxlength="50" size="50" @blur="emailValidation(newUser.email), checkMatchEmail(newUser.email)" required>&ensp;
-            <span class="subText">{{newUser.email.trim().length}} / 50</span>
-            <span v-show="emailStatus" class="warning"><br/>Sorry! an invalid email!</span>
-            <span v-show="matchEmailStatus" class="warning"><br/>อีเมลนี้ เคยถูกใช้ไปแล้ว!</span>
+            
+            <span v-show="emailStatus" class="warning"><br/>Input email is invalid!</span>
+            <span v-show="matchEmailStatus" class="warning"><br/>This email is already existed, please try another email</span>
+          </td>
+        </tr>
+        <tr style="color:white; padding-top: 10px;">
+          <td colspan="2">
+            <b style="padding: 1em; ">Role :</b>
+          <label>
+            <input type="radio" id="1" name="role" value="admin" v-model="newUser.role"> Admin
+          </label>
+          <label>
+            <input type="radio" id="2" name="role" value="lecturer" v-model="newUser.role"> Lecturer
+          </label>
+          <label>
+            <input type="radio" id="3" name="role" value="student" v-model="newUser.role" checked> Student
+          </label>
           </td>
         </tr>
       </table>
       
         <br>
         <br>
-      <div class="button-right">
-        <button type="button" :class="['button-18','negative']" @click="clearInput()">Cancel</button> &ensp;
-        <button type="submit" class="button-18" @click="createNewUser(newUser)" :disabled="checkBeforeAdd">Sign Up</button>
+      <div class="button-center">
+        <button type="submit" class="button-18" @click="createNewUser(newUser)" :disabled="checkBeforeAdd" style="width: 100%;">Sign Up</button>
+        <br/><br/>
+        <!-- <button type="button" :class="['button-18','negative']" @click="clearInput">Clear</button> -->
       </div>
     </div>
-  </div>
+    </div>
+  <!-- </div> -->
       <!-- <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p> -->
       <!-- <p>{{newUser}}</p> -->
 </template>
@@ -193,7 +205,7 @@
     input, label {
         border-radius: 10px;
         padding: 0.5em;
-        margin: 0.25em 0;
+        margin: 0.25em 0 ;
         text-rendering: auto;
         overflow: visible;
         -o-object-fit: cover;
@@ -204,6 +216,7 @@
         margin-right: auto;
         -o-object-fit: cover;
         object-fit: cover;
+        width: 80%;
     }
     tr {
         padding: auto;
@@ -212,16 +225,16 @@
     }
     th {
         /* vertical-align: top; */
-        text-align: right;
+        text-align: left;
         width: 19%;
-        padding: 5px 2px;
+        padding: 10px 2em 0 2em;
         -o-object-fit: cover;
         object-fit: cover;
     }
     td {
         text-align: left;
         width: 30%;
-        padding: 5px 2px;
+        padding: 0 2em 10px 2em;
         -o-object-fit: cover;
         object-fit: cover;
     }
@@ -232,7 +245,7 @@
       /* min-height: 400px; */
       /* max-height: 400px; */
       /* min-width: 200px; */
-      max-width: 750px;
+      max-width: 600px;
       box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
       margin-left: auto;
       margin-right: auto;
@@ -240,10 +253,17 @@
       -o-object-fit: cover;
       object-fit: cover;
     }
+    .thisEvent {
+      padding-left: 2em;
+      padding-right: 2em;
+    }
     .button-right {
-      text-align: right;
+      text-align: center;
     }
     .warning{
         color: orangered;
+    }
+    span{
+      font-size: smaller;
     }
 </style>

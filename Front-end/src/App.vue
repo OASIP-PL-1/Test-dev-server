@@ -1,31 +1,32 @@
 <script setup>
+import icon_Menu from './components/icons/menu.vue'
 </script>
  
 <template>
-    <div class="bg-home">
+    <div class="bg-home" >
         <div class="navbar">
-            <router-link :to="{name:'Home'}">
-                <img src="./assets/logo.png" alt="logo"
-                style="padding-left: 2em; padding-top: 10px; max-width: 450px; min-width: 250px; width: 10%;">
-            </router-link>
-            <span style="color: #FFCB4C; font-size: 10px">v1.1.21.6</span>
             <span class="navtop" style="display: inline;">
                 <span class="navhover">
-                    <div class="dropdown">
-                        <p style="float:right;" class="dropbtn">///</p>
-                        <div class="dropdown-content">
+                    <router-link :to="{name:'Home'}">
+                    <img src="./assets/logo.png" alt="logo"
+                    style="padding-left: 2em; padding-top: 10px; max-width: 450px; min-width: 250px; width: 10%; display: inline;">
+                    </router-link>
+                    <span style="color: #FFCB4C; font-size: 10px">v1.1.21.7</span>
+                    <span class="dropdown">
+                        <p style="float:right;" class="dropbtn"><icon_Menu/></p>
+                        <span class="dropdown-content">
                             <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
                             <router-link :to="{name:'CreateUser'}"><p style="float:right;">Sign Up</p></router-link>
                             <router-link :to="{name:'ViewUser'}"><p style="float:right;">User</p></router-link>
                             <router-link :to="{name:'AddNewEvent'}"><p style="float:right;">Book</p></router-link>
                             <router-link :to="{name:'ViewEventCategory'}"><p style="float:right;">Category</p></router-link>
                             <router-link :to="{name:'ViewEvent'}"><p style="float:right;">Event</p></router-link>
-                        </div>
-                    </div> 
+                        </span>
+                    </span> 
                 </span>
             </span>
         </div>
-        <div>
+        <div style="margin-top: 10em;">
             <router-view></router-view>
         </div>
     </div>
@@ -136,6 +137,10 @@
     .button-18:disabled {
         background-color: #c2c2ff;
     }
+    .subText{
+        color: gray;
+        text-align: center;
+    }
     .negative {
         background-color: #fff3d5;
         color: orangered;
@@ -143,53 +148,60 @@
     hr {
         border: 1px solid #5C5CFF;
     }
+    @media only screen and (min-width: 1000px) {
+        .dropdown .dropbtn{
+            display: none;
+        }
+    }
+    .dropdown-content {
+        display: inline;
+    }
     /* -------- Drop down ----------- */
     
-    @media only screen and (max-width: 720px) {
-    .dropdown {
-        float: right;
-        overflow: hidden;
-    }
+    @media only screen and (max-width: 1000px) {
+        .dropdown {
+            float: right;
+            overflow: hidden;
+        }
 
-    .dropdown .dropbtn {
-        border: none;
-        outline: none;
-        color: white;
-        padding: 14px 16px;
-        background-color: inherit;
-        font-family: inherit;
-        margin: 0;
-    }
+        .dropdown {
+            border: none;
+            outline: none;
+            color: white;
+            /* padding: 10px 10px; */
+            background-color: inherit;
+            font-family: inherit;
+            margin: 0;
+        }
 
-    /* .navbar a:hover, .dropdown:hover .dropbtn {
-        background-color: red;
-    } */
+        /* .navbar a:hover, .dropdown:hover .dropbtn {
+            background-color: red;
+        } */
 
-    .dropdown-content {
-        display: none;
-        /* position: absolute; */
-        /* background-color: #f9f9f9; */
-        /* min-width: 160px; */
-        /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
-        z-index: 1;
-    }
+        .dropdown-content {
+            display: none;
+            /* position: absolute; */
+            /* background-color: #f9f9f9; */
+            /* min-width: 160px; */
+            /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+            z-index: 1;
+        }
 
-    .dropdown-content a {
-        float: none;
-        /* color: black; */
-        padding: 12px 16px;
-        text-decoration: none;
-        display: inline;
-        text-align: left;
-    }
+        .dropdown-content a {
+            float: none;
+            /* color: black; */
+            /* padding: 10px 10px; */
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
 
-    /* .dropdown-content a:hover {
-        background-color: #ddd;
-    } */
+        /* .dropdown-content a:hover {
+            background-color: #ddd;
+        } */
 
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-    }
-        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    }    
 </style>
