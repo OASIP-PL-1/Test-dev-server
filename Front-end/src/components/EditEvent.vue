@@ -56,7 +56,7 @@
 </script>
  
 <template>
-    <h2 style="text-align: center;"> -- Editing Mode -- </h2>
+    <h2>-- Editing Mode --</h2>
     <div class="center">
     <div class="box">
         <div class="header">
@@ -127,6 +127,9 @@
 </template>
  
 <style scoped>
+    h2 {
+        text-align: center;
+    }
     h3 {
         color: #FFA21A;
     }

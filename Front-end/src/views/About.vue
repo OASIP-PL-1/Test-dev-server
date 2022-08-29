@@ -60,9 +60,10 @@
         border-radius: 30px;
         min-height: 300px;
         /* min-width: 600px; */
+        max-width: 1000px;
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-        margin-left: 20%;
-        margin-right: 20%;
+        margin-left: auto;
+        margin-right: auto;
         text-align: center;
         -o-object-fit: cover;
         object-fit: cover;

@@ -20,7 +20,7 @@ public class HandlerValidationException {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errorMap.put(error.getField(),error.getDefaultMessage());
         });
-        ErrorDetails errorDetails= new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST, errorMap);
+        ErrorDetails errorDetails= new ErrorDetails(new Date(), 400, HttpStatus.BAD_REQUEST, errorMap);
         return errorDetails;
     }
 

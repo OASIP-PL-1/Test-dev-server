@@ -1,40 +1,49 @@
 <script setup>
     import {ref, onMounted} from 'vue'
+    import {useListUser} from '../state/getListUser.js'
+    import {useRoute, useRouter} from 'vue-router'
+import ThisUserVue from './ThisUser.vue';
 
-    const users = ref()
-    const loading =ref()
-    const message = ref()
+    const getListUser = useListUser()
 
-    const getUsers = async () => {
-    loading.value = true
-    message.value = "loading..."
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
-      .catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
-        console.log(error)
-        console.log('GET List All User Fail')
-    });
-    users.value = await res.json()
-    loading.value = false
-    if(res.status==200){
-      console.log(`GET List All User OK`)
-      console.log(res.status)
-    }
-  }
+    // ย้าย function ไปทำ state
+//     const users = ref()
+//     const loading =ref()
+//     const message = ref()
+
+//     const getUsers = async () => {
+//     loading.value = true
+//     message.value = "loading..."
+//     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
+//       .catch((error)=> {
+//         message.value = "Not Found Backend Server!!!"
+//         console.log(error)
+//         console.log('GET List All User Fail')
+//     });
+//     users.value = await res.json()
+//     loading.value = false
+//     if(res.status==200){
+//       console.log(`GET List All User OK`)
+//       console.log(res.status)
+//     }
+//   }
 
     onMounted(async () => {
-      await getUsers()
+        await getListUser.getUsers()
   })
     // random image user 
     const pathImg = (userId) => `/humans/human${userId%8+1}.png`
+
+    const myRouter = useRouter()
+    const goToThisUser = (id) => myRouter.push({ name: 'ThisUser', params:{userId:id}})
 </script>
  
 <template>
     <div style="margin-top: 8em;">
-        <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
-        <div v-else-if="users == 0" class="center">-- No User--</div>
+        <div v-if="getListUser.loading" class="subText" style="margin-top: 2em;">{{getListUser.message}}</div>
+        <div v-else-if="getListUser.users.length === 0" class="center">-- No User--</div>
         <div v-else>
-            <div v-for="(user,index) in users" :key="index" class="boxRow">
+            <div v-for="(user,index) in getListUser.users" :key="index" class="boxRow">
                 <table class="boxUser">
                     <tr>
                         <td style="text-align: center; width: 20%;">
@@ -50,7 +59,10 @@
                             {{user.userRole}}
                         </td>
                         <td style="text-align: right; width: 10%;">
-                            <router-link :to="{ name: 'ThisUser', params:{userId:user.id}}" class="button-18">Detail</router-link>
+                            <!-- <button class="button-18">
+                                 <router-link :to="{ name: 'ThisUser', params:{userId:user.id}}" >Detail</router-link>
+                            </button> -->
+                            <button class="button-18" @click="goToThisUser(user.id)">Detail</button>
                         </td>
                     </tr>
                 </table>

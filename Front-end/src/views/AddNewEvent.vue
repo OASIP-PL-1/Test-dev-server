@@ -228,10 +228,10 @@
                 </div>
             </div>
         </div>
-        </div>
         <div class="button-right">
             <button @click="clearForm" :class="['button-18','negative']" role="button">Clear</button> &ensp;
             <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button>
+        </div>
         </div>
     </div>
 </template>
@@ -251,14 +251,17 @@
         background-color: #3333A3;
         padding: 1em 2em 1em 2em;
         border-radius: 30px;
-        margin: 1em 10em;
+        margin: 1em 0em;
+        margin-left: auto;
+        margin-right: auto;
         text-align: center;
         -o-object-fit: cover;
         object-fit: cover;
+        max-width: 800px;
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
     }
-    .thisEvent{
-        padding-left: 2em;
-        padding-right: 2em;
+    .thisEvent {
+        padding: 0 2em;
     }
     input, select, textarea {
         border-radius: 10px;
@@ -268,10 +271,12 @@
         overflow: visible;
         -o-object-fit: cover;
         object-fit: cover;
+        /* max-inline-size: 200em; */
     }
     .button-right {
         float: right;
-        margin: 0 12% 2em 0;
+        /* margin: 0 12% 2em 0; */
+        margin-right: 27%;
     }
     .warning{
         color: orangered;

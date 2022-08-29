@@ -9,6 +9,7 @@ import About from '../views/About.vue'
 import ViewUser from '../views/ViewUser.vue'
 import ThisUser from '../views/ThisUser.vue'
 import CreateUser from '../views/CreateUser.vue'
+import LoginUser from '../views/LoginUser.vue'
 
 const history = createWebHistory('/pl1/')
 const routes = [
@@ -56,6 +57,11 @@ const routes = [
     path: '/create-user',
     name: 'CreateUser',
     component: CreateUser
+  },
+  {
+    path: '/login-user',
+    name: 'LoginUser',
+    component: LoginUser
   },
   {
     path: '/about',

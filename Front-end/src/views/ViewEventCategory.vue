@@ -141,7 +141,7 @@ const checkName = (id,name) => {
                 <span class="close" @click="hideModalEdit()" >&times;</span>
                 <div class="modal-header">
                   <!-- {{editingCategory}} -->
-                    <h3> -- Edit Category -- </h3>
+                    <h3>-- Edit Category --</h3>
                 </div>
                 <div class="modal-body">
                   <table class="formEdit">
@@ -172,7 +172,6 @@ const checkName = (id,name) => {
                     </tr>
                   </table>
                 </div>
-  
                 <div class="modal-button">
                   <button @click="hideModalEdit()" :class="['button-18','negative']">Cancel</button>&ensp;
                   <button @click="updateCategory(editingCategory)" class="button-18" 
@@ -188,6 +187,9 @@ const checkName = (id,name) => {
 </template>
  
 <style scoped>
+  h3 {
+    text-align: center;
+  }
   .subText{
     color: gray;
     text-align: center;
@@ -201,8 +203,11 @@ const checkName = (id,name) => {
   }
   .box {    
     border-radius: 30px;
-    margin: 1em 8%;
+    /* margin: 1em 8%; */
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
+    max-width: 1600px;
   }
   table {
     text-align: left;
@@ -210,6 +215,7 @@ const checkName = (id,name) => {
     border-collapse: collapse;
     border-radius: 30px;
     overflow: hidden;
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
   }
   
   #listAll td{
@@ -250,18 +256,18 @@ const checkName = (id,name) => {
         vertical-align: middle; 
     }
     .modal-container {
-        width: 600px;
+        max-width: 600px;
         padding: 20px 30px;
         background-color: #fff;
         border-radius: 20px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         margin: auto;
     }
-    .modal-header h3 {
+    /* .modal-header h3 {
         color: rgb(0, 0, 0);
         margin: 1em 0em;
         text-align: center;
-    }
+    } */
     .modal-body {
         margin: 20px 0;
     }

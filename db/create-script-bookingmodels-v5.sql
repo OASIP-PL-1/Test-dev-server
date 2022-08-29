@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`events` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+DROP TABLE IF EXISTS `bookingmodels`.`users` ;
 
 CREATE TABLE IF NOT EXISTS `bookingmodels`.`users` (
   `userId` INT NOT NULL auto_increment,
@@ -65,6 +66,7 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`users` (
   `userRole` ENUM('admin', 'lecturer', 'student') NOT NULL DEFAULT 'student',
   `createdOn` DATETIME NOT NULL DEFAULT now(),
   `updatedOn` DATETIME NOT NULL DEFAULT now(),
+  `userPassword` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`userId`),
   UNIQUE INDEX `name_UNIQUE` (`userName` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`userEmail` ASC) VISIBLE
@@ -96,6 +98,14 @@ values
 update eventCategories set eventCategoryDuration = 20 where eventCategoryId=2;
 select * from eventCategories;
 select * from events;
+
+insert  into users(userId,userName,userEmail,userRole,userPassword) 
+values 
+(1,'OASIP ADMIN','oasip.admin@kmutt.ac.th','admin','$argon2id$v=19$m=4096,t=3,p=1$sYXzbUOqBoHY1NfhJ8cjnw$H6+adWySiFPgcUogJK3hEhcF6Y4fusy7tcXYEL+f0cQ'),
+(2,'Somchai Jaidee','somchai.jai@kmutt.ac.th','lecturer','$argon2id$v=19$m=4096,t=3,p=1$dmsOy7LPTjmooPu+P2oTZA$NZFTFd3f0K1Sp19aaUwyn3jgiy15yFcXhp8E4/1yXoI'),
+(3,'Komkrid Rakdee','komkrid.rak@mail.kmutt.ac.th','student','$argon2id$v=19$m=4096,t=3,p=1$8W61ZOC5RU7sJP5kKRbSqg$OLwZNPeMqxp+g0Vbn+odcA47XMClFN+IswTueVah7F0'),
+(4,'สมเกียรติ ขยันเรียน','somkiat.kay@kmutt.ac.th','student','$argon2id$v=19$m=4096,t=3,p=1$gBqgjspF45FcIKQEw8GmaQ$alrOCZ0YrDqOu8/aZiLDMGZo4vFkSEAXA0YoHhY0BDQ');
+
 
 -- DROP USER 'dev'@'%';
 CREATE USER 'dev'@'%' IDENTIFIED BY 'int221';

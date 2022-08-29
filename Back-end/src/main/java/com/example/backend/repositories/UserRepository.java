@@ -17,12 +17,35 @@ public interface UserRepository extends JpaRepository <User, Integer> {
     public User findByUserName(String userName);
     public User findByUserEmail(String userEmail);
 
-    @Query(value = "INSERT INTO users(userName,userEmail,userRole) values (:userName, :userEmail, :userRole)",
+    @Query(value = "INSERT INTO users(userName,userEmail,userRole,userPassword) values (:userName, :userEmail, :userRole, :userPassword)",
             nativeQuery = true)
     @Modifying
     @Transactional
     public void createUser(@Param("userName")String userName,
                            @Param("userEmail")String userEmail,
-                           @Param("userRole")String userRole);
+                           @Param("userRole")String userRole,
+                           @Param("userPassword")String userPassword);
 
+    @Query(value = "UPDATE users SET userName = :userName, userEmail = :userEmail, userRole = :userRole, updatedOn = now() WHERE userId = :userId",
+            nativeQuery = true)
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public void editUser(@Param("userId") int userId,
+                         @Param("userName") String userName,
+                         @Param("userEmail") String userEmail,
+                         @Param("userRole") String userRole);
+
+    @Query(value="COMMIT", nativeQuery = true)
+    @Transactional
+    public void commit();
+
+    @Query(value = "SELECT COUNT(*) FROM users WHERE userName = :userName AND userId != :userId",
+           nativeQuery = true)
+    public int checkUserNameExisted(@Param("userName") String userName,
+                                    @Param("userId") int userId);
+
+    @Query(value = "SELECT COUNT(*) FROM users WHERE userEmail = :userEmail AND userId != :userId",
+            nativeQuery = true)
+    public int checkUserEmailExisted(@Param("userEmail") String userEmail,
+                                    @Param("userId") int userId);
 }

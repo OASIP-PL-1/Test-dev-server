@@ -71,7 +71,7 @@
         border-radius: 30px;
         padding: 4px 20px 20px 20px;
         height: 600px;
-        width: 200px;
+        max-width: 200px;
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
         -o-object-fit: cover;
         object-fit: cover;

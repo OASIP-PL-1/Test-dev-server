@@ -1,22 +1,28 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.UserAddDTO;
-import com.example.backend.dtos.UserAllDTO;
-import com.example.backend.dtos.UserDTO;
+import com.example.backend.dtos.*;
 import com.example.backend.entities.Role;
 import com.example.backend.entities.User;
+import com.example.backend.exception.CustomException;
+import com.example.backend.exception.ErrorDetails;
 import com.example.backend.repositories.UserRepository;
+import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -29,6 +35,9 @@ public class UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    Argon2PasswordEncoder encoder = new Argon2PasswordEncoder();
+
+
     //GET method
     public List<UserAllDTO> getUserAllDTO() {
         List<User> users = repository.findAll(Sort.by("userName").ascending());
@@ -37,17 +46,64 @@ public class UserService {
 
     public UserDTO getUserDTOById(int userId) {
         User user = repository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen user is not existed."));
+//        User user = repository.findById(userId).orElseThrow(new ErrorDetails());
+//        User user = repository.findById(userId).orElseThrow(() -> new NotFoundException(404,HttpStatus.NOT_FOUND,"This user id is not existed."));
         return modelMapper.map(user, UserDTO.class);
     }
 
+
+    //POST method
     public int createUser(UserAddDTO newUser) {
-        repository.createUser(newUser.getUserName().trim(), newUser.getUserEmail().trim(), newUser.getUserRole().toString().trim());
+        repository.createUser(newUser.getUserName().trim(), newUser.getUserEmail().trim(), newUser.getUserRole().trim(), encoder.encode(newUser.getUserPassword().trim()));
+        repository.findTopByOrderByIdDesc().getId();
         return repository.findTopByOrderByIdDesc().getId();
     }
 
+//    public ErrorDetails logIn(UserLogin login){
+//        Map message = new HashMap<String,String>();
+//        int statusCode;
+//        HttpStatus httpStatus;
+//        User user = repository.findByUserEmail(login.getUserEmail().trim());
+//        if(user == null){
+
+//            message.put("message", "A user with specified email DOES NOT existed.");
+//            statusCode = 404;
+//            httpStatus = HttpStatus.NOT_FOUND;
+//        } else if(!user.getUserPassword().equals(login.getUserPassword().trim())){
+//            message.put("message", "Password NOT matched.");
+//            statusCode = 401;
+//            httpStatus = HttpStatus.UNAUTHORIZED;
+//        } else {
+//            message.put("message", "Password matched.");
+//            statusCode = 200;
+//            httpStatus = HttpStatus.ACCEPTED;
+//        }
+//        return new ErrorDetails(new Date(),statusCode,httpStatus,message);
+//    }
+
+    //DELETE method
     public void deleteUser(int userId){
         repository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Choosen user is not existed."));
         repository.deleteById(userId);
     }
 
+    //PUT method
+    public UserDTO editUser(UserUpdateDTO updateUser) {
+        User oldUser = repository.findById(updateUser.getId()).orElseThrow();
+        if(repository.checkUserNameExisted(updateUser.getUserName(), updateUser.getId()) > 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This user name is already existed");
+        if(repository.checkUserEmailExisted(updateUser.getUserEmail(), updateUser.getId()) > 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This user email is already existed");
+        if(updateUser.getUserName().equals(oldUser.getUserName()) &&
+                updateUser.getUserEmail().equals(oldUser.getUserEmail()) &&
+                updateUser.getUserRole().toString().equals(oldUser.getUserRole().toString())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"There aren't any changes.");
+        repository.editUser(updateUser.getId(), updateUser.getUserName(), updateUser.getUserEmail(),updateUser.getUserRole().toString());
+//        repository.flush();
+//        repository.saveAndFlush(new User(updateUser.getId(),updateUser.getUserName(),updateUser.getUserEmail(),updateUser.getUserRole(), new Date(), new Date(), "1234"));
+//        repository.commit();
+
+//        User user = repository.findById(updateUser.getId()).orElseThrow();
+//        System.out.println(user);
+//        System.out.println(modelMapper.map(user, UserDTO.class));
+//        return modelMapper.map(user, UserDTO.class);
+        return getUserDTOById(updateUser.getId());
+    }
 }

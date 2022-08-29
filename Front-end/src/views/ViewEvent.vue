@@ -133,7 +133,7 @@
               @categoryName="getEventByCategory"
               @reset="getEvents"/>
             </td>
-            <td>
+            <td style="padding-left: 20px">
               <ShowListEvent :events="events" :filterMode="filterMode"/>
             </td>
           </tr>
@@ -157,7 +157,7 @@
     object-fit: cover;
   }
   td {
-    padding: 0px 20px;
+    /* padding: 0 0 0 20px; */
     width: auto;
     -o-object-fit: cover;
     object-fit: cover;

@@ -35,8 +35,11 @@ public class User {
     @Column(name = "updatedOn", nullable = false)
     private Date updatedOn;
 
+    @Column(name = "userPassword", nullable = false, length = 90)
+    private String userPassword;
+
     public String toString(){
-        return "User{" + userName + " " + userEmail + " " + userRole +"}";
+        return "User{" + userName + " " + userEmail + " " + userRole + " " + createdOn + " " + updatedOn + "}";
     }
 
 }

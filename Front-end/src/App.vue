@@ -1,5 +1,11 @@
 <script setup>
-import icon_Menu from './components/icons/menu.vue'
+    import icon_Menu from './components/icons/menu.vue'
+    import './style.css'
+
+    const menuToggle = () => {
+        const toggleMenu = document.querySelector(".menu");
+        toggleMenu.classList.toggle("active");
+      }
 </script>
  
 <template>
@@ -8,19 +14,49 @@ import icon_Menu from './components/icons/menu.vue'
             <span class="navtop" style="display: inline;">
                 <span class="navhover">
                     <router-link :to="{name:'Home'}">
-                    <img src="./assets/logo.png" alt="logo"
-                    style="padding-left: 2em; padding-top: 10px; max-width: 450px; min-width: 250px; width: 10%; display: inline;">
+                        <img src="./assets/logo.png" alt="logo"
+                        style="float: left; padding: 10px 0 10px 30px; max-width: 450px; min-width: 250px; width: 10%; display: inline;">
                     </router-link>
-                    <span style="color: #FFCB4C; font-size: 10px">v1.1.21.7</span>
+                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.25.10</span>
                     <span class="dropdown">
                         <p style="float:right;" class="dropbtn"><icon_Menu/></p>
                         <span class="dropdown-content">
-                            <router-link :to="{name:'About'}"><p style="float:right;">About</p></router-link>
+                            <span><p style="float:right;">
+                                <div class="action">
+                                    <div class="profile" @click="menuToggle();">
+                                        <img src="./assets/icons/account.png"/>
+                                    </div>
+                                    <span class="menu">
+                                    <h3><b>FirstName</b></h3>
+                                        <ul>
+                                            <li>
+                                                <img src="./assets/icons/profile.png" /><router-link :to="{name:'LoginUser'}">My profile</router-link>
+                                            </li>
+                                            <li>
+                                                <img src="./assets/icons/editUser.png" /><router-link :to="{name:'LoginUser'}">Edit profile</router-link>
+                                            </li>
+                                            <!-- <li>
+                                                <img src="./assets/icons/envelope.png" /><a href="#">Inbox</a>
+                                            </li>
+                                            <li>
+                                                <img src="./assets/icons/settings.png" /><a href="#">Setting</a>
+                                            </li>
+                                            <li><img src="./assets/icons/question.png" /><a href="#">Help</a></li> -->
+                                            <li>
+                                                <img src="./assets/icons/logout.png" /><router-link :to="{name:'Home'}">Logout</router-link>
+                                            </li>
+                                        </ul>
+                                    </span>
+                                </div>
+                                </p>
+                            </span>
+                            <router-link :to="{name:'LoginUser'}"><p style="float:right;">Login</p></router-link>
                             <router-link :to="{name:'CreateUser'}"><p style="float:right;">Sign Up</p></router-link>
-                            <router-link :to="{name:'ViewUser'}"><p style="float:right;">User</p></router-link>
-                            <router-link :to="{name:'AddNewEvent'}"><p style="float:right;">Book</p></router-link>
-                            <router-link :to="{name:'ViewEventCategory'}"><p style="float:right;">Category</p></router-link>
-                            <router-link :to="{name:'ViewEvent'}"><p style="float:right;">Event</p></router-link>
+                            <router-link :to="{name:'ViewEvent'}"><p style="float:left;">Event</p></router-link>
+                            <router-link :to="{name:'ViewEventCategory'}"><p style="float:left;">Category</p></router-link>
+                            <router-link :to="{name:'AddNewEvent'}"><p style="float:left;">Book</p></router-link>
+                            <router-link :to="{name:'ViewUser'}"><p style="float:left;">User</p></router-link>
+                            <router-link :to="{name:'About'}"><p style="float:left;">About</p></router-link>
                         </span>
                     </span> 
                 </span>
@@ -32,176 +68,9 @@ import icon_Menu from './components/icons/menu.vue'
     </div>
 </template>
  
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=K2D&display=swap');
-
-    template {
-        padding: 0;
-    }
-    body {
-        font-family: 'K2D', sans-serif;
-        background-image: url(./assets/background.png); 
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        /* margin-top: 10em; */
-        margin-left: 0;
-        overflow-x: hidden;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    .bg-home {
-        align-items: center;
-        width: 100vw;
-        margin: 0;
-        display: auto;
-    }
-    .navbar {
-        overflow: auto;
-        position: fixed;
-        background-color: #3333A3;
-        top: 0;
-        width: 100%;
-        color: white;
-        padding-top: 0.5em;
-        padding-bottom: 0.5em;
-    }
-    .navbar p {
-        float: right;
-        display: block;
-        font-weight: bold;
-        text-align: center;
-        padding: 10px 30px;
-        text-decoration: none;
-        margin: 0;
-        font-size: 18px;
-    }
-    .navtop {
-        padding-top: 2em;
-    }
-    a {
-        color: white;
-    }
-    .navhover a:hover:not([disabled]) {
-        color: #FFA21A;
-    }
-    .router-link-active {
-        color: #FFCB4C;
-    }
-    button {
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
-        color: white;
-    }
-    button:hover:not([disabled]) {
-        background-color: #FFA21A;
-        color: white;
-        transition-duration: .1s;
-    }
-    button:active:not([disabled]){
-        background-color: #3333A3;
-        color: white;
-        transition-duration: .1s;
-    }
-    .button-18 {
-        align-items: center;
-        background-color: #5C5CFF;
-        border: 0;
-        border-radius: 100px;
-        box-sizing: border-box;
-        color: #ffffff;
-        cursor: pointer;
-        display: inline-flex;
-        font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        justify-content: center;
-        line-height: 20px;
-        max-width: 480px;
-        min-height: 40px;
-        min-width: 0px;
-        overflow: hidden;
-        padding: 0px;
-        padding-left: 20px;
-        padding-right: 20px;
-        text-align: center;
-        touch-action: manipulation;
-        transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, box-shadow 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s;
-        user-select: none;
-        -webkit-user-select: none;
-        vertical-align: middle;
-    }
-    .button-18:disabled {
-        background-color: #c2c2ff;
-    }
-    .subText{
-        color: gray;
-        text-align: center;
-    }
-    .negative {
-        background-color: #fff3d5;
-        color: orangered;
-    }
-    hr {
-        border: 1px solid #5C5CFF;
-    }
-    @media only screen and (min-width: 1000px) {
-        .dropdown .dropbtn{
-            display: none;
-        }
-    }
-    .dropdown-content {
-        display: inline;
-    }
-    /* -------- Drop down ----------- */
-    
-    @media only screen and (max-width: 1000px) {
-        .dropdown {
-            float: right;
-            overflow: hidden;
-        }
-
-        .dropdown {
-            border: none;
-            outline: none;
-            color: white;
-            /* padding: 10px 10px; */
-            background-color: inherit;
-            font-family: inherit;
-            margin: 0;
-        }
-
-        /* .navbar a:hover, .dropdown:hover .dropbtn {
-            background-color: red;
-        } */
-
-        .dropdown-content {
-            display: none;
-            /* position: absolute; */
-            /* background-color: #f9f9f9; */
-            /* min-width: 160px; */
-            /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
-            z-index: 1;
-        }
-
-        .dropdown-content a {
-            float: none;
-            /* color: black; */
-            /* padding: 10px 10px; */
-            text-decoration: none;
-            display: block;
-            text-align: left;
-        }
-
-        /* .dropdown-content a:hover {
-            background-color: #ddd;
-        } */
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-    }    
+<style scoped>
+* {
+    margin: 0;
+    padding: 0;
+}
 </style>

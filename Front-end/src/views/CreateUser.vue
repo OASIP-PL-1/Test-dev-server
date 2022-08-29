@@ -1,6 +1,9 @@
 <script setup>
     import { ref, computed, onMounted } from 'vue'
     import {useRouter} from 'vue-router'
+    import {useListUser} from '../state/getListUser.js'
+
+    const getListUser = useListUser() 
 
 
     const myRouter = useRouter()
@@ -8,35 +11,37 @@
     const goThisUser = (newId) => myRouter.push({name: 'ThisUser', params:{userId:newId}})
 
     // -- get list All User for check unique name and email --
-    const users = ref()
-    const loading = ref()
-    const message = ref()
+    // const users = ref()
+    // const loading = ref()
+    // const message = ref()
 
-    const getUsers = async () => {
-        loading.value = true
-        message.value = "loading..."
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
-          .catch((error)=> {
-            message.value = "Not Found Backend Server!!!"
-            console.log(error)
-            console.log('GET List All User Fail')
-        });
-        users.value = await res.json()
-        loading.value = false
-        if(res.status==200){
-          console.log(`GET List All User OK`)
-          console.log(res.status)
-        }
-      }
-        onMounted(async () => {
-          await getUsers()
-      })
+    // const getUsers = async () => {
+    //     loading.value = true
+    //     message.value = "loading..."
+    //     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
+    //       .catch((error)=> {
+    //         message.value = "Not Found Backend Server!!!"
+    //         console.log(error)
+    //         console.log('GET List All User Fail')
+    //     });
+    //     users.value = await res.json()
+    //     loading.value = false
+    //     if(res.status==200){
+    //       console.log(`GET List All User OK`)
+    //       console.log(res.status)
+    //     }
+    //   }
+    onMounted(async () => {
+      await getListUser.getUserCheckListCreate()
+    })
 
     // -- Create New User --
     const newUser = ref({
         name : "",
         email: "",
-        role : "student"
+        role : "student",
+        password : '',
+        confirmPW : '',
     })
 
     const createNewUser = async (user)=>{
@@ -49,7 +54,8 @@
         body: JSON.stringify({
             userName:user.name.trim(),
             userEmail:user.email.trim(),
-            userRole:user.role
+            userRole:user.role,
+            userPassword:user.password
         })
       }).catch(error => console.log(error));
       console.log(res.status)
@@ -59,6 +65,8 @@
                 goThisUser(newId)
                 console.log('Create New User OK')
             }else if(res.status===400){
+                console.log(res)
+                console.log(res.message)
                 console.log("Cannot Create New User : The data is incorrect")
             }else if(res.status===414){
                 console.log("Cannot Create New User : The data length in the input field is too large. Please try again.")
@@ -74,20 +82,27 @@
       newUser.value = {
         name : "",
         email: "",
-        role : "student"
+        role : "student",
+        password : "",
+        confirmPW :"",
       }
       matchNameStatus.value = false
       matchEmailStatus.value = false
     }
 
-    // Validate check
+    // ----- Validate check -----
 
     // - ถ้าเงื่อนไขเป็น false ทั้งหมดถึงจะให้ sign up ได้ (:disabled=true/false)
     const checkBeforeAdd = computed(()=>{
+      //true = Invalid
       return newUser.value.name.trim().length === 0
         || newUser.value.email.trim().length === 0
+        || newUser.value.password.length === 0
+        || newUser.value.confirmPW.length === 0
         || emailStatus.value
         || matchNameStatus.value || matchEmailStatus.value
+        || !passwordStatus.value || !(newUser.value.password === newUser.value.confirmPW)
+        || matchConfirmPassword.value === false
     })
 
     // - check ชื่อซ้ำ 
@@ -95,11 +110,11 @@
     const checkMatchName = (name) => {
       name = name.trim()
       if(name.length > 0){
-        const matchName = users.value.filter((user) => user.userName.replace(' ','').toLowerCase() === name.replace(' ','').toLowerCase())
+        const matchName = getListUser.userCheckListCreate.filter((user) => user.userName.replace(' ','').toLowerCase() === name.replace(' ','').toLowerCase())
         //true = ชื่อซ้ำ 
         matchName.length > 0 ? matchNameStatus.value = true : matchNameStatus.value = false
       }else{
-        matchEmailStatus.value = false
+        matchNameStatus.value = false
       }
     }
 
@@ -108,7 +123,7 @@
     const checkMatchEmail = (email) => {
       email = email.trim()
       if(email.length > 0){
-        const matchEmail = users.value.filter((user) => user.userEmail === email)
+        const matchEmail = getListUser.userCheckListCreate.filter((user) => user.userEmail === email)
         //true = email ซ้ำ
         matchEmail.length > 0 ? matchEmailStatus.value = true : matchEmailStatus.value = false
       }else{
@@ -116,7 +131,7 @@
       }
     }
 
-    // - check email
+    // - check format email
     const emailStatus = ref(false)
     const emailValidation = (inputEmail) => {
       inputEmail = inputEmail.trim()
@@ -127,19 +142,39 @@
             emailStatus.value = false
         }
     }
+
+    // const showInputConfirm = ref(false) 
+    // - check length password
+    const passwordStatus = ref(true) // true = Valid
+    const checkPassword = (password) => {
+      if(password.length < 8 ){
+        passwordStatus.value = false 
+        // showInputConfirm.value = false
+      }else{
+        passwordStatus.value = true
+        // showInputConfirm.value = true
+      }
+    }
+    
+    // - check ว่า password = confrim password ไหม?
+    const matchConfirmPassword = ref() // true = match
+    const checkComfirmPassword = (pw1,pw2) => pw1 === pw2 ? matchConfirmPassword.value = true : matchConfirmPassword.value = false
+    //Encode password
+
+
 </script>
  
 <template>
   <!-- <div style="margin-top: 10em;"> -->
-    <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
+    <div v-if="getListUser.loading" class="subText" style="margin-top: 2em;">{{getListUser.message}}</div>
     <div v-else>
-      <span class="thisEvent">
-    <button @click="goBack" class="button-18" role="button">Back</button></span>
+      <div class="thisEvent">
+        <button @click="goBack" class="button-18" role="button">Back</button>
+      </div>
     <div class="box">
       <h2>Sign Up</h2>
       <p>Fill the form to create an account.</p>
       <hr>
-      
       <table>
         <tr>
           <th><label for="username"><b>Username : </b></label></th>
@@ -165,23 +200,42 @@
             <span v-show="matchEmailStatus" class="warning"><br/>This email is already existed, please try another email</span>
           </td>
         </tr>
+        <tr>
+            <th><label for="password"><b>Password : </b></label></th>
+            <td style="text-align: right;"><span class="subText">8 - 14 character</span></td>
+          </tr>
+        <tr>
+          <td colspan="2">
+            <input type="password" placeholder="Enter password" name="password" 
+                  v-model="newUser.password" minlength="8" maxlength="14" size="50" @blur="checkPassword(newUser.password)" required >&ensp;
+            <span v-show="!passwordStatus" class="warning"><br/>Password should be at least 8 characters.</span>
+          </td>
+        </tr>
+        <tr>
+            <th><label for="confrim"><b>Confirm Password : </b></label></th>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="password" placeholder="Comfirm password" name="confrim" 
+                  v-model="newUser.confirmPW" minlength="8" maxlength="14" size="50" @blur="checkComfirmPassword(newUser.password, newUser.confirmPW)" required>&ensp;
+            <span v-show="matchConfirmPassword === false" class="warning"><br/>The password DOES NOT match</span>
+          </td>
+        </tr>
         <tr style="color:white; padding-top: 10px;">
           <td colspan="2">
             <b style="padding: 1em; ">Role :</b>
           <label>
             <input type="radio" id="1" name="role" value="admin" v-model="newUser.role"> Admin
           </label>
-          <label>
+          <label style="padding-left: 2em">
             <input type="radio" id="2" name="role" value="lecturer" v-model="newUser.role"> Lecturer
           </label>
-          <label>
+          <label style="padding-left: 2em">
             <input type="radio" id="3" name="role" value="student" v-model="newUser.role" checked> Student
           </label>
           </td>
         </tr>
       </table>
-      
-        <br>
         <br>
       <div class="button-center">
         <button type="submit" class="button-18" @click="createNewUser(newUser)" :disabled="checkBeforeAdd" style="width: 100%;">Sign Up</button>
@@ -202,7 +256,7 @@
     p, b, th {
         color: white;
     }
-    input, label {
+    input {
         border-radius: 10px;
         padding: 0.5em;
         margin: 0.25em 0 ;
@@ -254,8 +308,7 @@
       object-fit: cover;
     }
     .thisEvent {
-      padding-left: 2em;
-      padding-right: 2em;
+      padding: 0 2em;
     }
     .button-right {
       text-align: center;
@@ -266,4 +319,8 @@
     span{
       font-size: smaller;
     }
+    /* input:invalid {
+      border: red 1px solid;
+    } */
+ 
 </style>

@@ -25,6 +25,10 @@ public class UserDTO {
         return ZonedDateTime.ofInstant(createdOn.toInstant(), ZoneId.of("Asia/Bangkok"));
     }
     public ZonedDateTime getUpdatedOn(){
-        return ZonedDateTime.ofInstant(createdOn.toInstant(), ZoneId.of("Asia/Bangkok"));
+        return ZonedDateTime.ofInstant(updatedOn.toInstant(), ZoneId.of("Asia/Bangkok"));
+    }
+
+    public String toString(){
+        return "User{" + userName + " " + userEmail + " " + userRole + " " + createdOn + " " + updatedOn + "}";
     }
 }

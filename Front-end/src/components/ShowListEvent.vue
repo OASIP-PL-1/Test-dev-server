@@ -48,7 +48,7 @@ const datetimeFormat = useDatetimeFormat()
 </template>
  
 <style scoped>
-  .category{
+  .category {
     background-color: antiquewhite;
     border-radius: 10px;
     margin-top: 5px;
@@ -74,7 +74,7 @@ const datetimeFormat = useDatetimeFormat()
     object-fit: cover;
  }
  .grid-container {
-    display: grid;
+   display: grid;
     border-radius: 20px;
     grid-template-columns: 340px 340px 340px;
     background-color: #9F9FF9;

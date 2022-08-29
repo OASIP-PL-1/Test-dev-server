@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const useDatetimeFormat = defineStore('counter', () => {
+export const useDatetimeFormat = defineStore('dateTime', () => {
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
     const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
 
