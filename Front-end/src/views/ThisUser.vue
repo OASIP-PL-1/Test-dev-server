@@ -67,7 +67,7 @@
     const goToViewUser = () => myRouter.push({ name: 'ViewUser'})
 
     // random image user 
-    const pathImg = (userId) => `/humans/human${userId%8+1}.png`
+    const pathImg = (userId) => `${import.meta.env.BASE_URL}humans/human${userId%8+1}.png`
 
     // DELETE User
     const removeUser = async () => {

@@ -94,7 +94,7 @@
           <label for="role"> Admin</label>&ensp;&ensp;&ensp;
           <input type="radio" id="2" name="role" value="lecturer" v-model="editingUser.userRole" :checked="editingUser.userRole==='lecturer'"> 
           <label for="role"> Lecturer</label>&ensp;&ensp;&ensp;
-          <input type="radio" id="3" name="role" value="student" v-model="editingUser.userRole" :checked="editingUser.userRole==='studnt'"> 
+          <input type="radio" id="3" name="role" value="student" v-model="editingUser.userRole" :checked="editingUser.userRole==='student'"> 
           <label for="role"> Student</label>
           <br>
           <div class="button-right">

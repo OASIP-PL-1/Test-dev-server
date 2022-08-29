@@ -32,7 +32,7 @@ import ThisUserVue from './ThisUser.vue';
         await getListUser.getUsers()
   })
     // random image user 
-    const pathImg = (userId) => `/humans/human${userId%8+1}.png`
+    const pathImg = (userId) => `${import.meta.env.BASE_URL}humans/human${userId%8+1}.png`
 
     const myRouter = useRouter()
     const goToThisUser = (id) => myRouter.push({ name: 'ThisUser', params:{userId:id}})
