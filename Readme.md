@@ -1,4 +1,4 @@
-# วิธี run dev server (แบบมี Reverse Proxy แล้ว)
+# วิธี run dev server (แบบมี Reverse Proxy , HTTPS แล้ว)
 *ช่วงแรก* : ที่เข้า vm ให้ `ssh-keygen` แล้ว copy `id_rsa.pub` ใน `~/.ssh` ไปใส่ใน link git ที่จะ pull project 
 ``` 
 git clone git@github.com:OASIP-PL-1/Test-dev-server.git
@@ -106,14 +106,18 @@ services:
 
   proxy:
     container_name: reverse-proxy
-    image: nginx
-    restart: always
+    image: nginx:stable-alpine
+    # restart: always
+    restart: unless-stopped
     depends_on:
       - frontend-app
     ports:
+      - 443:443
       - 80:80
     volumes:
-      - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+      # - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+      - ./dohttps/nginx/config/conf.d/default.conf:/etc/nginx/conf.d/default.conf:rw
+      - ./dohttps/nginx/ssl:/etc/ssl/:rw
 ```    
       
 ### 1. สร้าง database container ใน docker-compose.yml
@@ -332,33 +336,44 @@ server {
 ```yml
   proxy:
     container_name: reverse-proxy
-    image: nginx
-    restart: always
+    image: nginx:stable-alpine
+    # restart: always
+    restart: unless-stopped
     depends_on:
       - frontend-app
     ports:
+      - 443:443
       - 80:80
     volumes:
-      - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+      # - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+      - ./dohttps/nginx/config/conf.d/default.conf:/etc/nginx/conf.d/default.conf:rw
+      - ./dohttps/nginx/ssl:/etc/ssl/:rw
 ```
 
 ### 4.1 `nginx.conf` กำหนดการตั้งค่าของ reverse Proxy 
+- (มีการเปลี่ยนไฟล์ .conf จาก `nginx.conf` เป็น `default.conf` ใน dohttps/nginx/config/conf.d)
 - กำหนด url ให้ตรงกับ port ภายใน container ของ frontend และ backend
+- เพิ่ม ssl สำหรับการ Implement HTTTPS
+- เพิ่ม `ip21pl1.crt` , `ip21pl1.key` ใน ./dohttps/nginx/ssl
 ```conf 
-    upstream frontend-server {
-        server frontend-app:80 ;
-    }
-
-    upstream backend-server {
-        server backend-app:8080 ;
-    }
-
-    server {
+server{ #port 80
         listen 80;
-        listen [::]:80;
+        rewrite ^/(.*)$ https://$host/pl1/$1 permanent;
+}
+server{ #port 443
+        listen 443 ssl;
         server_name localhost;
-        
+        ssl_certificate /etc/ssl/ip21pl1.crt;   #The crt file storage path of nginx for ssl certificate of domain name application
+        ssl_certificate_key /etc/ssl/ip21pl1.key;      #Storage path of nginx key file of ssl certificate for domain name application
 
+        ssl_session_cache    shared:SSL:1m;
+        ssl_session_timeout  5m;
+
+     # Specify the password as a format supported by openssl
+        ssl_protocols TLSv1.2;
+
+        ssl_ciphers  HIGH:!aNULL:!MD5;  # Password encryption method
+        ssl_prefer_server_ciphers  on;
         location / {
             proxy_pass http://frontend-server;
         }
@@ -366,11 +381,20 @@ server {
         location /api {
             proxy_pass http://backend-server;
         }
-        
+}
+upstream frontend-server {
+        server frontend-app:80 ;
     }
+
+upstream backend-server {
+        server backend-app:8080 ;
+    }
+
 ```
+
 
 ### Reference
 - วิธีสร้าง container database-backend  ให้เชื่อมต่อกันได้ : https://www.bezkoder.com/docker-compose-spring-boot-mysql/
 - วิธีสร้าง container frontend : https://v2.vuejs.org/v2/cookbook/dockerize-vuejs-app.html
 - แก้ปัญหา refresh หน้าเว็บไม่ได้ nginx https://stackoverflow.com/questions/17798457/how-can-i-make-this-try-files-directive-work
+- การ Implement HTTPS และขอ certificate : https://mailkmuttacth.sharepoint.com/:f:/s/1-2565_INT307SecurityI/EkGyj5CiK01Png1jfep1vqEBA1o-U3v1e1QvIGDiBtywog?e=PqBFqe
