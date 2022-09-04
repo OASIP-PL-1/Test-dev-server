@@ -64,11 +64,11 @@ services:
       # - "./dohttps/nginx/config/conf.d/default.conf:/etc/nginx/conf.d/default.conf:rw"
       # - "./dohttps/nginx/logs:/var/log/nginx/:rw"
       # - "./dohttps/nginx/ssl:/ssl/:rw"
-      - ./dohttps/nginx/config/conf.d:/etc/nginx/conf.d
-      - ./dohttps/nginx/ssl:/etc/ssl:rw
-    links:
-     - frontend-app
-     - backend-app
+      - ./dohttps/nginx/config/conf.d/default.conf:/etc/nginx/conf.d/default.conf:rw
+      - ./dohttps/nginx/ssl:/etc/ssl/:rw
+    # links:
+    #  - frontend-app
+    #  - backend-app
 
 
       
