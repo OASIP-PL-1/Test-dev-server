@@ -11,7 +11,7 @@
 
     const loginUser = async (user)=>{
       console.log(user)
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/match`,{
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/login`,{
         method:'POST',
         headers:{
           'content-type':'application/json'
