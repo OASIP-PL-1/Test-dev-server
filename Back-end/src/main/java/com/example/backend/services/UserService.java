@@ -3,29 +3,25 @@ package com.example.backend.services;
 import com.example.backend.dtos.*;
 import com.example.backend.entities.Role;
 import com.example.backend.entities.User;
-import com.example.backend.exception.CustomException;
-import com.example.backend.exception.ErrorDetails;
 import com.example.backend.repositories.UserRepository;
-import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
 
@@ -36,6 +32,7 @@ public class UserService {
     private ModelMapper modelMapper;
 
     Argon2PasswordEncoder encoder = new Argon2PasswordEncoder();
+//    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
     //GET method
@@ -106,4 +103,25 @@ public class UserService {
 //        return modelMapper.map(user, UserDTO.class);
         return getUserDTOById(updateUser.getId());
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+//        System.out.println("UserService : LoadUserByUsername");
+        User user = repository.findByUserEmail(userEmail);
+        System.out.println("UserServiceLoadByUserName: " + userEmail);
+//        if(user==null) user = repository.findById(8).orElseThrow();
+        if(user==null) throw new ResourceNotFoundException();
+//        System.out.println(user.getUserName());
+//        Role[] roles = Role.values();
+        ArrayList<SimpleGrantedAuthority> role = new ArrayList<>();
+//        for (Role r : roles) {
+//            role.add(new SimpleGrantedAuthority(r.toString()));
+//        }
+        role.add(new SimpleGrantedAuthority(user.getUserRole().toString()));
+        System.out.println(role);
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUserEmail(), user.getUserPassword(), role);
+        System.out.println(userDetails.getPassword());
+        return userDetails;
+    }
+
 }

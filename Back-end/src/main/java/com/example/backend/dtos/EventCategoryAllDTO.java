@@ -15,7 +15,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventCategoryAllDTO {
-    @Min(value = 1, message = "The least id number is 1.")
+//    @Min(value = 1, message = "The least id number is 1.")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
@@ -23,7 +23,7 @@ public class EventCategoryAllDTO {
     @Size(max = 100, message = "Event category's name is too long, maximum 100 characters.")
     private String categoryName;
 
-    @NotBlank(message = "Event category's description is required.")
+//    @NotBlank(message = "Event category's description is required.")
     @Size(max = 500, message = "Event category's description is too long, maximum 500 characters.")
     private String categoryDescription;
 

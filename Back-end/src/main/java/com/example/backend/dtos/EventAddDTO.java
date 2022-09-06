@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAddDTO {
-    @Min(value = 1, message = "The least id number is 1.")
+//    @Min(value = 1, message = "The least id number is 1.")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
@@ -29,10 +29,10 @@ public class EventAddDTO {
     private String bookingEmail;
 
     @NotNull(message = "Start time is required.")
-    @Future(message = "Selecteed date must be in the future.")
+    @Future(message = "Selected date must be in the future.")
     private Date startTime;
 
-    @NotBlank(message = "Event's note is required!")
+//    @NotBlank(message = "Event's note is required!")
     @Size(max = 500, message = "Event's note is too long, maximum 500 characters.")
     private String notes;
 
