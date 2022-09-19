@@ -2,7 +2,7 @@
     import {ref, onMounted} from 'vue'
     import {useListUser} from '../state/getListUser.js'
     import {useRoute, useRouter} from 'vue-router'
-import ThisUserVue from './ThisUser.vue';
+    import ThisUserVue from './ThisUser.vue';
 
     const getListUser = useListUser()
 
@@ -80,7 +80,7 @@ import ThisUserVue from './ThisUser.vue';
     }
     .boxUser {
         background-color:#b5b5f7;
-        padding: 1em 2em 1em 2em;
+        padding: 1em 2em 0.6em 2em;
         border-radius: 30px;
         /* min-height: 100px; */
         /* min-width: 200px; */

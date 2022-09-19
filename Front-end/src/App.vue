@@ -6,6 +6,7 @@
         const toggleMenu = document.querySelector(".menu");
         toggleMenu.classList.toggle("active");
       }
+    const removeToken = () => localStorage.removeItem('jwtToken')
 </script>
  
 <template>
@@ -17,39 +18,32 @@
                         <img src="./assets/logo.png" alt="logo"
                         style="float: left; padding: 10px 0 10px 30px; max-width: 450px; min-width: 250px; width: 10%; display: inline;">
                     </router-link>
-                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.25.10</span>
+                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.26.10</span>
+                    <span><p style="float:right;">
+                        <div class="action">
+                            <div class="profile" @click="menuToggle();">
+                                <img src="./assets/icons/account.png"/>
+                            </div>
+                            <span class="menu">
+                            <h3><b>FirstName</b></h3>
+                                <ul>
+                                    <li>
+                                        <img src="./assets/icons/profile.png" /><router-link :to="{name:'LoginUser'}">My profile</router-link>
+                                    </li>
+                                    <li>
+                                        <img src="./assets/icons/editUser.png" /><router-link :to="{name:'LoginUser'}">Edit profile</router-link>
+                                    </li>
+                                    <li>
+                                        <img src="./assets/icons/logout.png" /><router-link :to="{name:'Home'}" @click="removeToken()">Logout</router-link>
+                                    </li>
+                                </ul>
+                            </span>
+                        </div>
+                        </p>
+                    </span>
                     <span class="dropdown">
                         <p style="float:right;" class="dropbtn"><icon_Menu/></p>
                         <span class="dropdown-content">
-                            <span><p style="float:right;">
-                                <div class="action">
-                                    <div class="profile" @click="menuToggle();">
-                                        <img src="./assets/icons/account.png"/>
-                                    </div>
-                                    <span class="menu">
-                                    <h3><b>FirstName</b></h3>
-                                        <ul>
-                                            <li>
-                                                <img src="./assets/icons/profile.png" /><router-link :to="{name:'LoginUser'}">My profile</router-link>
-                                            </li>
-                                            <li>
-                                                <img src="./assets/icons/editUser.png" /><router-link :to="{name:'LoginUser'}">Edit profile</router-link>
-                                            </li>
-                                            <!-- <li>
-                                                <img src="./assets/icons/envelope.png" /><a href="#">Inbox</a>
-                                            </li>
-                                            <li>
-                                                <img src="./assets/icons/settings.png" /><a href="#">Setting</a>
-                                            </li>
-                                            <li><img src="./assets/icons/question.png" /><a href="#">Help</a></li> -->
-                                            <li>
-                                                <img src="./assets/icons/logout.png" /><router-link :to="{name:'Home'}">Logout</router-link>
-                                            </li>
-                                        </ul>
-                                    </span>
-                                </div>
-                                </p>
-                            </span>
                             <router-link :to="{name:'LoginUser'}"><p style="float:right;">Login</p></router-link>
                             <router-link :to="{name:'CreateUser'}"><p style="float:right;">Sign Up</p></router-link>
                             <router-link :to="{name:'ViewEvent'}"><p style="float:left;">Event</p></router-link>

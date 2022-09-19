@@ -18,6 +18,7 @@ body {
     overflow-x: hidden;
     -o-object-fit: cover;
     object-fit: cover;
+    cursor: url(../src/assets/icons/apple2.png), auto !important;
 }
 .bg-home {
     align-items: center;
@@ -61,6 +62,7 @@ a {
 button {
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
     color: white;
+    cursor: url(../src/assets/icons/apple.png), pointer !important;
 }
 button:hover:not([disabled]) {
     background-color: #FFA21A;
@@ -159,7 +161,7 @@ hr {
         /* padding: 10px 10px; */
         text-decoration: none;
         display: block;
-        text-align: left;
+        text-align: right;
     }
 
     /* .dropdown-content a:hover {
@@ -174,27 +176,36 @@ hr {
 /* profile account */
 .action {
     position: fixed;
-    top: 12px;
+    /* top: 12px; */
     right: 0px;
   }
   .action .profile {
     position: relative;
     width: 60px;
     height: 60px;
-    border-radius: 50%;
+    /* border-radius: 50%; */
     overflow: hidden;
-    cursor: pointer;
+    /* cursor: pointer; */
   }
   
   .action .profile img {
     position: absolute;
     top: 0;
     left: 0;
-    max-width: 40px;
+    max-width: 30px;
     /* height: 50%; */
     object-fit: cover;
-  }
-  
+}
+  .action .profile img:hover:not([disabled]) {
+        background-color: #FFA21A;
+        border-radius: 2em;
+        transition-duration: .1s;
+    }
+    .action .profile img:active:not([disabled]){
+        background-color: #FFCB4C;
+        border-radius: 2em;
+        transition-duration: .1s;
+    }
   .action .menu {
     position: absolute;
     top: 120px;
@@ -203,15 +214,16 @@ hr {
     background: #ECECFE;
     width: 150px;
     box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.075);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     transition: 0.5s;
     visibility: hidden;
     opacity: 0;
   }
+
   
   .action .menu.active {
-    top: 60px;
+    top: 50px;
     visibility: visible;
     opacity: 1;
   }
@@ -220,7 +232,7 @@ hr {
     content: "";
     position: absolute;
     top: -5px;
-    right: 10px;
+    right: 15px;
     width: 20px;
     height: 20px;
     background: #ECECFE;

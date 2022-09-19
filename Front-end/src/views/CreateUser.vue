@@ -49,7 +49,8 @@
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`,{
         method:'POST',
         headers:{
-          'content-type':'application/json'
+          'content-type':'application/json',
+          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
         },
         body: JSON.stringify({
             userName:user.name.trim(),

@@ -6,23 +6,40 @@ export const useListUser = defineStore('listuser',() => {
     const users = ref([])
     const loading =ref()
     const message = ref()
+    // const token = ref()
 
     const getUsers = async () => {
       loading.value = true
       message.value = "loading..."
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`,{
+        method: "GET",
+        headers:{
+          'Content-Type' : 'application/json',
+          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+        }
+      })
         .catch((error)=> {
-          message.value = "Not Found Backend Server!!!"
+          message.value = "Error Backend Server!!!"
           console.log(error)
           console.log('GET List All User Fail')
+         
       });
-      users.value = await res.json()
-      loading.value = false
+      console.log(res)
       console.log(res.status)
       if(res.status==200){
+        users.value = await res.json()
+        loading.value = false
         console.log(`GET List All User OK`)
         console.log(users.value)
+      }else if(res.status===401){
+        message.value = "Please login again"
+      }else{
+        message.value = "Not found Backend Server!!!"
       }
+      
+      
+
+      
     }
 
     // userCheckList for CreateUser

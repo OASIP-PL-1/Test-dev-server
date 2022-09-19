@@ -19,7 +19,13 @@
     const getThisUser = async () => {
         loading.value = true
         message.value = "loading..."
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${params.userId}`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${params.userId}`,{
+        method: "GET",
+        headers:{
+          'Content-Type' : 'application/json',
+          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+        }
+      })
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)

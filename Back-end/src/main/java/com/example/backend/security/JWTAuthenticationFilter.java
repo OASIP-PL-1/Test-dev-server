@@ -35,16 +35,16 @@ import java.util.stream.Collectors;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String token = request.getParameter("accessToken");
-        System.out.println("doFilter JWTFilter");
-        chain.doFilter(request,response);
-    }
+//    @Override
+//    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+//        String token = request.getParameter("accessToken");
+//        System.out.println("doFilter JWTFilter");
+//        chain.doFilter(request,response);
+//    }
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager){
         this.authenticationManager = authenticationManager;
-//        setFilterProcessesUrl("/api/login");
+//        setFilterProcessesUrl("/login");
     }
 
     @Override
@@ -53,9 +53,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        try{
 //            User creds = new ObjectMapper().readValue(request.getInputStream(), User.class);
 //            System.out.println(creds);
+//            UsernamePasswordAuthenticationToken a = new UsernamePasswordAuthenticationToken(
+//                    creds.getUserEmail(),
+//                    creds.getUserPassword(),
+//                    new ArrayList<>());
+//            System.out.println(a);
 //            return authenticationManager.authenticate(
 //                    new UsernamePasswordAuthenticationToken(
-//                            creds.getUserName(),
+//                            creds.getUserEmail(),
 //                            creds.getUserPassword(),
 //                            new ArrayList<>())
 //            );

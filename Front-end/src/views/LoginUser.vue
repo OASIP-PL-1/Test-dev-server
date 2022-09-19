@@ -1,6 +1,7 @@
 <script setup>
     import { ref, computed} from 'vue'
     import {useRouter} from 'vue-router'
+    import {useListUser} from '../state/getListUser.js'
 
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
@@ -10,11 +11,10 @@
     const message = ref("")
 
     const loginUser = async (user)=>{
-      console.log(user)
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/login`,{
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL.slice(0, -4)}/login`,{
         method:'POST',
         headers:{
-          'content-type':'application/json'
+          'content-type':'application/json',
         },
         body: JSON.stringify({
             userEmail:user.email.trim(),
@@ -23,21 +23,27 @@
       }).catch(error => console.log(error))
 
       const respone = await res.json()
-      console.log(respone.status)
-      console.log(respone.message.message)
-      message.value = respone.message.message
+
+      console.log(respone)
+      // console.log(respone.status)
+      // console.log(respone.message.message)
+      // console.log(respone.message.accessToken)
+
       if(res.status===400){
         console.log("Invalid Data")
       }
-            // if(respone.status===404){
-            //     console.log('A user with specified email DOES NOT existed.')
-            // }else if(respone.status===401){
-            //     console.log("Password NOT matched.")
-            // }else if(respone.status===200){
-            //     console.log("Password matched.")
-            // }else if(res.status===400){
-            //     console.log("Invalid Data")
-            // }
+        if(respone.status===404){
+          message.value = "A user with the specified email DOES NOT exist"
+        }else if(respone.status===401){
+          message.value = "Password Incorrect"
+        }else if(respone.status===200){
+          message.value = "Login Successful"
+          // localStorage
+          localStorage.setItem('jwtToken',respone.message.accessToken)
+          console.log(localStorage.getItem('jwtToken'))
+        }else if(res.status===400){
+          console.log("Invalid Data")
+        }
     }
 
     // ----- Validate check -----
@@ -91,12 +97,12 @@
           <td colspan="2">
             <input type="password" placeholder="Enter password" name="password" 
                    v-model="userLogin.password" minlength="8" maxlength="14" size="50" @blur=checkPassword(userLogin.password) required>&ensp;
-            <span v-show="!passwordStatus" class="warning"><br/>Password should be at least 8 characters.</span>
+            <span v-show="!passwordStatus" class="warning"><br/>At least 8 characters.</span>
           </td>
         </tr>
       </table>
       <br>
-      <span style="color: greenyellow;" v-if="message==='Password matched.'">{{message}}</span>
+      <span style="color: greenyellow;" v-if="message==='Login Successful'">{{message}}</span>
       <span style="color: red;" v-else>{{message}}</span>
       <div class="button-center">
         <button type="submit" class="button-18" @click="loginUser(userLogin)" :disabled="checkBeforeAdd" style="width: 100%;">Login</button>

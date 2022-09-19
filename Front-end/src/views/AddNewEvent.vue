@@ -12,7 +12,13 @@
     const getEventCategoryName = async () => {
         loading.value = true
         message.value = "loading..."
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`)
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`,{
+        method: "GET",
+        headers:{
+          'Content-Type' : 'application/json',
+          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+        }
+      })
         .catch((error)=> {
             message.value = "Not Found Backend Server!!!"
             console.log(error)
@@ -56,7 +62,13 @@
         const dateTime = new Date(newEvent.dateTime).toISOString()
         const startTime = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19)  
         //console.log(startTime)  //2022-05-26-04-00-00 (-7)
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`)
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`,{
+        method: "GET",
+        headers:{
+          'Content-Type' : 'application/json',
+          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+        }
+      })
             .catch((error)=> {
             message.value = "Not Found Backend Server!!!"
             console.log(error)
@@ -75,7 +87,13 @@
     const selectedDate = ref('')
 
     const getListOverlap = async (newEvent) => {
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/${newEvent.dateTime.substring(0,10)}`)
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/${newEvent.dateTime.substring(0,10)}`,{
+        method: "GET",
+        headers:{
+          'Content-Type' : 'application/json',
+          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+        }
+      })
                                 .catch((error)=> console.log(error));
         listOverlap.value = await res.json()
         console.log(res.status)
@@ -109,7 +127,8 @@
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`,{
                 method:'POST',
                 headers:{
-                'content-type':'application/json'
+                'content-type':'application/json',
+                'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
                 },
                 body: JSON.stringify({
                     bookingName: newEvent.bookingName.trim(),
