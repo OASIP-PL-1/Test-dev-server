@@ -4,6 +4,7 @@ import com.example.backend.repositories.UserRepository;
 import com.example.backend.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +14,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        configuration.setAllowedHeaders(List.of("Authorization","Content-type","IsRefreshToken"));
         http.csrf().disable();
         http.cors().and();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -48,8 +56,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests().antMatchers("/login").permitAll();
 //        http.authorizeRequests().antMatchers("/api/users/**").hasAnyAuthority("admin");
-        http.authorizeRequests().anyRequest().authenticated();
-//        http.authorizeRequests().antMatchers("/api/**").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/users/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/users/**").authenticated();
+//        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/users/**").authenticated();
+//        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/users/**").authenticated();
+//        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/users/**").authenticated();
+//        http.authorizeRequests().anyRequest().authenticated();
+        http.authorizeRequests().antMatchers("/api/**").permitAll();
     }
 
     @Bean

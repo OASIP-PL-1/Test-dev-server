@@ -16,14 +16,15 @@
     const getThisEvent = async () => {
         loading.value = true
         message.value = "loading..."
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
-    .catch((error)=> {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+    ).catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
     });
@@ -56,13 +57,15 @@ const selectedCategory = ref('')
 const selectedDate = ref('')
     
 const getListOverlap = async (editingEvent) => {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-edit-overlap/${editingEvent.id}/${editingEvent.date}`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      }).catch((error)=> console.log(error));
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-edit-overlap/${editingEvent.id}/${editingEvent.date}`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //        'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      ).catch((error)=> console.log(error));
     listOverlap.value = await res.json()
     console.log(res.status)
     if(res.status==200){
@@ -108,7 +111,7 @@ const getListOverlap = async (editingEvent) => {
                 method:'PUT',
                 headers:{
                 'content-type':'application/json',
-                'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+                // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
                 },
                 body: JSON.stringify({
                     id : editingEvent.id,
@@ -144,14 +147,15 @@ const getListOverlap = async (editingEvent) => {
         console.log(dateTime)
         const dateFormat = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19) 
         console.log(dateFormat) //2022-05-26-04-00-00 (-7)
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/edit/${id}/${dateFormat}`,{
-            method: "GET",
-            headers:{
-            'Content-Type' : 'application/json',
-            'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-            }
-        })
-            .catch((error)=> {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/edit/${id}/${dateFormat}`
+        // ,{
+        //     method: "GET",
+        //     headers:{
+        //     'Content-Type' : 'application/json',
+        //     'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+        //     }
+        // }
+        ).catch((error)=> {
                 message.value = "Not Found Backend Server!!!"
                 console.log(error)
             });
@@ -173,7 +177,7 @@ const getListOverlap = async (editingEvent) => {
             method: 'DELETE',
             headers:{
             'Content-Type' : 'application/json',
-            'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+            // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
             }
         }).catch(error => console.log(error) );
         console.log(res.status)

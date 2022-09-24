@@ -50,7 +50,6 @@
         method:'POST',
         headers:{
           'content-type':'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
         },
         body: JSON.stringify({
             userName:user.name.trim(),

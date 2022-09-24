@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.backend.exception.ErrorDetails;
 import org.hibernate.annotations.Filter;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,9 +32,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         System.out.println("dofilterInternal");
 //        filterChain.doFilter(request,response);
 //        System.out.println(request.getHeader("Authorization"));
-        if (request.getServletPath().equals("/login")){
-            filterChain.doFilter(request,response);
-        } else {
+        if (request.getServletPath().equals("/login")) {
+            filterChain.doFilter(request, response);
+        }
+        else {
             String authorizationHeader = request.getHeader("Authorization");
             String testGetHeader = request.getHeader("Referer");
             System.out.println("accesstoken :" + authorizationHeader);

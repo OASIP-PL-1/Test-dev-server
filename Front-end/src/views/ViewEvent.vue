@@ -11,13 +11,15 @@
   const getEvents = async () => {
     loading.value = true
     message.value = "loading..."
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      )
       .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
@@ -35,13 +37,15 @@
   const getEventCategoryName = async () => {
     loading.value = true
     message.value = "loading..."
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      )
       .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
@@ -65,13 +69,15 @@
 
 // --- Filter ---
   const getPastEvent = async () => {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/past`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/past`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
@@ -86,13 +92,15 @@
   }
 
   const getUpcomingEvent = async () => {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/upcoming`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/upcoming`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
@@ -108,13 +116,15 @@
   }
 
   const getEventByDate = async (date) => {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/date/${date}`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/date/${date}`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
@@ -131,13 +141,15 @@
 
   const getEventByCategory = async (id) => {
     if(id > 0){
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/category/${id}`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/category/${id}`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)

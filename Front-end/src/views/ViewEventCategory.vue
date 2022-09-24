@@ -8,14 +8,15 @@ const message = ref()
 const getEventCategories = async () => {
     loading.value = true
     message.value = "loading..."
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`,{
-        method: "GET",
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        }
-      })
-      .catch((error)=> {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`
+    // ,{
+    //     method: "GET",
+    //     headers:{
+    //       'Content-Type' : 'application/json',
+    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+    //     }
+    //   }
+      ).catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
     });
@@ -61,7 +62,7 @@ const updateCategory = async (category)=>{
     method:'PUT',
     headers:{
       'content-type':'application/json',
-      'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+      // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
     },
     body: JSON.stringify({
       id: category.id,
