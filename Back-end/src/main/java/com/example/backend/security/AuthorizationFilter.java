@@ -32,6 +32,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         System.out.println("dofilterInternal");
 //        filterChain.doFilter(request,response);
 //        System.out.println(request.getHeader("Authorization"));
+        System.out.println(request.getServletPath());
         if (request.getServletPath().equals("/login")) {
             filterChain.doFilter(request, response);
         }

@@ -44,11 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        System.out.println("CORS configure");
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-type","IsRefreshToken"));
-        http.cors().configurationSource(request -> configuration).and();
+        // configuration.setAllowedOrigins(List.of("*"));
+        // configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        // configuration.setAllowedHeaders(List.of("Authorization","Content-type","IsRefreshToken"));
+        // http.cors().configurationSource(request -> configuration).and();
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //        http.addFilter(new JWTAuthenticationFilter(authenticationManagerBean()))

@@ -14,7 +14,7 @@
       const res = await fetch(`${import.meta.env.VITE_BASE_URL.slice(0, -4)}/login`,{
         method:'POST',
         headers:{
-          'content-type':'application/json',
+          'content-type':'application/json'
         },
         body: JSON.stringify({
             userEmail:user.email.trim(),

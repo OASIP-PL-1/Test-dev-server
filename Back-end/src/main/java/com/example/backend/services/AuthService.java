@@ -29,6 +29,7 @@ public class AuthService {
 //    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public ErrorDetails logIn(UserLoginDTO login){
+        System.out.println("ErrorDetails logIn");
         Map message = new HashMap<String,String>();
         int statusCode;
         HttpStatus httpStatus;
