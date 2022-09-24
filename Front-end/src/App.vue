@@ -18,7 +18,7 @@
                         <img src="./assets/logo.png" alt="logo"
                         style="float: left; padding: 10px 0 10px 30px; max-width: 450px; min-width: 250px; width: 10%; display: inline;">
                     </router-link>
-                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.26.10</span>
+                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.29.20</span>
                     <span><p style="float:right;">
                         <div class="action">
                             <div class="profile" @click="menuToggle();">
