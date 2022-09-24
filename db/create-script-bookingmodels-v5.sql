@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventCategories` (
   UNIQUE INDEX `eventCategoryName_UNIQUE` (`eventCategoryName` ASC) VISIBLE , 
   CONSTRAINT time_duration CHECK (eventCategoryDuration BETWEEN 1 AND 480)
 )
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 
 -- -----------------------------------------------------
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`events` (
     REFERENCES `bookingmodels`.`eventCategories` (`eventCategoryId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 DROP TABLE IF EXISTS `bookingmodels`.`users` ;
 
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`users` (
   UNIQUE INDEX `name_UNIQUE` (`userName` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`userEmail` ASC) VISIBLE
 )
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
