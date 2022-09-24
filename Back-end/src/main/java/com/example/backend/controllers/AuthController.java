@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 
 @EnableWebSecurity
 @RestController
-@RequestMapping("")
+@RequestMapping("/api")
 // @CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired

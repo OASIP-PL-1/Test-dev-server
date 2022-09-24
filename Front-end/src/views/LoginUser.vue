@@ -11,7 +11,7 @@
     const message = ref("")
 
     const loginUser = async (user)=>{
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL.slice(0, -4)}/login`,{
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/login`,{
         method:'POST',
         headers:{
           'content-type':'application/json'

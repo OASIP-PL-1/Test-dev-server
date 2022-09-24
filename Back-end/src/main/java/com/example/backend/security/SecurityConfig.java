@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.addFilter(new JWTAuthenticationFilter(authenticationManagerBean()))
         http.addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 //        http.authorizeRequests().anyRequest().permitAll();
-        http.authorizeRequests().antMatchers("/login").permitAll();
+        http.authorizeRequests().antMatchers("/api/login").permitAll();
 //        http.authorizeRequests().antMatchers("/api/users/**").hasAnyAuthority("admin");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/users/**").permitAll();
         http.authorizeRequests().antMatchers("/api/users/**").authenticated();
@@ -63,7 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/users/**").authenticated();
 //        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/users/**").authenticated();
 //        http.authorizeRequests().anyRequest().authenticated();
+        System.out.println("addFilter");
         http.authorizeRequests().antMatchers("/api/**").permitAll();
+        
     }
 
     @Bean
