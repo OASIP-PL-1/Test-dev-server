@@ -16,7 +16,7 @@ import java.util.Optional;
 @EnableWebSecurity
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
     private AuthService service;
