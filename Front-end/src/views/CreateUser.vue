@@ -2,35 +2,15 @@
     import { ref, computed, onMounted } from 'vue'
     import {useRouter} from 'vue-router'
     import {useListUser} from '../state/getListUser.js'
+    import { useSignIn } from '../state/signIn.js';
 
     const getListUser = useListUser() 
-
+    const signIn = useSignIn()
 
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
     const goThisUser = (newId) => myRouter.push({name: 'ThisUser', params:{userId:newId}})
 
-    // -- get list All User for check unique name and email --
-    // const users = ref()
-    // const loading = ref()
-    // const message = ref()
-
-    // const getUsers = async () => {
-    //     loading.value = true
-    //     message.value = "loading..."
-    //     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
-    //       .catch((error)=> {
-    //         message.value = "Not Found Backend Server!!!"
-    //         console.log(error)
-    //         console.log('GET List All User Fail')
-    //     });
-    //     users.value = await res.json()
-    //     loading.value = false
-    //     if(res.status==200){
-    //       console.log(`GET List All User OK`)
-    //       console.log(res.status)
-    //     }
-    //   }
     onMounted(async () => {
       await getListUser.getUserCheckListCreate()
     })
@@ -50,31 +30,42 @@
         method:'POST',
         headers:{
           'content-type':'application/json',
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
         },
         body: JSON.stringify({
-            userName:user.name.trim(),
-            userEmail:user.email.trim(),
-            userRole:user.role,
-            userPassword:user.password
+          userName:user.name.trim(),
+          userEmail:user.email.trim(),
+          userRole:user.role,
+          userPassword:user.password
         })
       }).catch(error => console.log(error));
       console.log(res.status)
-            if(res.status===200){
-                const newId = await res.json()
-                console.log(newId)
-                goThisUser(newId)
-                console.log('Create New User OK')
-            }else if(res.status===400){
-                console.log(res)
-                console.log(res.message)
-                console.log("Cannot Create New User : The data is incorrect")
-            }else if(res.status===414){
-                console.log("Cannot Create New User : The data length in the input field is too large. Please try again.")
-            }else if(res.status===404){
-                console.log("Cannot Create New User : Not Found! User id")
-            }else{
-                console.log("Error, Cannot Create New User")
-            }
+        if(res.status===200){
+          const newId = await res.json()
+          console.log(newId)
+          goThisUser(newId)
+          console.log('Create New User OK')
+        }else if(res.status===400){
+          console.log(res)
+          console.log(res.message)
+          console.log("Cannot Create New User : The data is incorrect")
+        }else if(res.status===414){
+          console.log("Cannot Create New User : The data length in the input field is too large. Please try again.")
+        }else if(res.status===404){
+          console.log("Cannot Create New User : Not Found! User id")
+        }else if(res.status===401){
+          let errorText = await res.text()
+          console.log(errorText)
+          if(errorText==="Token is expired."){
+            await signIn.sendRefreshToken()
+          }else{
+            console.log('Please login')
+          }
+        }else if(res.status===403){
+          console.log('Unauthorized access')
+        }else{
+          console.log("Error, Cannot Create New User")
+        }
       clearInput()
     }
     

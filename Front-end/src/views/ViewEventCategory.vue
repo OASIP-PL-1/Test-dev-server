@@ -1,5 +1,8 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue'
+import { useSignIn } from '../state/signIn.js';
+
+const signIn = useSignIn()
 
 const eventCategories = ref()
 const loading =ref()
@@ -9,22 +12,31 @@ const getEventCategories = async () => {
     loading.value = true
     message.value = "loading..."
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       ).catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
     });
-    eventCategories.value = await res.json()
-    loading.value = false
     console.log(res.status)
     if(res.status==200){
+      eventCategories.value = await res.json()
+      loading.value = false
       console.log(`GET List All Category OK`)
+    }else if(res.status===401){
+      let errorText = await res.text()
+      console.log(errorText)
+      if(errorText==="Token is expired."){
+        await signIn.sendRefreshToken()
+      }else{
+        message.value = "Please login again"
+      }
+    }else if(res.status===403){
+      console.log('Unauthorized access')
     }
 }
 onMounted(async () => {
@@ -62,7 +74,7 @@ const updateCategory = async (category)=>{
     method:'PUT',
     headers:{
       'content-type':'application/json',
-      // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+      'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
     },
     body: JSON.stringify({
       id: category.id,
@@ -90,6 +102,10 @@ const updateCategory = async (category)=>{
         console.log("Cannot Edit Category : The data length in the input field is too large. Please try again.")
       }else if(res.status===500){
         console.log('Error, Internal Server Error')
+      }else if(res.status===401){
+        console.log('Plase login')
+      }else if(res.status===403){
+        console.log('Unauthorized access')
       }else{console.log('Error, Cannot Edit Category')}
 }
 

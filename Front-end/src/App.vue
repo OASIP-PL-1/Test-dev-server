@@ -1,12 +1,44 @@
 <script setup>
     import icon_Menu from './components/icons/menu.vue'
+    import {ref, computed} from 'vue'
+    import {useRouter} from 'vue-router'
+    
     import './style.css'
+    import {useSignIn} from './state/signIn.js'
+
+    const signIn = useSignIn()
+    signIn.checkLogin()
+
+    const myRouter = useRouter()
+    const gotoHome = () => myRouter.push({name: 'Home'})
+    // const user = ref({
+    //     username:localStorage.getItem('userName'),
+    //     userRole:localStorage.getItem('userRole')
+    // })
+
+    // const statusLogin = computed(()=>{
+    //     return localStorage.getItem('userName')!==null 
+    //     || localStorage.getItem('userRole')!==null 
+    //     || localStorage.getItem('accessToken')!==null 
+    //     || localStorage.getItem('refreshToken')!==null 
+    // })
 
     const menuToggle = () => {
         const toggleMenu = document.querySelector(".menu");
         toggleMenu.classList.toggle("active");
       }
-    const removeToken = () => localStorage.removeItem('jwtToken')
+    const removeStorage = () => {
+        if(confirm("Are you sure want to Logout?") == true){
+            signIn.removeCookie('accessToken')
+            signIn.removeCookie('refreshToken')
+            signIn.removeCookie('userName')
+            signIn.removeCookie('userRole')
+            signIn.statusLogin = false
+            signIn.username = ""
+            signIn.role = ""
+            gotoHome()
+        }
+    }
 </script>
  
 <template>
@@ -18,14 +50,14 @@
                         <img src="./assets/logo.png" alt="logo"
                         style="float: left; padding: 10px 0 10px 30px; max-width: 450px; min-width: 250px; width: 10%; display: inline;">
                     </router-link>
-                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.29.20</span>
-                    <span><p style="float:right;">
+                    <span style="color: #FFCB4C; font-size: 10px; float: left;">v1.1.28.20</span>
+                    <span><p style="float:right;" v-show="signIn.statusLogin===true">
                         <div class="action">
                             <div class="profile" @click="menuToggle();">
                                 <img src="./assets/icons/account.png"/>
                             </div>
                             <span class="menu">
-                            <h3><b>FirstName</b></h3>
+                            <h3><b>{{signIn.username}}</b></h3>
                                 <ul>
                                     <li>
                                         <img src="./assets/icons/profile.png" /><router-link :to="{name:'LoginUser'}">My profile</router-link>
@@ -34,7 +66,7 @@
                                         <img src="./assets/icons/editUser.png" /><router-link :to="{name:'LoginUser'}">Edit profile</router-link>
                                     </li>
                                     <li>
-                                        <img src="./assets/icons/logout.png" /><router-link :to="{name:'Home'}" @click="removeToken()">Logout</router-link>
+                                        <img src="./assets/icons/logout.png" /><a @click="removeStorage()">Logout</a>
                                     </li>
                                 </ul>
                             </span>
@@ -44,7 +76,8 @@
                     <span class="dropdown">
                         <p style="float:right;" class="dropbtn"><icon_Menu/></p>
                         <span class="dropdown-content">
-                            <router-link :to="{name:'LoginUser'}"><p style="float:right;">Login</p></router-link>
+                            <a @click="removeStorage()" v-if="signIn.statusLogin===true" ><p style="float:right;">Logout</p></a>
+                            <router-link :to="{name:'LoginUser'}" v-else><p style="float:right;">Login</p></router-link>
                             <router-link :to="{name:'CreateUser'}"><p style="float:right;">Sign Up</p></router-link>
                             <router-link :to="{name:'ViewEvent'}"><p style="float:left;">Event</p></router-link>
                             <router-link :to="{name:'ViewEventCategory'}"><p style="float:left;">Category</p></router-link>

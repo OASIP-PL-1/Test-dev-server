@@ -3,6 +3,9 @@
     import {useRoute, useRouter} from 'vue-router'
     import EditEvent from '../components/EditEvent.vue';
     import {useDatetimeFormat} from '../state/datetimeFormat.js'
+    import { useSignIn } from '../state/signIn.js';
+
+    const signIn = useSignIn()
     
     const {params} = useRoute()
     const datetimeFormat = useDatetimeFormat()
@@ -17,25 +20,30 @@
         loading.value = true
         message.value = "loading..."
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
     ).catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
     });
-        thisEvent.value = await res.json()
-        console.log(res.status)
-        if(res.status===200){
+    console.log(res.status)
+    if(res.status===200){
+            thisEvent.value = await res.json()
             console.log(`GET This Event id: ${params.eventId} OK`)
             showDetail.value = true
         }else if(res.status===404){
             console.log(`Not Found! This Event id: ${params.eventId}`)
             showDetail.value = false
+        }else if(res.status===401){
+            console.log('Please login')
+            goToViewEvent()
+        }else if(res.status===403){
+            console.log('Unauthorized access')
+            goToViewEvent()
         }
         loading.value = false
     }
@@ -58,21 +66,24 @@ const selectedDate = ref('')
     
 const getListOverlap = async (editingEvent) => {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-edit-overlap/${editingEvent.id}/${editingEvent.date}`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //        'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
-      ).catch((error)=> console.log(error));
-    listOverlap.value = await res.json()
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
+    ).catch((error)=> console.log(error));
     console.log(res.status)
     if(res.status==200){
+        listOverlap.value = await res.json()
         console.log(`-- Get List Overlap Times --`)
         console.log(listOverlap.value)
     }else if(res.status===404){
         console.log(`Not Found This Event id: ${params.eventId}`)
+    }else if(res.status===401){
+        console.log('Please login')
+    }else if(res.status===403){
+        console.log('Unauthorized access')
     }
     console.log(listOverlap.value)
     selectedCategory.value = thisEvent.value.categoryName
@@ -111,7 +122,7 @@ const getListOverlap = async (editingEvent) => {
                 method:'PUT',
                 headers:{
                 'content-type':'application/json',
-                // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
                 },
                 body: JSON.stringify({
                     id : editingEvent.id,
@@ -129,11 +140,13 @@ const getListOverlap = async (editingEvent) => {
                 console.log("Cannot Edit This Event : The data is incorrect")
             }else if(res.status===414){
                 console.log("Cannot Edit This Event  : The data length in the input field is too large. Please try again.")
-            }
-            else if(res.status===404){
+            }else if(res.status===404){
                 console.log("Cannot Edit This Event : Not Found! Event id")
-            }
-            else{
+            }else if(res.status===401){
+                console.log('Please login')
+            }else if(res.status===403){
+                console.log('Unauthorized access')
+            }else{
                 console.log("Error, Cannot Create New Event")
             }
         }
@@ -148,21 +161,24 @@ const getListOverlap = async (editingEvent) => {
         const dateFormat = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19) 
         console.log(dateFormat) //2022-05-26-04-00-00 (-7)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/edit/${id}/${dateFormat}`
-        // ,{
-        //     method: "GET",
-        //     headers:{
-        //     'Content-Type' : 'application/json',
-        //     'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-        //     }
-        // }
+        ,{
+            method: "GET",
+            headers:{
+                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+            }
+        }
         ).catch((error)=> {
                 message.value = "Not Found Backend Server!!!"
                 console.log(error)
             });
-        overlapStatus.value = await res.json()
-        console.log(res.status)
+            console.log(res.status)
         if(res.status==200){
+            overlapStatus.value = await res.json()
             console.log(`--- Check Overlap Status ---`)
+        }else if(res.status===401){
+            console.log('Please login')
+        }else if(res.status===403){
+            console.log('Unauthorized access')
         }
         return overlapStatus.value
     }
@@ -176,8 +192,7 @@ const getListOverlap = async (editingEvent) => {
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/${params.eventId}` , {
             method: 'DELETE',
             headers:{
-            'Content-Type' : 'application/json',
-            // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+            'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
             }
         }).catch(error => console.log(error) );
         console.log(res.status)
@@ -186,10 +201,12 @@ const getListOverlap = async (editingEvent) => {
             goToViewEvent()
         }else if(res.status===404){
             console.log(`Not Found! This Event id: ${params.eventId}`)
-        }
-        else{
+        }else if(res.status===401){
+            console.log('Please login')
+        }else if(res.status===403){
+            console.log('Unauthorized access')
+        }else{
             console.log('Error, Cannot Delete This Event')
-            console.log(res.status)
         }
     }
 </script> 

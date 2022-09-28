@@ -1,32 +1,9 @@
 <script setup>
-    import {ref, onMounted} from 'vue'
+    import {onMounted} from 'vue'
     import {useListUser} from '../state/getListUser.js'
-    import {useRoute, useRouter} from 'vue-router'
-    import ThisUserVue from './ThisUser.vue';
+    import {useRouter} from 'vue-router'
 
     const getListUser = useListUser()
-
-    // ย้าย function ไปทำ state
-//     const users = ref()
-//     const loading =ref()
-//     const message = ref()
-
-//     const getUsers = async () => {
-//     loading.value = true
-//     message.value = "loading..."
-//     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
-//       .catch((error)=> {
-//         message.value = "Not Found Backend Server!!!"
-//         console.log(error)
-//         console.log('GET List All User Fail')
-//     });
-//     users.value = await res.json()
-//     loading.value = false
-//     if(res.status==200){
-//       console.log(`GET List All User OK`)
-//       console.log(res.status)
-//     }
-//   }
 
     onMounted(async () => {
         await getListUser.getUsers()

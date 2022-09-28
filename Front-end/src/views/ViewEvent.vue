@@ -3,6 +3,9 @@
   import Filter from '../components/Filter.vue'
 
   import {ref, onMounted} from 'vue'
+  import { useSignIn } from '../state/signIn';
+
+  const signIn = useSignIn()
 
   const events = ref()
   const loading =ref()
@@ -12,24 +15,34 @@
     loading.value = true
     message.value = "loading..."
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       )
       .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
         console.log('GET List All Event Fail')
     });
-    events.value = await res.json()
-    loading.value = false
     if(res.status==200){
+      events.value = await res.json()
+      loading.value = false
       console.log(`GET List All Event OK`)
       console.log(res.status)
+    }else if(res.status===401){
+      let errorText = await res.text()
+      console.log(errorText)
+      if(errorText==="Token is expired."){
+        await signIn.sendRefreshToken()
+      }else{
+        message.value = "Please login again"
+      }
+      console.log('Please login')
+    }else if(res.status===403){
+      console.log('Unauthorized access')
     }
   }
 
@@ -38,25 +51,29 @@
     loading.value = true
     message.value = "loading..."
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       )
       .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
         console.log('GET List All CategoryName Fail')
     });
-    eventCategories.value = await res.json()
-    loading.value = false
-    filterMode.value = ''
     if(res.status==200){
+      eventCategories.value = await res.json()
+      loading.value = false
+      filterMode.value = ''
       console.log(`GET List All CategoryName OK`)
       console.log(res.status)
+    }else if(res.status===401){
+      console.log('Please login')
+      message.value = "Please login again"
+    }else if(res.status===403){
+      console.log('Unauthorized access')
     }
   }
 
@@ -70,13 +87,12 @@
 // --- Filter ---
   const getPastEvent = async () => {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/past`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
@@ -88,19 +104,21 @@
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value}`)
       console.log(res.status)
+    }else if(res.status===401){
+      console.log('Please login')
+    }else if(res.status===403){
+      console.log('Unauthorized access')
     }
   }
 
   const getUpcomingEvent = async () => {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/upcoming`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
-      )
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      })
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
@@ -112,18 +130,21 @@
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value}`)
       console.log(res.status)
+    }else if(res.status===401){
+      console.log('Please login')
+    }else if(res.status===403){
+      console.log('Unauthorized access')
     }
   }
 
   const getEventByDate = async (date) => {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/date/${date}`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
@@ -136,19 +157,22 @@
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value} = ${date}`)
       console.log(res.status)
+    }else if(res.status===401){
+      console.log('Please login')
+    }else if(res.status===403){
+      console.log('Unauthorized access')    
     }
   }
 
   const getEventByCategory = async (id) => {
     if(id > 0){
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/category/${id}`
-    // ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/category/${id}`  
+    ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       )
     .catch((error)=> {
         message.value = "Not Found Backend Server!!!"
@@ -160,6 +184,10 @@
       if(res.status==200){
         console.log(`Filter Mode : ${filterMode.value} = ${(eventCategories.value.find((category)=> id === category.id)).categoryName}`)
         console.log(res.status)
+      }else if(res.status===401){
+        console.log('Please login')
+      }else if(res.status===403){
+        console.log('Unauthorized access')
       }
     }else{
       getEvents()

@@ -2,8 +2,10 @@
     import {ref, onMounted, computed} from 'vue'
     import {useRouter} from 'vue-router'
     import {useDatetimeFormat} from '../state/datetimeFormat.js'
-    
+    import { useSignIn } from '../state/signIn.js';
+
     const datetimeFormat = useDatetimeFormat()
+    const signIn = useSignIn()
 
     // --- GET Event Category Name to drop down list ---
     const eventCategories = ref()
@@ -13,23 +15,33 @@
         loading.value = true
         message.value = "loading..."
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/eventcategories/name`
-    //     ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+        ,{
+        method: "GET",
+        headers:{
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       ).catch((error)=> {
             message.value = "Not Found Backend Server!!!"
             console.log(error)
             console.log(`GET List All CategoryName Fail`)
         });
-        eventCategories.value = await res.json()
-        loading.value = false
         console.log(res.status)
         if(res.status==200){
+            eventCategories.value = await res.json()
             console.log(`GET List All CategoryName OK`)
+            loading.value = false
+        }else if(res.status===401){
+            let errorText = await res.text()
+            console.log(errorText)
+            if(errorText==="Token is expired."){
+                await signIn.sendRefreshToken()
+            }else{
+                message.value = "Please login again"
+            }
+            console.log('Please login')
+        }else if(res.status===403){
+            console.log('Unauthorized access')
         }
     }
 
@@ -64,21 +76,24 @@
         const startTime = dateTime.substring(0,10) + '-' + dateTime.substring(11,13) + '-' +dateTime.substring(14,16) + '-' + dateTime.substring(17,19)  
         //console.log(startTime)  //2022-05-26-04-00-00 (-7)
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/book/${categoryId}/${startTime}`
-    //     ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+        ,{
+        method: "GET",
+        headers:{
+             'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       ).catch((error)=> {
             message.value = "Not Found Backend Server!!!"
             console.log(error)
         });
-        overlapStatus.value = await res.json()
         console.log(res.status)
         if(res.status==200){
+            overlapStatus.value = await res.json()
             console.log(`--- Check Overlap Status ---`)
+        }else if(res.status===401){
+            console.log('Please login')
+        }else if(res.status===403){
+            console.log('Unauthorized access')
         }
         return overlapStatus.value
     }
@@ -90,19 +105,23 @@
 
     const getListOverlap = async (newEvent) => {
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/events/list-book-overlap/${newEvent.category.id}/${newEvent.dateTime.substring(0,10)}`
-    //     ,{
-    //     method: "GET",
-    //     headers:{
-    //       'Content-Type' : 'application/json',
-    //       'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
-    //     }
-    //   }
+        ,{
+        method: "GET",
+        headers:{
+          'Content-Type' : 'application/json',
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+        }
+      }
       ).catch((error)=> console.log(error));
-        listOverlap.value = await res.json()
-        console.log(res.status)
-        if(res.status==200){
+      console.log(res.status)
+      if(res.status==200){
+            listOverlap.value = await res.json()
             console.log(`-- Get List Overlap Times --`)
             console.log(listOverlap.value)
+        }else if(res.status===401){
+            console.log('Please login')
+        }else if(res.status===403){
+            console.log('Unauthorized access')
         }
         selectedCategory.value = (eventCategories.value.find((category)=> category.id === newEvent.category.id)).categoryName
         selectedDate.value = datetimeFormat.showDate(new Date(newEvent.dateTime)).substring(4,15)
@@ -131,7 +150,7 @@
                 method:'POST',
                 headers:{
                 'content-type':'application/json',
-                // 'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
                 },
                 body: JSON.stringify({
                     bookingName: newEvent.bookingName.trim(),
@@ -152,6 +171,10 @@
                 console.log("Cannot Create New Event : The data length in the input field is too large. Please try again.")
             }else if(res.status===404){
                 console.log("Cannot Create New Event : Not Found! Category id")
+            }else if(res.status===401){
+                console.log('Plase login')
+            }else if(res.status===403){
+                console.log('Unauthorized access')
             }else{
                 console.log("Error, Cannot Create New Event")
             }
@@ -180,6 +203,8 @@
 </script>
  
 <template>
+    <div v-if="loading" class="subText" style="margin-top: 2em; font-size: medium;">{{message}}</div>
+    <div v-else>
     <div style="margin-top: 10em;">
     <div class="thisEvent">
         <button @click="goBack" class="button-18" role="button">Back</button>
@@ -255,6 +280,7 @@
             <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd" class="button-18" role="button" type="submit">Save</button>
         </div>
         </div>
+    </div>
     </div>
 </template>
 

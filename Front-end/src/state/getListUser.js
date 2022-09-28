@@ -1,28 +1,28 @@
 import { defineStore,acceptHMRUpdate } from 'pinia'
 import { computed, ref } from 'vue'
+import { useSignIn } from './signIn.js'
 
 export const useListUser = defineStore('listuser',() => {
     // GET User
     const users = ref([])
     const loading =ref()
     const message = ref()
+    const signIn = useSignIn()
+  
     // const token = ref()
-
     const getUsers = async () => {
+      console.log(signIn.getCookie('accessToken'))
       loading.value = true
       message.value = "loading..."
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`,{
         method: "GET",
         headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+          'Authorization' : 'Bearer '+ signIn.getCookie('accessToken')
         }
-      })
-        .catch((error)=> {
+      }).catch((error)=> {
           message.value = "Error Backend Server!!!"
           console.log(error)
           console.log('GET List All User Fail')
-         
       });
       console.log(res)
       console.log(res.status)
@@ -32,13 +32,19 @@ export const useListUser = defineStore('listuser',() => {
         console.log(`GET List All User OK`)
         console.log(users.value)
       }else if(res.status===401){
-        message.value = "Please login again"
-      }else{
-        message.value = "Not found Backend Server!!!"
+        let errorText = await res.text()
+        console.log(errorText)
+        if(errorText==="Token is expired."){
+          await signIn.sendRefreshToken()
+        }else{
+          message.value = "Please login again"
+        }
+      }else if(res.status===403){
+        message.value = "Unauthorized access"
       }
-      
-      
-
+      else{
+        message.value = "Error"
+      }
       
     }
 
@@ -74,6 +80,8 @@ export const useListUser = defineStore('listuser',() => {
         console.log('get User checklist for name, email [EDIT]')
         console.log(userCheckListEdit.value)
     })
+
+    
     return {  users,loading,message, getUsers, 
               userCheckListCreate, getUserCheckListCreate,
               userCheckListEdit, getUserCheckListEdit}

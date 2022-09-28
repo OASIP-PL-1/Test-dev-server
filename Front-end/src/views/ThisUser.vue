@@ -5,10 +5,14 @@
     import cancel_icon from '../components/icons/cancel.vue'
     import EditUser from '../components/EditUser.vue'
     import {useListUser} from '../state/getListUser.js'
+    import {useSignIn} from '../state/signIn.js'
 
     const getListUser = useListUser() 
 
+    const signIn = useSignIn()
+
     const {params} = useRoute()
+
     const datetimeFormat = useDatetimeFormat()
 
     const thisUser = ref({})
@@ -22,22 +26,28 @@
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${params.userId}`,{
         method: "GET",
         headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer '+localStorage.getItem('jwtToken')
+          'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
         }
       })
-    .catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
-        console.log(error)
-    });
-        thisUser.value = await res.json()
+        .catch((error)=> {
+            console.log(error)
+        });
         console.log(res.status)
         if(res.status===200){
+            thisUser.value = await res.json()
             console.log(`GET This User id: ${params.userId} OK`)
+            getListUser.getUserCheckListEdit(thisUser.value.id)
             showDetail.value = true
+            loading.value = false
         }else if(res.status===404){
             console.log(`Not Found! This User id: ${params.userId}`)
             showDetail.value = false
+        }else if(res.status===401){
+            console.log('Please Login')
+            goToViewUser()
+        }else if(res.status===403){
+            console.log('Unauthorized access')
+            goToViewUser()
         }
         loading.value = false
     }
@@ -65,7 +75,6 @@
 
     onBeforeMount(async () => {
         await getThisUser()
-        getListUser.getUserCheckListEdit(thisUser.value.id)
     })
 
     const myRouter = useRouter()
@@ -79,7 +88,10 @@
     const removeUser = async () => {
         if(confirm("Are you sure delete this account?")==true){
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${thisUser.value.id}` , {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers:{
+                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+                }
             }).catch(error => console.log(error) );
             console.log(res.status)
             if (res.status===200) {
@@ -87,8 +99,11 @@
                 goBack()
             }else if(res.status===404){
                 console.log(`Not Found! This User id: ${thisUser.value.id}`)
-            }
-            else{
+            }else if(res.status===401){
+                console.log('Please login')
+            }else if(res.status===403){
+                console.log('Unauthorized access')
+            }else{
                 console.log('Error, Cannot Delete This User')
                 console.log(res.status)
             }
@@ -114,7 +129,8 @@
             {
                 method:'PUT',
                 headers:{
-                'content-type':'application/json'
+                'content-type':'application/json',
+                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
                 },
                 body: JSON.stringify({
                     id : editingUser.id,
@@ -122,7 +138,7 @@
                     userEmail: editingUser.userEmail.trim(),
                     userRole: editingUser.userRole,
                 })
-            }).catch(error => console.log(error) );
+            }).catch(error => console.log(error));
             console.log(res.status)
             if(res.status===200){
                 console.log('PUT This User Updated')
@@ -133,11 +149,13 @@
                 console.log("Cannot Edit This User : The data is incorrect")
             }else if(res.status===414){
                 console.log("Cannot Edit This User  : The data length in the input field is too large. Please try again.")
-            }
-            else if(res.status===404){
+            }else if(res.status===404){
                 console.log("Cannot Edit This User : Not Found! User id")
-            }
-            else{
+            }else if(res.status===401){
+                console.log('Please login')
+            }else if(res.status===403){
+                console.log('Unauthorized access')
+            }else{
                 console.log("Error, Cannot Update This User")
                 }
             }
@@ -145,7 +163,6 @@
 </script>
  
 <template>
-
     <!-- <div style="margin-top: 10em;"> -->
         <!-- <button @click="goBack" class="button-18" role="button">Back</button>&ensp; -->
         <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
@@ -183,7 +200,6 @@
                 @hideEditMode="hideEditMode"
                 @save="updateUser" />
         </div>
-        <!-- </div> -->
 </template>
  
 <style scoped>

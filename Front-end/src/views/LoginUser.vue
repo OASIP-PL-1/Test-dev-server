@@ -1,7 +1,9 @@
 <script setup>
     import { ref, computed} from 'vue'
     import {useRouter} from 'vue-router'
-    import {useListUser} from '../state/getListUser.js'
+    import {useSignIn} from '../state/signIn.js'
+
+    const signIn = useSignIn()
 
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
@@ -14,36 +16,33 @@
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/login`,{
         method:'POST',
         headers:{
-          'content-type':'application/json'
+          'content-type':'application/json',
         },
         body: JSON.stringify({
             userEmail:user.email.trim(),
             userPassword:user.password
         })
       }).catch(error => console.log(error))
-
+      
       const respone = await res.json()
-
+      
       console.log(respone)
-      // console.log(respone.status)
-      // console.log(respone.message.message)
-      // console.log(respone.message.accessToken)
 
-      if(res.status===400){
+      if(res.status===200){
+        message.value = "Login Successful"
+        signIn.setCookie('accessToken',respone.message.accessToken,1)
+        signIn.setCookie('refreshToken',respone.message.refreshToken,1)
+        signIn.setCookie('userName',respone.message.userName,1)
+        signIn.setCookie('userRole',respone.message.userRole,1)
+
+        signIn.statusLogin = true
+        signIn.username = signIn.getCookie('userName')
+
+      }else if(res.status===400){
         console.log("Invalid Data")
+      }else{
+        console.log(res.status)
       }
-        if(respone.status===404){
-          message.value = "A user with the specified email DOES NOT exist"
-        }else if(respone.status===401){
-          message.value = "Password Incorrect"
-        }else if(respone.status===200){
-          message.value = "Login Successful"
-          // localStorage
-          localStorage.setItem('jwtToken',respone.message.accessToken)
-          console.log(localStorage.getItem('jwtToken'))
-        }else if(res.status===400){
-          console.log("Invalid Data")
-        }
     }
 
     // ----- Validate check -----
