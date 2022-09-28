@@ -27,17 +27,23 @@
       const respone = await res.json()
       
       console.log(respone)
-
       if(res.status===200){
-        message.value = "Login Successful"
-        signIn.setCookie('accessToken',respone.message.accessToken,1)
-        signIn.setCookie('refreshToken',respone.message.refreshToken,1)
-        signIn.setCookie('userName',respone.message.userName,1)
-        signIn.setCookie('userRole',respone.message.userRole,1)
+        if(respone.status===200){
+          message.value = "Login Successful"
+          signIn.setCookie('accessToken',respone.message.accessToken,1)
+          signIn.setCookie('refreshToken',respone.message.refreshToken,1)
+          signIn.setCookie('userName',respone.message.userName,1)
+          signIn.setCookie('userRole',respone.message.userRole,1)
 
-        signIn.statusLogin = true
-        signIn.username = signIn.getCookie('userName')
-
+          signIn.statusLogin = true
+          signIn.username = signIn.getCookie('userName')
+        }else if(respone.status===401){
+          console.log(respone.message.message)
+          message.value = "Password Incorrect"
+        }else if(respone.status===404){
+          console.log(respone.message.message)
+          message.value = "A user with the specified email DOES NOT exist"
+        }
       }else if(res.status===400){
         console.log("Invalid Data")
       }else{
