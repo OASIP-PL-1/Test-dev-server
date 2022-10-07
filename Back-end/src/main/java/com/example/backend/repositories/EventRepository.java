@@ -14,6 +14,7 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     public List<Event> findByEventStartTimeBetweenOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime);
     public Event findTopByOrderByIdDesc();
     public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
+    public List<Event> findByBookingEmail(String userEmail);
 
 
     @Query(value = "select e.* from events e " +

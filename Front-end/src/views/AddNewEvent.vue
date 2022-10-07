@@ -37,7 +37,7 @@
             if(errorText==="Token is expired."){
                 await signIn.sendRefreshToken()
             }else{
-                message.value = "Please login again"
+                message.value = "Please login"
             }
             console.log('Please login')
         }else if(res.status===403){
@@ -60,7 +60,7 @@
     // --- check if the information is filled out ---
     const checkBeforeAdd = computed(()=>{ 
         return newEvent.value.bookingName.trim() === "" 
-        || newEvent.value.email === "" 
+        // || newEvent.value.email === "" 
         || emailStatus.value
         || Object.keys(newEvent.value.category).length === 0 
         || newEvent.value.dateTime === ""
@@ -154,7 +154,8 @@
                 },
                 body: JSON.stringify({
                     bookingName: newEvent.bookingName.trim(),
-                    bookingEmail: newEvent.email,
+                    // bookingEmail: newEvent.email,
+                    bookingEmail: signIn.user.email,
                     startTime: dataTime.toISOString().replace(".000Z", "Z"),
                     notes:newEvent.notes.length === 0 ? null : newEvent.notes.trim(),
                     eventCategoryId: newEvent.category.id
@@ -172,7 +173,7 @@
             }else if(res.status===404){
                 console.log("Cannot Create New Event : Not Found! Category id")
             }else if(res.status===401){
-                console.log('Plase login')
+                console.log('Please login')
             }else if(res.status===403){
                 console.log('Unauthorized access')
             }else{
@@ -222,8 +223,10 @@
                 <tr>
                     <th><label for="bEmail">Your email :</label></th>
                     <td>
-                        <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">&ensp;
-                        <span class="subText">{{newEvent.email.trim().length}} / 50</span>
+                        <!-- <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">&ensp; -->
+                        <span>{{signIn.user.email}}</span>
+                        <!-- <span class="subText">{{newEvent.email.trim().length}} / 50</span> -->
+                        <!-- <span class="subText">&emsp;{{signIn.user.email.length}} / 50</span> -->
                     <br><span v-show="emailStatus" class="warning">Sorry! an invalid email!</span>
                     </td>
                 </tr>

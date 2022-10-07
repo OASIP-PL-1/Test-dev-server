@@ -1,10 +1,15 @@
 import { defineStore,acceptHMRUpdate } from 'pinia'
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 
 export const useSignIn = defineStore('signIn', () => {
+    const myRouter = useRouter()
+    const gotoHome = () => myRouter.push({name: 'Home'})
+
+    // state  
     const statusLogin = ref()
-    const username = ref()
-    const role = ref()
+    const user = ref({id:'', name:'', role:'', email:''})
 
     const getCookie = function(name){  //ดึง value จาก name=value ใน cookie
       let cookieName = `${encodeURIComponent(name)}=`,     //นำ name มาแปลงเป็น encode เพื่อจะเอาไปเทียบกับ cookie
@@ -36,17 +41,25 @@ export const useSignIn = defineStore('signIn', () => {
     const removeCookie = (name) => setCookie(name,null,0)
 
     const checkLogin = () =>{
-      if( (getCookie('userName')!==null 
-        || getCookie('userRole')!==null 
-        || getCookie('accessToken')!==null 
-        || getCookie('refreshToken')!==null) === false ){
+      if(getCookie('user')===null){
         statusLogin.value= false
       }else{
         statusLogin.value= true
-        username.value = getCookie('userName')
-        role.value = getCookie('userRole')
+        user.value = JSON.parse(getCookie('user'))
       }
     }
+    
+    const Logout = () => {
+      if(confirm("Are you sure want to Logout?") == true){
+          removeCookie('accessToken')
+          removeCookie('refreshToken')
+          removeCookie('user')
+          statusLogin.value = false
+          user.value = {id:'', name:'', role:'', email:''}
+          gotoHome()
+      }
+  }
+
     const sendRefreshToken = async() => {
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/refresh`,{
         method: "POST",
@@ -66,6 +79,9 @@ export const useSignIn = defineStore('signIn', () => {
         const respone = await res.json()
         setCookie('accessToken',respone.message.accessToken,1)
         setCookie('refreshToken',respone.message.refreshToken,1)
+
+        setCookie('user',JSON.stringify(JSON.parse(getCookie('user'))),1)
+
         alert("access token and refresh token UPDATED")
         location.reload() 
       }else if(res.status===400){
@@ -74,7 +90,7 @@ export const useSignIn = defineStore('signIn', () => {
 
     }
 
-    return {statusLogin, username, role,checkLogin, getCookie, setCookie, removeCookie, sendRefreshToken} 
+    return {statusLogin, user, checkLogin, getCookie, setCookie, removeCookie, Logout, sendRefreshToken} 
 })
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useSignIn, import.meta.hot))

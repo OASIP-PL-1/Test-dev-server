@@ -27,21 +27,24 @@
         console.log(error)
         console.log('GET List All Event Fail')
     });
+    console.log(res.status)
     if(res.status==200){
       events.value = await res.json()
       loading.value = false
       console.log(`GET List All Event OK`)
-      console.log(res.status)
+      console.log(events.value)
+      await getEventCategoryName()
     }else if(res.status===401){
       let errorText = await res.text()
       console.log(errorText)
       if(errorText==="Token is expired."){
         await signIn.sendRefreshToken()
       }else{
-        message.value = "Please login again"
+        message.value = "Please login"
       }
       console.log('Please login')
     }else if(res.status===403){
+      message.value = 'Unauthorized access'
       console.log('Unauthorized access')
     }
   }
@@ -56,9 +59,7 @@
         headers:{
           'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
         }
-      }
-      )
-      .catch((error)=> {
+      }).catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
         console.log('GET List All CategoryName Fail')
@@ -71,7 +72,7 @@
       console.log(res.status)
     }else if(res.status===401){
       console.log('Please login')
-      message.value = "Please login again"
+      message.value = "Please login"
     }else if(res.status===403){
       console.log('Unauthorized access')
     }
@@ -79,7 +80,7 @@
 
   onMounted(async () => {
       await getEvents()
-      await getEventCategoryName()
+      // await getEventCategoryName()
   })
 
   const filterMode = ref('')
@@ -144,13 +145,12 @@
         headers:{
           'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
         }
-      }
-      )
-    .catch((error)=> {
+      }).catch((error)=> {
         message.value = "Not Found Backend Server!!!"
         console.log(error)
         console.log(`GET Filter Mode : Date Fail`)
     });
+
     events.value = await res.json()
     filterMode.value = 'date'
     console.log(res.status)

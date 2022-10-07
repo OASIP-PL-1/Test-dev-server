@@ -10,7 +10,8 @@
     signIn.checkLogin()
 
     const myRouter = useRouter()
-    const gotoHome = () => myRouter.push({name: 'Home'})
+    const gotoThisUser = () => myRouter.push({ name: 'ThisUser', params:{userId:signIn.user.id}})
+    // const gotoHome = () => myRouter.push({name: 'Home'})
     // const user = ref({
     //     username:localStorage.getItem('userName'),
     //     userRole:localStorage.getItem('userRole')
@@ -27,18 +28,18 @@
         const toggleMenu = document.querySelector(".menu");
         toggleMenu.classList.toggle("active");
       }
-    const removeStorage = () => {
-        if(confirm("Are you sure want to Logout?") == true){
-            signIn.removeCookie('accessToken')
-            signIn.removeCookie('refreshToken')
-            signIn.removeCookie('userName')
-            signIn.removeCookie('userRole')
-            signIn.statusLogin = false
-            signIn.username = ""
-            signIn.role = ""
-            gotoHome()
-        }
-    }
+    // const removeStorage = () => {
+    //     if(confirm("Are you sure want to Logout?") == true){
+    //         signIn.removeCookie('accessToken')
+    //         signIn.removeCookie('refreshToken')
+    //         signIn.removeCookie('userName')
+    //         signIn.removeCookie('userRole')
+    //         signIn.statusLogin = false
+    //         signIn.username = ""
+    //         signIn.role = ""
+    //         gotoHome()
+    //     }
+    // }
 </script>
  
 <template>
@@ -57,16 +58,16 @@
                                 <img src="./assets/icons/account.png"/>
                             </div>
                             <span class="menu">
-                            <h3><b>{{signIn.username}}</b></h3>
+                            <h3><b>{{signIn.user.name}}</b></h3>
                                 <ul>
                                     <li>
-                                        <img src="./assets/icons/profile.png" /><router-link :to="{name:'LoginUser'}">My profile</router-link>
+                                        <img src="./assets/icons/profile.png" /><a @click="gotoThisUser(), menuToggle()">My profile</a>
                                     </li>
                                     <li>
-                                        <img src="./assets/icons/editUser.png" /><router-link :to="{name:'LoginUser'}">Edit profile</router-link>
+                                        <img src="./assets/icons/editUser.png" /><a @click="gotoThisUser(), menuToggle()">Edit profile</a>
                                     </li>
                                     <li>
-                                        <img src="./assets/icons/logout.png" /><a @click="removeStorage()">Logout</a>
+                                        <img src="./assets/icons/logout.png" /><a @click="signIn.Logout()">Logout</a>
                                     </li>
                                 </ul>
                             </span>
@@ -76,7 +77,7 @@
                     <span class="dropdown">
                         <p style="float:right;" class="dropbtn"><icon_Menu/></p>
                         <span class="dropdown-content">
-                            <a @click="removeStorage()" v-if="signIn.statusLogin===true" ><p style="float:right;">Logout</p></a>
+                            <a @click="signIn.Logout()" v-if="signIn.statusLogin===true" ><p style="float:right;">Logout</p></a>
                             <router-link :to="{name:'LoginUser'}" v-else><p style="float:right;">Login</p></router-link>
                             <router-link :to="{name:'CreateUser'}"><p style="float:right;">Sign Up</p></router-link>
                             <router-link :to="{name:'ViewEvent'}"><p style="float:left;">Event</p></router-link>

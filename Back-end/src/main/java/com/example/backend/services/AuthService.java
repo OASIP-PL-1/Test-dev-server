@@ -52,6 +52,8 @@ public class AuthService {
             message.put("message", "Password matched.");
             message.put("userName", user.getUserName());
             message.put("userRole", user.getUserRole().toString());
+            message.put("userId", user.getId().toString());
+            message.put("userEmail", user.getUserEmail());
             message.put("accessToken", generateAccessToken(user.getUserEmail(), user.getUserRole().toString()));
             message.put("refreshToken", generateRefreshToken(user.getUserEmail(), user.getUserRole().toString()));
             statusCode = 200;

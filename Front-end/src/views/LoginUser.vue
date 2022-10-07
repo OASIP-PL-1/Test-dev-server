@@ -1,12 +1,12 @@
 <script setup>
     import { ref, computed} from 'vue'
-    import {useRouter} from 'vue-router'
+    // import {useRouter} from 'vue-router'
     import {useSignIn} from '../state/signIn.js'
 
     const signIn = useSignIn()
 
-    const myRouter = useRouter()
-    const goBack = () => myRouter.go(-1)
+    // const myRouter = useRouter()
+    // const goBack = () => myRouter.go(-1)
     // const goThisUser = (newId) => myRouter.push({name: 'ThisUser', params:{userId:newId}})
     
     const userLogin = ref({email:"",password:""})
@@ -32,11 +32,21 @@
           message.value = "Login Successful"
           signIn.setCookie('accessToken',respone.message.accessToken,1)
           signIn.setCookie('refreshToken',respone.message.refreshToken,1)
-          signIn.setCookie('userName',respone.message.userName,1)
-          signIn.setCookie('userRole',respone.message.userRole,1)
+          const thisUser = {
+            id:Number(respone.message.userId),
+            name:respone.message.userName,
+            role:respone.message.userRole,
+            email:respone.message.userEmail
+          }
+          signIn.setCookie('user',JSON.stringify(thisUser),1)
+
+          // signIn.setCookie('userName',respone.message.userName,1)
+          // signIn.setCookie('userRole',respone.message.userRole,1)
 
           signIn.statusLogin = true
-          signIn.username = signIn.getCookie('userName')
+          signIn.user = JSON.parse(signIn.getCookie('user'))
+          
+          // signIn.username = signIn.getCookie('userName')
         }else if(respone.status===401){
           console.log(respone.message.message)
           message.value = "Password Incorrect"
@@ -74,9 +84,9 @@
 <template>
       <!-- <div style="margin-top: 10em;"> -->
     <div>
-        <div class="thisEvent">
+        <!-- <div class="thisEvent">
             <button @click="goBack" class="button-18" role="button">Back</button>
-        </div>
+        </div> -->
     <div class="box">
       <h2>Login</h2>
       <hr>
