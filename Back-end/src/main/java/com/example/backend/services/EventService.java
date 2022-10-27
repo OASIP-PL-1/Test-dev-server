@@ -59,18 +59,12 @@ public class EventService {
         if(role.equals("admin")) {
             List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
             return listMapper.mapList(events, EventAllDTO.class, modelMapper);
-<<<<<<< HEAD
         } else if(role.equals("student")) {
             List<Event> events = repository.findByBookingEmail(new Authorization().getUserEmailFromRequest(request));
             return listMapper.mapList(events, EventAllDTO.class, modelMapper);
         } else if(role.equals("lecturer")) {
             List<Event> events = repository.lecturerGetEvent(new Authorization().getUserEmailFromRequest(request));
             return listMapper.mapList(events, EventAllDTO.class, modelMapper);
-=======
-        } else if(role.equals("student")){
-            List<Event> events = repository.findByBookingEmail(new Authorization().getUserEmailFromRequest(request));
-            return listMapper.mapList(events, EventAllDTO.class, modelMapper);
->>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
         }
         return null;
     }
@@ -137,7 +131,6 @@ public class EventService {
 
     //POST method
     public int createEvent(EventAddDTO newEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException {
-<<<<<<< HEAD
         if(request.getHeader("Authorization") != null){
             String role = new Authorization().getRoleFromRequest(request);
             if (role.equals("student")) {
@@ -148,19 +141,10 @@ public class EventService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking email didn't match your email.");
             }
         }
-=======
->>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
         if (!(checkOverlap(newEvent.getEventCategoryId(), newEvent.getStartTime()).size() == 0)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The choosen time is overlap other events");
         }
         EventCategory eventCategory = categoryRepository.findById(newEvent.getEventCategoryId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This category is not existed."));
-        String role = new Authorization().getRoleFromRequest(request);
-        if(role.equals("student")){
-//            event.setBookingEmail(new Authorization().getUserEmailFromRequest(request));
-            System.out.println(newEvent.getBookingEmail());
-            System.out.println(new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()));
-            if(!new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking email didn't match your email.");
-        }
         Event event = new Event();
         event.setId(newEvent.getId());
         event.setBookingName(newEvent.getBookingName());
