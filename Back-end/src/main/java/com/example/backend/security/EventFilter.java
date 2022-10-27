@@ -20,6 +20,7 @@ public class EventFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getServletPath().startsWith("/api/events")) {
+<<<<<<< HEAD
             if(request.getHeader("Authorization")!=null) {
                 String token = request.getHeader("Authorization").substring("Bearer ".length());
                 Map claims = JWT.decode(token).getClaims();
@@ -61,6 +62,26 @@ public class EventFilter extends OncePerRequestFilter {
 //                response.getWriter().print("Unauthorized.");
 //                System.out.println("EventFilter : You aren't admin.");
 //                return;
+=======
+            String token = request.getHeader("Authorization").substring("Bearer ".length());
+            Map claims = JWT.decode(token).getClaims();
+            String role = claims.get("role").toString().replace("\"","");
+//            System.out.println(role);
+            if(role.equals("admin")){
+                response.setStatus(200);
+                System.out.println("EventFilter : Admin can do ANY request in events.");
+                filterChain.doFilter(request,response);
+            }
+            else if(role.equals("student")){
+                response.setStatus(200);
+                System.out.println("EventFilter : Student can GET his own assigned events only.");
+                filterChain.doFilter(request, response);
+            } else {
+                response.setStatus(403);
+                response.getWriter().print("Unauthorized.");
+                System.out.println("EventFilter : You aren't admin.");
+                return;
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
             }
         }
         else{

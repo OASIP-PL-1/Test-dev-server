@@ -62,8 +62,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new UserFilter(), FilterSecurityInterceptor.class)
+<<<<<<< HEAD
                 .addFilterBefore(new EventFilter(), FilterSecurityInterceptor.class)
                 .addFilterBefore(new EventCategoryFilter(), FilterSecurityInterceptor.class);
+=======
+                .addFilterBefore(new EventFilter(), FilterSecurityInterceptor.class);
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
 
 //        http.addFilter(new UserFilter());
 //        http.addFilterBefore(new UserFilter(), UsernamePasswordAuthenticationFilter.class);

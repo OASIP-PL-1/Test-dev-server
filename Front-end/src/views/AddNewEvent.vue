@@ -163,8 +163,12 @@
                 body: JSON.stringify({
                     bookingName: newEvent.bookingName.trim(),
                     // bookingEmail: newEvent.email,
+<<<<<<< HEAD
                     // bookingEmail: signIn.user.email,
                     bookingEmail: newEmail,
+=======
+                    bookingEmail: signIn.user.email,
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
                     startTime: dataTime.toISOString().replace(".000Z", "Z"),
                     notes:newEvent.notes.length === 0 ? null : newEvent.notes.trim(),
                     eventCategoryId: newEvent.category.id
@@ -232,12 +236,19 @@
                 <tr>
                     <th><label for="bEmail">Your email :</label></th>
                     <td>
+<<<<<<< HEAD
                         <!-- add guest ด้วย -->
                         <span v-if="signIn.user.role==='admin'">
                             <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">&ensp;
                             <span class="subText">{{newEvent.email.trim().length}} / 50</span>
                         </span>
                         <span v-else>{{signIn.user.email}}</span>
+=======
+                        <!-- <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">&ensp; -->
+                        <span>{{signIn.user.email}}</span>
+                        <!-- <span class="subText">{{newEvent.email.trim().length}} / 50</span> -->
+                        <!-- <span class="subText">&emsp;{{signIn.user.email.length}} / 50</span> -->
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
                     <br><span v-show="emailStatus" class="warning">Sorry! an invalid email!</span>
                     </td>
                 </tr>

@@ -41,7 +41,14 @@ const routes = [
     name: 'ViewEvent',
     component: ViewEvent,
     beforeEnter: (to, from, nextTick) => {
+<<<<<<< HEAD
       checkError401(nextTick)
+=======
+      const signIn = useSignIn()
+      //ถ้ายังไม่ login จะ link ไปหน้า Error 401
+      if (signIn.statusLogin === false){nextTick({ name:'Error401'})}
+      else{nextTick()}
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
     }
   },
   {
@@ -49,7 +56,14 @@ const routes = [
     name: 'ViewEventCategory',
     component: ViewEventCategory,
     beforeEnter: (to, from, nextTick) => {
+<<<<<<< HEAD
       checkError401(nextTick)
+=======
+      const signIn = useSignIn()
+      //ถ้ายังไม่ login จะ link ไปหน้า Error 401
+      if (signIn.statusLogin === false){nextTick({ name:'Error401'})}
+      else{nextTick()}
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
     }
   },
   {
@@ -61,12 +75,15 @@ const routes = [
     path: '/create-new-event',
     name: 'AddNewEvent',
     component: AddNewEvent,
+<<<<<<< HEAD
     beforeEnter: (to, from, nextTick) => {
       const signIn = useSignIn()
       //ถ้าเป็น lecture สร้าง Event ไม่ได้
       if(signIn.statusLogin === true && signIn.user.role === 'lecturer'){nextTick({name:'Error403'})}
       else{nextTick()}
     }
+=======
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
   },
   {
     path: '/view-user',
@@ -124,17 +141,30 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
+  },
+  {
+    name: 'Error401',
+    component: Error401
+  },
+  {
+    name: 'Error403',
+    component: Error403
   }
  
 ]
 
 const router = createRouter({ history, routes })
 
+<<<<<<< HEAD
 // router.afterEach((to, from, next) => {
+=======
+// router.beforeEach((to, from, next) => {
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
 //   console.log(to)
 //   console.log(from)
 //   console.log(next)
 //       //ถ้ายังไม่ login จะบังคับให้กดดูหน้าอื่นไม่ได้ จนกว่าจะ login
+<<<<<<< HEAD
 //   // const signIn = useSignIn()
 //   // if(to.name === 'Home'|| to.name !== 'LoginUser'){
 //   //   next({name:'LoginUser'})
@@ -150,4 +180,13 @@ function checkError401 (nextTick){
 }
 
 
+=======
+//   const signIn = useSignIn()
+//   if(to.name === 'Home'|| to.name !== 'LoginUser'){
+//     next({name:'LoginUser'})
+//   }
+//   // if (to.name !== 'LoginUser' && signIn.statusLogin===false) next({ name: 'LoginUser' })
+//   // else next()
+// })
+>>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
 export default router
