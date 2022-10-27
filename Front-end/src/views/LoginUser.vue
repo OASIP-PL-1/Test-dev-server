@@ -5,12 +5,8 @@
 
     const signIn = useSignIn()
 
-<<<<<<< HEAD
     const myRouter = useRouter()
     const gotoEvent = () => myRouter.push({name: 'ViewEvent'})
-=======
-    // const myRouter = useRouter()
->>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
     // const goBack = () => myRouter.go(-1)
     // const goThisUser = (newId) => myRouter.push({name: 'ThisUser', params:{userId:newId}})
     
@@ -34,7 +30,6 @@
       console.log(respone)
       if(res.status===200){
         if(respone.status===200){
-<<<<<<< HEAD
           if(signIn.statusLogin === true && signIn.user.role === 'admin'){
             //มีการ login อยู่แล้ว และเป็น admin จะเป็น check login mode
             console.log("Check Password Login")
@@ -57,26 +52,6 @@
 
             if(signIn.user.role !== 'admin'){gotoEvent()}          
           }
-=======
-          message.value = "Login Successful"
-          signIn.setCookie('accessToken',respone.message.accessToken,1)
-          signIn.setCookie('refreshToken',respone.message.refreshToken,1)
-          const thisUser = {
-            id:Number(respone.message.userId),
-            name:respone.message.userName,
-            role:respone.message.userRole,
-            email:respone.message.userEmail
-          }
-          signIn.setCookie('user',JSON.stringify(thisUser),1)
-
-          // signIn.setCookie('userName',respone.message.userName,1)
-          // signIn.setCookie('userRole',respone.message.userRole,1)
-
-          signIn.statusLogin = true
-          signIn.user = JSON.parse(signIn.getCookie('user'))
-          
-          // signIn.username = signIn.getCookie('userName')
->>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
         }else if(respone.status===401){
           console.log(respone.message.message)
           message.value = "Password Incorrect"
