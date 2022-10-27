@@ -11,15 +11,7 @@
 
     const myRouter = useRouter()
     const gotoThisUser = () => myRouter.push({ name: 'ThisUser', params:{userId:signIn.user.id}})
-<<<<<<< HEAD
     const gotoHome = () => myRouter.push({name: 'Home'})
-=======
-    // const gotoHome = () => myRouter.push({name: 'Home'})
-    // const user = ref({
-    //     username:localStorage.getItem('userName'),
-    //     userRole:localStorage.getItem('userRole')
-    // })
->>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
 
     // gotoHome()
 
@@ -27,23 +19,8 @@
         const toggleMenu = document.querySelector(".menu");
         toggleMenu.classList.toggle("active");
       }
-<<<<<<< HEAD
 
     
-=======
-    // const removeStorage = () => {
-    //     if(confirm("Are you sure want to Logout?") == true){
-    //         signIn.removeCookie('accessToken')
-    //         signIn.removeCookie('refreshToken')
-    //         signIn.removeCookie('userName')
-    //         signIn.removeCookie('userRole')
-    //         signIn.statusLogin = false
-    //         signIn.username = ""
-    //         signIn.role = ""
-    //         gotoHome()
-    //     }
-    // }
->>>>>>> 61aab8d9fcb43cec6b8c0b338a83380dc2465ba6
 </script>
  
 <template>
