@@ -33,7 +33,7 @@ const getEventCategories = async () => {
       if(errorText==="Token is expired."){
         await signIn.sendRefreshToken()
       }else{
-        message.value = "Please login again"
+        message.value = "Please login"
       }
     }else if(res.status===403){
       console.log('Unauthorized access')

@@ -39,8 +39,9 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         else {
             String authorizationHeader = request.getHeader("Authorization");
             System.out.println(authorizationHeader + "|");
+            System.out.println(authorizationHeader.equals("Bearer null"));
 //            if (authorizationHeader.startsWith("Bearer ") || authorizationHeader!="Bearer null" || authorizationHeader!=null) {
-            if((authorizationHeader!=null) && (authorizationHeader.startsWith("Bearer"))){
+            if((!authorizationHeader.equals("Bearer null")) && (authorizationHeader.startsWith("Bearer"))){
                 try {
                     String token = authorizationHeader.substring("Bearer ".length());
                     System.out.println("try");
@@ -66,10 +67,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 System.out.println("Pass all");
                 filterChain.doFilter(request, response);
             } else {
-                System.out.println("Token is null. Required.");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().print("Token is required.");
-                return;
+//                System.out.println("Token is null. Required.");
+//                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                response.getWriter().print("Token is required.");
+//                return;
+                filterChain.doFilter(request,response);
             }
         }
     }

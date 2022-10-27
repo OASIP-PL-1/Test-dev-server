@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -57,7 +58,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().anyRequest().permitAll();
 //        http.authorizeRequests().antMatchers("/api/login").permitAll();
 //        http.authorizeRequests().antMatchers("/api/refresh").permitAll();
-        http.addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new UserFilter(), FilterSecurityInterceptor.class)
+                .addFilterBefore(new EventFilter(), FilterSecurityInterceptor.class)
+                .addFilterBefore(new EventCategoryFilter(), FilterSecurityInterceptor.class);
+
+//        http.addFilter(new UserFilter());
+//        http.addFilterBefore(new UserFilter(), UsernamePasswordAuthenticationFilter.class);
+
 //        http.authorizeRequests().antMatchers("/api/users/**").hasAnyAuthority("admin");
 
 //        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/users/**").permitAll();
@@ -68,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/users/**").authenticated();
 //        http.authorizeRequests().anyRequest().authenticated();
 //        http.authorizeRequests().antMatchers("/api/**").permitAll();
+
     }
 
     @Bean

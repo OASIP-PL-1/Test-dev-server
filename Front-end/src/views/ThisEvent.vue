@@ -40,10 +40,10 @@
             showDetail.value = false
         }else if(res.status===401){
             console.log('Please login')
-            goToViewEvent()
+            goToError401()
         }else if(res.status===403){
             console.log('Unauthorized access')
-            goToViewEvent()
+            goToError403()
         }
         loading.value = false
     }
@@ -58,6 +58,8 @@
     const myRouter = useRouter()
     const goBack = () => myRouter.go(-1)
     const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
+    const goToError401 = () => myRouter.push({ name: 'Error401'})
+    const goToError403 = () => myRouter.push({ name: 'Error403'})
 
 // --- GET List Overlap ---    
 const listOverlap = ref([])

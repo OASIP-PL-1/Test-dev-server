@@ -6,7 +6,8 @@
     const signIn = useSignIn()
 
     const myRouter = useRouter()
-    const goBack = () => myRouter.go(-1)
+    const gotoEvent = () => myRouter.push({name: 'ViewEvent'})
+    // const goBack = () => myRouter.go(-1)
     // const goThisUser = (newId) => myRouter.push({name: 'ThisUser', params:{userId:newId}})
     
     const userLogin = ref({email:"",password:""})
@@ -29,14 +30,28 @@
       console.log(respone)
       if(res.status===200){
         if(respone.status===200){
-          message.value = "Login Successful"
-          signIn.setCookie('accessToken',respone.message.accessToken,1)
-          signIn.setCookie('refreshToken',respone.message.refreshToken,1)
-          signIn.setCookie('userName',respone.message.userName,1)
-          signIn.setCookie('userRole',respone.message.userRole,1)
+          if(signIn.statusLogin === true && signIn.user.role === 'admin'){
+            //มีการ login อยู่แล้ว และเป็น admin จะเป็น check login mode
+            console.log("Check Password Login")
+            message.value = "Login Successful"
+          }else{
+            message.value = "Login Successful"
+              
+            signIn.setCookie('accessToken',respone.message.accessToken,1)
+            signIn.setCookie('refreshToken',respone.message.refreshToken,1)
+            const thisUser = {
+              id:Number(respone.message.userId),
+              name:respone.message.userName,
+              role:respone.message.userRole,
+              email:respone.message.userEmail
+            }
+            signIn.setCookie('user',JSON.stringify(thisUser),1)
 
-          signIn.statusLogin = true
-          signIn.username = signIn.getCookie('userName')
+            signIn.statusLogin = true
+            signIn.user = JSON.parse(signIn.getCookie('user'))
+
+            if(signIn.user.role !== 'admin'){gotoEvent()}          
+          }
         }else if(respone.status===401){
           console.log(respone.message.message)
           message.value = "Password Incorrect"
@@ -74,9 +89,9 @@
 <template>
       <!-- <div style="margin-top: 10em;"> -->
     <div>
-        <div class="thisEvent">
+        <!-- <div class="thisEvent">
             <button @click="goBack" class="button-18" role="button">Back</button>
-        </div>
+        </div> -->
     <div class="box">
       <h2>Login</h2>
       <hr>

@@ -5,27 +5,29 @@ import com.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-// @CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class EventController {
     @Autowired
     private EventService service;
 
     @GetMapping("")
-    public List<EventAllDTO> getAllEventDTO() {
-        return service.getEventAllDTO();
+    public List<EventAllDTO> getAllEventDTO(HttpServletRequest request, HttpServletResponse response) {
+        return service.getEventAllDTO(request, response);
     }
 
     @GetMapping("/{eventId}")
-    public EventDTO getEventDTOById(@Valid @PathVariable int eventId) {
-        return service.getEventDTOById(eventId);
+    public EventDTO getEventDTOById(@Valid @PathVariable int eventId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        return service.getEventDTOById(eventId, request, response);
     }
-
 
     @GetMapping("/category/{categoryId}")
     public List<EventAllDTO> getEventDTOByCategory(@Valid @PathVariable int categoryId) {
@@ -69,18 +71,18 @@ public class EventController {
     }
 
     @PostMapping("")
-    public int createEvent(@Valid @RequestBody EventAddDTO newEvent) throws ParseException {
-        return service.createEvent(newEvent);
+    public int createEvent(@Valid @RequestBody EventAddDTO newEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+        return service.createEvent(newEvent, request, response);
     }
 
     @DeleteMapping("/{eventId}")
-    public void deleteEvent(@PathVariable int eventId) {
-        service.deleteEvent(eventId);
+    public void deleteEvent(@PathVariable int eventId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        service.deleteEvent(eventId, request, response);
     }
 
     @PutMapping("")
-    public EventDTO editEvent(@Valid @RequestBody EventUpdateDTO updateEvent) throws ParseException {
-        return service.editEvent(updateEvent);
+    public EventDTO editEvent(@Valid @RequestBody EventUpdateDTO updateEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
+        return service.editEvent(updateEvent, request, response);
     }
 
 

@@ -14,7 +14,15 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     public List<Event> findByEventStartTimeBetweenOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime);
     public Event findTopByOrderByIdDesc();
     public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
+    public List<Event> findByBookingEmail(String userEmail);
 
+    @Query(value = "select e.* from (events e JOIN eventcategoryowners eco ON e.eventCategoryId = eco.eventCategoryId) JOIN users u on eco.userId = u.userId " +
+            "where u.userEmail = :userEmail",
+            nativeQuery = true)
+//    @Query(value = "select e.* from events e " +
+//        "where e.eventId = :userId",
+//        nativeQuery = true)
+    public List<Event> lecturerGetEvent(@Param("userEmail") String userEmail);
 
     @Query(value = "select e.* from events e " +
             "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) <= :currentTime " +

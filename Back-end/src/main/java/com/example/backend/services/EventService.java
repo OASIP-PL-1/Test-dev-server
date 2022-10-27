@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import com.auth0.jwt.JWT;
 import com.example.backend.dtos.*;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
@@ -12,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +27,11 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+//select * from eventCategoryOwners;
+//        select u.userName , ec.eventCategoryName
+//        FROM (Users u JOIN eventCategoryOwners eco ON u.userId = eco.userId)
+//        JOIN eventcategories ec ON ec.eventCategoryId = eco.eventCategoryId;
 
 @Service
 public class EventService {
@@ -42,14 +51,37 @@ public class EventService {
     }
 
     //GET method
-    public List<EventAllDTO> getEventAllDTO() {
-        List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
-        return listMapper.mapList(events, EventAllDTO.class, modelMapper);
+    public List<EventAllDTO> getEventAllDTO(HttpServletRequest request, HttpServletResponse response) {
+//        String authorization = request.getHeader("Authorization").substring(7);
+////        String token = JWT.decode()
+//        System.out.println(authorization);
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")) {
+            List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
+            return listMapper.mapList(events, EventAllDTO.class, modelMapper);
+        } else if(role.equals("student")) {
+            List<Event> events = repository.findByBookingEmail(new Authorization().getUserEmailFromRequest(request));
+            return listMapper.mapList(events, EventAllDTO.class, modelMapper);
+        } else if(role.equals("lecturer")) {
+            List<Event> events = repository.lecturerGetEvent(new Authorization().getUserEmailFromRequest(request));
+            return listMapper.mapList(events, EventAllDTO.class, modelMapper);
+        }
+        return null;
     }
 
-    public EventDTO getEventDTOById(int eventId) {
+    public EventDTO getEventDTOById(int eventId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed."));
-        return modelMapper.map(event, EventDTO.class);
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")) {
+            return modelMapper.map(event, EventDTO.class);
+        }
+        if(role.equals("student")){
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            if(event.getBookingEmail().equals(userEmail)) return modelMapper.map(event, EventDTO.class);
+        }
+        response.setStatus(403);
+        response.getWriter().print("Unauthorized.");
+        return null;
     }
 
     public List<EventListOverlapDTO> listEditOverlap(int eventId, String dateTime) throws ParseException {
@@ -98,39 +130,17 @@ public class EventService {
 
 
     //POST method
-    public int createEvent(EventAddDTO newEvent) throws ParseException {
-//        if (newEvent == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The data wasn't fulfilled");
-//        }
-//        if (newEvent.getBookingName() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking name is required.");
-//        }
-//        if (newEvent.getBookingEmail() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking emil is required.");
-//        }
-//        if (newEvent.getEventCategoryId() == 0) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The category must be choosen.");
-//        }
-//        if (newEvent.getStartTime() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date must be chosen.");
-//        }
-//        if (newEvent.getBookingName().length() > 100) {
-//            throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Booking name is too long. Maximum length is 100.");
-//        }
-//        if (newEvent.getBookingEmail().length() > 50) {
-//            throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Booking email is too long. Maximum length is 50.");
-//        }
-//        if (!checkEmail(newEvent.getBookingEmail())) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is not valid");
-//        }
-//        if (checkStartDate(newEvent.getStartTime())) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking date is in the past.");
-//        }
-//        if (newEvent.getNotes() != null) {
-//            if (newEvent.getNotes().length() > 500) {
-//                throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Notes is too long. Maximum length is 500.");
-//            }
-//        }
+    public int createEvent(EventAddDTO newEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+        if(request.getHeader("Authorization") != null){
+            String role = new Authorization().getRoleFromRequest(request);
+            if (role.equals("student")) {
+    //            event.setBookingEmail(new Authorization().getUserEmailFromRequest(request));
+                System.out.println(newEvent.getBookingEmail());
+                System.out.println(new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()));
+                if (!new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()))
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking email didn't match your email.");
+            }
+        }
         if (!(checkOverlap(newEvent.getEventCategoryId(), newEvent.getStartTime()).size() == 0)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The choosen time is overlap other events");
         }
@@ -143,40 +153,58 @@ public class EventService {
         event.setEventDuration(eventCategory.getEventCategoryDuration());
         event.setEventNotes(newEvent.getNotes());
         event.setEventCategory(eventCategory);
+        System.out.println(event.getBookingEmail());
         repository.saveAndFlush(event);
         return repository.findTopByOrderByIdDesc().getId();
     }
 
     //DELETE method
-    public void deleteEvent(int eventId) {
-        repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed"));
-        repository.deleteById(eventId);
+    public void deleteEvent(int eventId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String role = new Authorization().getRoleFromRequest(request);
+        Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed"));
+        if(role.equals("admin")) {
+            repository.deleteById(eventId);
+            return;
+        }
+        if(role.equals("student")){
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            if(event.getBookingEmail().equals(userEmail)) {
+                repository.deleteById(eventId);
+                return;
+            }
+        }
+        response.setStatus(403);
+        response.getWriter().print("UnAuthorized");
     }
 
     //PUT method
-    public EventDTO editEvent(EventUpdateDTO updateEvent) throws ParseException {
-//        if (updateEvent == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The data wasn't fulfilled.");
-//        }
-//        if (updateEvent.getStartTime() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date must be chosen.");
-//        }
-//        if (checkStartDate(updateEvent.getStartTime())) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking date is in the past.");
-//        }
-//        if (updateEvent.getNotes() != null) {
-//            if (updateEvent.getNotes().length() > 500) {
-//                throw new ResponseStatusException(HttpStatus.URI_TOO_LONG, "Notes is too long. Maximum length is 500.");
-//            }
-//        }
+    public EventDTO editEvent(EventUpdateDTO updateEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         Event event = repository.findById(updateEvent.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " event not found."));
-        if (!checkEditOverlap(event, updateEvent.getStartTime())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")){
+            if (!checkEditOverlap(event, updateEvent.getStartTime())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
+            }
+            event.setEventStartTime(updateEvent.getStartTime());
+            event.setEventNotes(updateEvent.getNotes());
+            repository.saveAndFlush(event);
+            return modelMapper.map(event, EventDTO.class);
         }
-        event.setEventStartTime(updateEvent.getStartTime());
-        event.setEventNotes(updateEvent.getNotes());
-        repository.saveAndFlush(event);
-        return modelMapper.map(event, EventDTO.class);
+        if(role.equals("student")){
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            if(event.getBookingEmail().equals(userEmail)){
+                if (!checkEditOverlap(event, updateEvent.getStartTime())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
+                }
+                event.setEventStartTime(updateEvent.getStartTime());
+                event.setEventNotes(updateEvent.getNotes());
+                repository.saveAndFlush(event);
+                return modelMapper.map(event, EventDTO.class);
+            }
+        }
+        response.setStatus(403);
+        response.getWriter().print("Unauthorized.");
+        return null;
     }
 
     //Checkoverlap part------------------

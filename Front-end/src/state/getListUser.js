@@ -11,7 +11,7 @@ export const useListUser = defineStore('listuser',() => {
   
     // const token = ref()
     const getUsers = async () => {
-      console.log(signIn.getCookie('accessToken'))
+      // console.log(signIn.getCookie('accessToken'))
       loading.value = true
       message.value = "loading..."
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`,{
@@ -20,11 +20,11 @@ export const useListUser = defineStore('listuser',() => {
           'Authorization' : 'Bearer '+ signIn.getCookie('accessToken')
         }
       }).catch((error)=> {
-          message.value = "Error Backend Server!!!"
+          message.value = "Not Found Backend Server!!!"
           console.log(error)
           console.log('GET List All User Fail')
       });
-      console.log(res)
+      // console.log(res)
       console.log(res.status)
       if(res.status==200){
         users.value = await res.json()
@@ -37,7 +37,7 @@ export const useListUser = defineStore('listuser',() => {
         if(errorText==="Token is expired."){
           await signIn.sendRefreshToken()
         }else{
-          message.value = "Please login again"
+          message.value = "Please login"
         }
       }else if(res.status===403){
         message.value = "Unauthorized access"

@@ -11,7 +11,7 @@ const closeModal = () => myRouter.go(-1)
         <div class="modal-header"><h3>404 Error : Page Not Found</h3></div>
         <div class="modal-body">Please try again!</div>
         <div class="modal-button">
-          <button @click="closeModal">Close</button>
+          <button class="button-18" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
