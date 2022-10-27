@@ -38,40 +38,45 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
         else {
             String authorizationHeader = request.getHeader("Authorization");
-            System.out.println(authorizationHeader + "|");
-            System.out.println(authorizationHeader.equals("Bearer null"));
-//            if (authorizationHeader.startsWith("Bearer ") || authorizationHeader!="Bearer null" || authorizationHeader!=null) {
-            if((!authorizationHeader.equals("Bearer null")) && (authorizationHeader.startsWith("Bearer"))){
-                try {
-                    String token = authorizationHeader.substring("Bearer ".length());
-                    System.out.println("try");
-                    System.out.println("hnhnhnhnhnhnh");
-                    Object JWTtoken = JWT.decode(token);
+            System.out.println(authorizationHeader);
+//            System.out.println(authorizationHeader.equals("Bearer null"));
+//            System.out.println(authorizationHeader.startsWith("Bearer"));
+            if (authorizationHeader == null) {
+                filterChain.doFilter(request, response);
+            }
+            else {
+                if ((!authorizationHeader.equals("Bearer null")) && (authorizationHeader.startsWith("Bearer"))) {
+                    try {
+                        String token = authorizationHeader.substring("Bearer ".length());
+                        System.out.println("try");
+                        System.out.println("hnhnhnhnhnhnh");
+                        Object JWTtoken = JWT.decode(token);
 //                    System.out.println(JWTtoken);
 //                    System.out.println(JWT.decode(token).getClaims().get("role"));
 //                    JWT.decode(token).getClaims();
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
-                    response.setStatus(401);
-                    response.getWriter().print("Invalid token.");
-                    return;
-                }
-                String token = authorizationHeader.substring("Bearer ".length());
-                System.out.println("try");
-                if (JWT.decode(token).getExpiresAt().before(new Date())) {
-                    response.setStatus(401);
-                    response.getWriter().print("Token is expired.");
-                    return;
-                }
-                response.setStatus(200);
-                System.out.println("Pass all");
-                filterChain.doFilter(request, response);
-            } else {
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                        response.setStatus(401);
+                        response.getWriter().print("Invalid token.");
+                        return;
+                    }
+                    String token = authorizationHeader.substring("Bearer ".length());
+                    System.out.println("try");
+                    if (JWT.decode(token).getExpiresAt().before(new Date())) {
+                        response.setStatus(401);
+                        response.getWriter().print("Token is expired.");
+                        return;
+                    }
+                    response.setStatus(200);
+                    System.out.println("Pass all");
+                    filterChain.doFilter(request, response);
+                } else {
 //                System.out.println("Token is null. Required.");
 //                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 //                response.getWriter().print("Token is required.");
 //                return;
-                filterChain.doFilter(request,response);
+                    filterChain.doFilter(request, response);
+                }
             }
         }
     }

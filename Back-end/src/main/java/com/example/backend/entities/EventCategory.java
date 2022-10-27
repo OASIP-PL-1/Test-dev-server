@@ -2,12 +2,15 @@ package com.example.backend.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "eventCategories")
 public class EventCategory {
     @Id

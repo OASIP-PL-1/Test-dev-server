@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import ViewEvent from '../views/ViewEvent.vue'
 import ViewEventCategory from '../views/ViewEventCategory.vue'
-import NotFoundPage from '../views/NotFoundPage.vue'
+import NotFoundPage from '../views/error/NotFoundPage.vue'
 import ThisEvent from '../views/ThisEvent.vue'
 import AddNewEvent from '../views/AddNewEvent.vue'
 import About from '../views/About.vue'
@@ -124,15 +124,16 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
-  },
-  {
-    name: 'Error401',
-    component: Error401
-  },
-  {
-    name: 'Error403',
-    component: Error403
   }
+  // ,
+  // {
+  //   name: 'Error401',
+  //   component: Error401
+  // },
+  // {
+  //   name: 'Error403',
+  //   component: Error403
+  // }
  
 ]
 
