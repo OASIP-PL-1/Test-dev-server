@@ -6,10 +6,7 @@ import org.hibernate.annotations.Immutable;
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Table(name = "eventCategoryOwners", indexes = {
-        @Index(name = "fk_eventCategoryOwners_eventCategories1_idx", columnList = "eventCategoryId"),
-        @Index(name = "fk_eventCategoryOwners_users1_idx", columnList = "userId")
-})
+@Table(name = "eventCategoryOwners")
 @Entity
 @Setter @Getter
 //@AllArgsConstructor @NoArgsConstructor
