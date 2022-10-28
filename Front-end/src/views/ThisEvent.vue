@@ -270,8 +270,10 @@ const getListOverlap = async (editingEvent) => {
             </div>
                 <div class="button-right">
                     <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
-                    <button @click="showDeleteModal()" :class="['button-18','negative']" role="button">Delete</button>  &ensp;  
-                    <button @click="showEditMode()" class="button-18" role="button">Edit</button>
+                    <button @click="showDeleteModal()" :class="['button-18','negative']" role="button"
+                        v-show="signIn.user.role!=='lecturer'" >Delete</button>  &ensp;  
+                    <button @click="showEditMode()" class="button-18" role="button"
+                        v-show="signIn.user.role!=='lecturer'">Edit</button>
                 </div>
             </div>
 

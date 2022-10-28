@@ -148,9 +148,11 @@
             console.log(dataTime.toISOString().replace(".000Z", "Z"))
             console.log(signIn.user.role)
             let newEmail = ""
-            if(signIn.user.role==='admin'){
+            //ถ้าเป็น guest หรือ admin จะใช้ input email ได้
+            if(signIn.user.role==='admin'||signIn.statusLogin== false){
                 newEmail = newEvent.email
             }else{
+                //แต่ถ้าไม่ใช่ จะใช้ fix email ตาม user.email แทน
                 newEmail = signIn.user.email
             }
             console.log(newEmail)
@@ -173,8 +175,13 @@
             console.log(res.status)
             if(res.status===200){
                 const newId = await res.json()
-                goThisEvent(newId)
-                console.log('Create New Event OK')
+                if(signIn.statusLogin===true){
+                    goThisEvent(newId)
+                    console.log('Create New Event OK')
+                }else{
+                    alert(`Create New Event OK \n your event id : ${newId}`)
+                    clearForm()
+                }
             }else if(res.status===400){
                 console.log("Cannot Create New Event : The data is incorrect")
             }else if(res.status===414){
@@ -233,7 +240,7 @@
                     <th><label for="bEmail">Your email :</label></th>
                     <td>
                         <!-- add guest ด้วย -->
-                        <span v-if="signIn.user.role==='admin'">
+                        <span v-if="signIn.statusLogin == false || signIn.user.role==='admin'">
                             <input type="email" id="bEmail" name="bEmail" v-model="newEvent.email" size="50" maxlength="50" @blur="emailValidation(newEvent.email)">&ensp;
                             <span class="subText">{{newEvent.email.trim().length}} / 50</span>
                         </span>
