@@ -4,8 +4,13 @@ import com.auth0.jwt.JWT;
 import com.example.backend.dtos.*;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
+import com.example.backend.entities.EventCategoryOwner;
+import com.example.backend.entities.User;
+import com.example.backend.repositories.EventCategoryOwnerRepository;
 import com.example.backend.repositories.EventCategoryRepository;
 import com.example.backend.repositories.EventRepository;
+import com.example.backend.repositories.UserRepository;
+import jdk.jfr.Category;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -39,6 +44,10 @@ public class EventService {
     private EventRepository repository;
     @Autowired
     private EventCategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EventCategoryOwnerRepository eventCategoryOwnerRepository;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -78,6 +87,16 @@ public class EventService {
         if(role.equals("student")){
             String userEmail = new Authorization().getUserEmailFromRequest(request);
             if(event.getBookingEmail().equals(userEmail)) return modelMapper.map(event, EventDTO.class);
+        }
+        if(role.equals("lecturer")){
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            User user = userRepository.findByUserEmail(userEmail);
+            EventCategory category = event.getEventCategory();
+            System.out.println(category + " " + user);
+            EventCategoryOwner eventCategoryOwner = eventCategoryOwnerRepository.findByUserIdAndEventCategoryId(user, category);
+            if(eventCategoryOwner!=null){
+                return modelMapper.map(event, EventDTO.class);
+            }
         }
         response.setStatus(403);
         response.getWriter().print("Unauthorized.");
