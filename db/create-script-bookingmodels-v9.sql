@@ -84,17 +84,17 @@ DROP TABLE IF EXISTS `bookingmodels`.`eventCategoryOwners` ;
 
 CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventCategoryOwners` (
   `eventCategoryOwnerId` INT NOT NULL auto_increment,
-  `userId` INT NULL,
+  `userId` INT NOT NULL,
   `eventCategoryId` INT NOT NULL,
   PRIMARY KEY (`eventCategoryOwnerId`),
-  INDEX `fk_eventCategoryOwners_users1_idx` (`userId` ASC) VISIBLE,
-  INDEX `fk_eventCategoryOwners_eventCategories1_idx` (`eventCategoryId` ASC) VISIBLE,
-  CONSTRAINT `fk_eventCategoryOwners_users1`
+  INDEX `fk_eventCategoryOwners_users_idx` (`userId` ASC) VISIBLE,
+  INDEX `fk_eventCategoryOwners_eventCategories_idx` (`eventCategoryId` ASC) VISIBLE,
+  CONSTRAINT `fk_eventCategoryOwners_users`
     FOREIGN KEY (`userId`)
     REFERENCES `bookingmodels`.`users` (`userId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_eventCategoryOwners_eventCategories1`
+  CONSTRAINT `fk_eventCategoryOwners_eventCategories`
     FOREIGN KEY (`eventCategoryId`)
     REFERENCES `bookingmodels`.`eventCategories` (`eventCategoryId`)
     ON DELETE NO ACTION
