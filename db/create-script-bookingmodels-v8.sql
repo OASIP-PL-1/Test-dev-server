@@ -83,18 +83,16 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bookingmodels`.`eventCategoryOwners` ;
 
 CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventCategoryOwners` (
-  `eventCategoryOwnerId` INT NOT NULL auto_increment,
-  `userId` INT NOT NULL,
+  `userId` INT NULL,
   `eventCategoryId` INT NOT NULL,
-  PRIMARY KEY (`eventCategoryOwnerId`),
-  INDEX `fk_eventCategoryOwners_users_idx` (`userId` ASC) VISIBLE,
-  INDEX `fk_eventCategoryOwners_eventCategories_idx` (`eventCategoryId` ASC) VISIBLE,
-  CONSTRAINT `fk_eventCategoryOwners_users`
+  INDEX `fk_eventCategoryOwners_users1_idx` (`userId` ASC) VISIBLE,
+  INDEX `fk_eventCategoryOwners_eventCategories1_idx` (`eventCategoryId` ASC) VISIBLE,
+  CONSTRAINT `fk_eventCategoryOwners_users1`
     FOREIGN KEY (`userId`)
     REFERENCES `bookingmodels`.`users` (`userId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_eventCategoryOwners_eventCategories`
+  CONSTRAINT `fk_eventCategoryOwners_eventCategories1`
     FOREIGN KEY (`eventCategoryId`)
     REFERENCES `bookingmodels`.`eventCategories` (`eventCategoryId`)
     ON DELETE NO ACTION
@@ -137,15 +135,15 @@ values
 (8,'Komkrid Rakdee','komkrid.rak@mail.kmutt.ac.th','student','$argon2id$v=19$m=4096,t=3,p=1$8W61ZOC5RU7sJP5kKRbSqg$OLwZNPeMqxp+g0Vbn+odcA47XMClFN+IswTueVah7F0','2022-08-08 16:00:00+07:00','2022-08-08 16:00:00+07:00'),
 (9,'สมเกียรติ ขยันเรียน','somkiat.kay@kmutt.ac.th','student','$argon2id$v=19$m=4096,t=3,p=1$gBqgjspF45FcIKQEw8GmaQ$alrOCZ0YrDqOu8/aZiLDMGZo4vFkSEAXA0YoHhY0BDQ','2022-08-16 09:00:00+07:00','2022-08-16 09:00:00+07:00');
 
-insert into eventCategoryOwners(eventCategoryOwnerId,userId, eventCategoryId)
+insert into eventCategoryOwners(userId, eventCategoryId)
 values
-    (1,2,1),
-    (2,2,2),
-    (3,5,2),
-    (4,6,3),
-    (5,4,4),
-    (6,3,5),
-    (7,2,5);
+    (2,1),
+    (2,2),
+    (5,2),
+    (6,3),
+    (4,4),
+    (3,5),
+    (2,5);
 
 -- DROP USER 'dev'@'%';
 CREATE USER 'dev'@'%' IDENTIFIED BY 'int221';

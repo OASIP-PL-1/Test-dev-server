@@ -4,9 +4,7 @@ import com.auth0.jwt.JWT;
 import com.example.backend.dtos.*;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
-import com.example.backend.entities.EventCategoryOwner;
 import com.example.backend.entities.User;
-import com.example.backend.repositories.EventCategoryOwnerRepository;
 import com.example.backend.repositories.EventCategoryRepository;
 import com.example.backend.repositories.EventRepository;
 import com.example.backend.repositories.UserRepository;
@@ -46,8 +44,6 @@ public class EventService {
     private EventCategoryRepository categoryRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private EventCategoryOwnerRepository eventCategoryOwnerRepository;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -91,10 +87,13 @@ public class EventService {
         if(role.equals("lecturer")){
             String userEmail = new Authorization().getUserEmailFromRequest(request);
             User user = userRepository.findByUserEmail(userEmail);
-            EventCategory category = event.getEventCategory();
-            System.out.println(category + " " + user);
-            EventCategoryOwner eventCategoryOwner = eventCategoryOwnerRepository.findByUserIdAndEventCategoryId(user, category);
-            if(eventCategoryOwner!=null){
+//            EventCategory category = event.getEventCategory();
+//            System.out.println(category + " " + user);
+//            int eventCategoryId = event.getEventCategory().getId();
+//            if(userRepository.checkLecturerCategory(user.getId(), eventCategoryId)==1){
+//                return modelMapper.map(event, EventDTO.class);
+//            }
+            if(repository.checkLecturerCategory(eventId, user.getId())==1){
                 return modelMapper.map(event, EventDTO.class);
             }
         }

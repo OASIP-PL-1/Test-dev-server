@@ -49,4 +49,11 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
             @Param("endTime") Date endTime
     );
 
+    @Query(value="select count(*)\n" +
+            "from events e JOIN eventcategoryowners e2 on e.eventCategoryId = e2.eventCategoryId\n" +
+            "where e.eventId = :eventId and e2.userId = :userId",
+        nativeQuery = true)
+    public int checkLecturerCategory(@Param("eventId")int eventId,
+                                     @Param("userId")int userId);
+
 }
