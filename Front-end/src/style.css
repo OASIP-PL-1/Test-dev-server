@@ -18,7 +18,7 @@ body {
     overflow-x: hidden;
     -o-object-fit: cover;
     object-fit: cover;
-    cursor: url(../src/assets/icons/apple2.png), auto !important;
+    /* cursor: url(../src/assets/icons/apple2.png), auto !important; */
 }
 .bg-home {
     align-items: center;
@@ -62,7 +62,7 @@ a {
 button {
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
     color: white;
-    cursor: url(../src/assets/icons/apple.png), pointer !important;
+    /* cursor: url(../src/assets/icons/apple.png), pointer !important; */
 }
 button:hover:not([disabled]) {
     background-color: #FFA21A;
@@ -81,7 +81,7 @@ button:active:not([disabled]){
     border-radius: 100px;
     box-sizing: border-box;
     color: #ffffff;
-    cursor: pointer;
+    /* cursor: pointer; */
     display: inline-flex;
     font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
     font-size: 16px;

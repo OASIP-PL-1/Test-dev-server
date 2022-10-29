@@ -3,6 +3,7 @@ package com.example.backend.services;
 import com.example.backend.dtos.*;
 import com.example.backend.entities.Role;
 import com.example.backend.entities.User;
+import com.example.backend.repositories.EventCategoryOwnerRepository;
 import com.example.backend.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,12 @@ import java.util.*;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
-
     @Autowired
     private ListMapper listMapper;
-
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private EventCategoryOwnerRepository eventCategoryOwnerRepository;
 
     Argon2PasswordEncoder encoder = new Argon2PasswordEncoder();
 //    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -80,8 +81,12 @@ public class UserService implements UserDetailsService {
 
     //DELETE method
     public void deleteUser(int userId){
-        repository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Choosen user is not existed."));
-        repository.deleteById(userId);
+        User user = repository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen user is not existed."));
+        if(repository.checkUserTeachEventCategoryOwner(userId)>0){
+            eventCategoryOwnerRepository.deleteByUser(user);
+        } else {
+            repository.deleteById(userId);
+        }
     }
 
     //PUT method

@@ -56,4 +56,10 @@ public interface UserRepository extends JpaRepository <User, Integer> {
 //            nativeQuery = true)
 //    public int checkLecturerCategory(@Param("userId")int userId,
 //                                     @Param("eventCategoryId")int eventCategoryId);
+
+    @Query(value = "select count(*)\n" +
+            "from users u JOIN eventCategoryOwners e on u.userId = e.userId\n" +
+            "where u.userId = :userId",
+            nativeQuery = true)
+    public int checkUserTeachEventCategoryOwner(@Param("userId") int userId);
 }

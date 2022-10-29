@@ -135,7 +135,7 @@
     }
 
     // --- Create New Event ---
-    const createNewEvent = async (newEvent)=>{
+    const createNewEvent = async (newEvent) => {
         console.log(newEvent)
         const status = await checkOverlap(newEvent)
         console.log(status)    // false = overlap = เพิ่มไม่ได้
