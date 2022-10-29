@@ -82,9 +82,8 @@ public class UserService implements UserDetailsService {
     //DELETE method
     public void deleteUser(int userId){
         User user = repository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen user is not existed."));
-        if(repository.checkUserTeachEventCategoryOwner(userId)>0){
+        if(repository.checkUserTeachEventCategoryOwner(userId)>0) {
             eventCategoryOwnerRepository.deleteByUser(user);
-        } else {
             repository.deleteById(userId);
         }
     }
