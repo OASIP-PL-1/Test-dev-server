@@ -16,7 +16,7 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
     public List<Event> findByBookingEmail(String userEmail);
 
-    @Query(value = "select e.* from (events e JOIN eventcategoryowners eco ON e.eventCategoryId = eco.eventCategoryId) JOIN users u on eco.userId = u.userId " +
+    @Query(value = "select e.* from (events e JOIN eventCategoryOwners eco ON e.eventCategoryId = eco.eventCategoryId) JOIN users u on eco.userId = u.userId " +
             "where u.userEmail = :userEmail",
             nativeQuery = true)
 //    @Query(value = "select e.* from events e " +
@@ -50,7 +50,7 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     );
 
     @Query(value="select count(*)\n" +
-            "from events e JOIN eventcategoryowners e2 on e.eventCategoryId = e2.eventCategoryId\n" +
+            "from events e JOIN eventCategoryOwners e2 on e.eventCategoryId = e2.eventCategoryId\n" +
             "where e.eventId = :eventId and e2.userId = :userId",
         nativeQuery = true)
     public int checkLecturerCategory(@Param("eventId")int eventId,
