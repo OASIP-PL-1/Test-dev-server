@@ -85,6 +85,8 @@ public class UserService implements UserDetailsService {
         if(repository.checkUserTeachEventCategoryOwner(userId)>0) {
             eventCategoryOwnerRepository.deleteByUser(user);
             repository.deleteById(userId);
+        } else {
+            repository.deleteById(userId);
         }
     }
 
