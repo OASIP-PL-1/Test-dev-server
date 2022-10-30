@@ -55,7 +55,11 @@ const routes = [
   {
     path: '/view-event/:eventId',
     name: 'ThisEvent',
-    component: ThisEvent
+    component: ThisEvent,
+    beforeEnter: (to, from, nextTick) => {
+      checkError401(nextTick)
+    }
+    
   },
   {
     path: '/create-new-event',
@@ -84,18 +88,21 @@ const routes = [
     path: '/view-user/:userId',
     name: 'ThisUser',
     component: ThisUser,
-    // beforeEnter: (to, from) => {
-    //   // reject the navigation
-    //   console.log(to.params.userId)
-    //   const signIn = useSignIn()
-    //  //ถ้า จะดู detail ได้เฉพาะ user ตัวเอง
-    //   if (signIn.user.id == to.params.userId){
-    //     console.log('user id match')
-    //   }else{
-    //     console.log('user id NOT match')
-    //   }
-    //   // return false
-    // },
+    beforeEnter: (to, from, nextTick) => {
+      // reject the navigation
+      console.log(to.params.userId)
+      const signIn = useSignIn()
+      if(signIn.statusLogin === false){nextTick({ name:'Error401'})}
+      else if(signIn.statusLogin === true && signIn.user.role === 'admin'){nextTick({name:'Error403'})}
+      else{nextTick()}
+     //ถ้า จะดู detail ได้เฉพาะ user ตัวเอง
+      // if (signIn.user.id == to.params.userId){
+      //   console.log('user id match')
+      // }else{
+      //   console.log('user id NOT match')
+      // }
+      // return false
+    },
   },
   {
     path: '/create-user',

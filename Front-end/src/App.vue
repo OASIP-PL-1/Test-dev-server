@@ -65,7 +65,7 @@
                             <router-link :to="{name:'ViewEventCategory'}"><p style="float:left;">Category</p></router-link>
                             <router-link :to="{name:'AddNewEvent'}"><p style="float:left;">Book</p></router-link>
                             <router-link :to="{name:'ViewUser'}"><p style="float:left;">User</p></router-link>
-                            <router-link :to="{name:'About'}"><p style="float:left;">About</p></router-link>
+                            <!-- <router-link :to="{name:'About'}"><p style="float:left;">About</p></router-link> -->
                         </span>
                     </span> 
                 </span>
