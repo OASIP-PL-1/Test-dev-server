@@ -22,7 +22,15 @@ public class EventFilter extends OncePerRequestFilter {
         if(request.getServletPath().startsWith("/api/events")) {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader == null) {
-                filterChain.doFilter(request, response);
+                System.out.println("Guest's token is null");
+                if(request.getMethod().equals(HttpMethod.POST.toString())){
+                    System.out.println("Guest can create event only");
+                    filterChain.doFilter(request,response);
+                } else {
+                    response.setStatus(401);
+                    response.getWriter().print("Token is required.");
+                    return;
+                }
             } else {
                 if (!authorizationHeader.equals("Bearer null")) {
                     String token = authorizationHeader.substring("Bearer ".length());
@@ -51,20 +59,14 @@ public class EventFilter extends OncePerRequestFilter {
                     }
                 } else {
                     System.out.println("Guest is accessing /api/events");
-                    System.out.println(request.getServletPath() + request.getMethod());
-//                if(request.getMethod().equals(HttpMethod.POST.toString())) {
-                    response.setStatus(200);
-                    filterChain.doFilter(request, response);
-//                } else {
-//                    response.setStatus(401);
-//                    response.getWriter().print("Token is required.");
-//                    return;
-//                }
-
-//                response.setStatus(403);
-//                response.getWriter().print("Unauthorized.");
-//                System.out.println("EventFilter : You aren't admin.");
-//                return;
+                    if(request.getMethod().equals(HttpMethod.POST.toString())){
+                        System.out.println("Guest can create event only");
+                        filterChain.doFilter(request,response);
+                    } else {
+                        response.setStatus(401);
+                        response.getWriter().print("Token is required.");
+                        return;
+                    }
                 }
             }
         }
