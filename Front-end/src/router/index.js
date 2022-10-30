@@ -93,7 +93,7 @@ const routes = [
       console.log(to.params.userId)
       const signIn = useSignIn()
       if(signIn.statusLogin === false){nextTick({ name:'Error401'})}
-      else if(signIn.statusLogin === true && signIn.user.role === 'admin'){nextTick({name:'Error403'})}
+      else if(signIn.statusLogin === true && signIn.user.role !== 'admin'){nextTick({name:'Error403'})}
       else{nextTick()}
      //ถ้า จะดู detail ได้เฉพาะ user ตัวเอง
       // if (signIn.user.id == to.params.userId){
