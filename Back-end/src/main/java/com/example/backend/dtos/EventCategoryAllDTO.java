@@ -31,4 +31,6 @@ public class EventCategoryAllDTO {
     @Max(value = 480, message = "Duration's maximum is 480 minutes.")
     @NotNull(message = "Duration is required.")
     private int duration;
+
+
 }

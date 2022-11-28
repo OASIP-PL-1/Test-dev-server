@@ -2,10 +2,18 @@
     import {ref, onBeforeMount, onMounted} from 'vue'    
     import {useRoute, useRouter} from 'vue-router'
     import {useDatetimeFormat} from '../state/datetimeFormat.js'
-    import cancel_icon from '../components/icons/cancel.vue'
-    import EditUser from '../components/EditUser.vue'
+    // import cancel_icon from '../components/icons/iconCancel.vue'
+    import modalEditUser from '../components/modalEditUser.vue'
+    import modalDeleteUser from '../components/modalDeleteUser.vue'
     import {useListUser} from '../state/getListUser.js'
     import {useSignIn} from '../state/signIn.js'
+
+    import IconLoading from '../components/icons/iconLoading.vue'
+    import IconMore from '../components/icons/iconMore.vue'
+    import IconEdit from '../components/icons/iconEdit.vue'
+    import IconDelete from '../components/icons/iconDelete.vue'
+    import Dot from '../components/icons/dot.vue'
+    
 
     const getListUser = useListUser() 
 
@@ -40,8 +48,9 @@
             showDetail.value = true
             loading.value = false
         }else if(res.status===404){
-            console.log(`Not Found! This User id: ${params.userId}`)
+            // console.log(`Not Found! This User id: ${params.userId}`)
             showDetail.value = false
+            message.value = `-- Not Found Data of User ID : ${params.userId} --`
         }else if(res.status===401){
             console.log('Please Login')
             goToViewUser()
@@ -51,28 +60,7 @@
         }
         loading.value = false
     }
-    //*****ย้ายไปใน state แล้ว */
-    // -- get list All User for check unique name and email --
-    // const userCheckList = ref()
-
-    // const getUserCheckList = async () => {
-    //     loading.value = true
-    //     message.value = "loading..."
-    //     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`)
-    //       .catch((error)=> {
-    //         message.value = "Not Found Backend Server!!!"
-    //         console.log(error)
-    //         console.log('GET List All User Fail')
-    //     });
-    //     userCheckList.value = await res.json()
-    //     userCheckList.value = userCheckList.value.filter((user) => user.id !== thisUser.value.id)
-    //     loading.value = false
-    //     if(res.status==200){
-    //       console.log(`GET List All User OK`)
-    //       console.log(res.status)
-    //     }
-    //   }
-
+    
     onBeforeMount(async () => {
         await getThisUser()
     })
@@ -83,32 +71,6 @@
 
     // random image user 
     const pathImg = (userId) => `${import.meta.env.BASE_URL}humans/human${userId%8+1}.png`
-
-    // DELETE User
-    const removeUser = async () => {
-        if(confirm("Are you sure delete this account?")==true){
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${thisUser.value.id}` , {
-                method: 'DELETE',
-                headers:{
-                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
-                }
-            }).catch(error => console.log(error) );
-            console.log(res.status)
-            if (res.status===200) {
-                console.log('DELETE successfully')
-                goBack()
-            }else if(res.status===404){
-                console.log(`Not Found! This User id: ${thisUser.value.id}`)
-            }else if(res.status===401){
-                console.log('Please login')
-            }else if(res.status===403){
-                console.log('Unauthorized access')
-            }else{
-                console.log('Error, Cannot Delete This User')
-                console.log(res.status)
-            }
-        }
-    }
 
     // --- Edit Mode ---
     const editMode = ref(false)
@@ -160,12 +122,45 @@
                 }
             }
         }
+
+
+    // DELETE User
+    const modalStatusDelete = ref(false)
+    const showDeleteModal = () => {modalStatusDelete.value = true}
+    const hideDeleteModal = () => {modalStatusDelete.value = false}
+
+    const removeUser = async () => {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${thisUser.value.id}` , {
+            method: 'DELETE',
+            headers:{
+            'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+            }
+        }).catch(error => console.log(error) );
+        console.log(res.status)
+        if (res.status===200) {
+            console.log('DELETE successfully')
+            goToViewUser()
+        }else if(res.status===404){
+            console.log(`Not Found! This User id: ${thisUser.value.id}`)
+        }else if(res.status===401){
+            console.log('Please login')
+        }else if(res.status===403){
+            console.log('Unauthorized access')
+        }else{
+            console.log('Error, Cannot Delete This User')
+        }
+    }
+
+    const menuToggle = () => {
+    const toggleMenu = document.getElementById("toggle-edit")
+        toggleMenu.classList.toggle('showToggle')
+    }
 </script>
  
 <template>
     <!-- <div style="margin-top: 10em;"> -->
         <!-- <button @click="goBack" class="button-18" role="button">Back</button>&ensp; -->
-        <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
+        <!-- <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
         <div v-else-if="!showDetail" class="NotFoundText" style="margin-top: 2em;">
         -- Not Found Data of User ID : {{params.userId}} --
         </div>
@@ -185,7 +180,6 @@
                         <p><b>Updated on : </b>{{datetimeFormat.showDateTimeZone(new Date(thisUser.updatedOn))}}</p>
                         <br>
                         <span class="button-right">
-                            <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
                             <button :class="['button-18','negative']" role="button" @click="removeUser()">Delete</button>  &ensp;  
                             <button class="button-18" role="button" @click="showEditMode()">Edit</button>
                         </span>
@@ -199,11 +193,83 @@
                 :users="getListUser.userCheckListEdit"
                 @hideEditMode="hideEditMode"
                 @save="updateUser" />
+        </div> -->
+
+        <div v-if="loading" class="text-blue-800 my-16 text-center"><span v-if="message=='loading...'"><IconLoading/></span><span v-else>{{message}}</span></div>
+        <div v-else-if="!showDetail" class="text-red-600 my-16 text-center">{{message}}</div>
+        <div v-else class="mx-10 w-auto mt-5">
+            <div class="mb-4 font-semibold"><button @click="goToViewUser()" class="underline hover:text-yellow-300">User</button> / Detail </div>
+            <div class="bg-white rounded-2xl flex flex-row mx-auto px-10 py-5 w-4/5 text-[16px]">
+                <img :src="pathImg(thisUser.id)" alt="human" class="w-48 h-48 my-5 mx-auto"/>
+                <div class="flex flex-col w-full mx-7 my-5">
+                    <h3 class="font-semibold text-[20px]">{{thisUser.userName}}</h3>
+                    <p class="py-1">{{thisUser.userEmail}}</p>
+                    <div class="py-4">
+                        <strong>role </strong>
+                        <div class="my-auto mx-2 w-24 py-1 pl-1 pr-2 text-center rounded-md border-2 inline">
+                            <Dot v-if="thisUser.userRole=='admin'"  class="w-7 h-7 inline text-red-500"/>
+                            <Dot v-else-if="thisUser.userRole=='lecturer'" class="w-7 h-7 inline text-blue-500"/>
+                            <Dot v-else-if="thisUser.userRole=='student'" class="w-7 h-7 inline text-yellow-400"/>
+                            {{thisUser.userRole}}
+                        </div>
+                    </div>
+                    <div class="flex flex-row my-3">
+                    <div class="basis-1/2 px-1">
+                        <h4>created on</h4>
+                        <p>{{datetimeFormat.showDateTimeZone(new Date(thisUser.createdOn))}}</p>
+                    </div>
+                    <div class="basis-1/2 px-1">
+                        <h4>updated on</h4>
+                        <p>{{datetimeFormat.showDateTimeZone(new Date(thisUser.updatedOn))}}</p>
+                    </div>
+                </div>
+                </div>
+
+            <IconMore @click="menuToggle()" class="w-7 h-7 float-right text-gray-400" />
+                <span id="toggle-edit" class="absolute top-[175px] right-[120px] py-2 bg-[#E3ECFC] w-28 box-border drop-shadow-md rounded-xl text-gray-700 
+                            transition duration-500 opacity-0 invisible">
+                    <div class="flex flex-col">
+                        <div @click="showEditMode()" class="pr-4 py-2 inline hover:bg-white
+                                    active:text-[#FFCB4C] hover:text-[#3333A3] hover:underline">
+                            <IconEdit class="w-5 h-5 ml-5 mr-2 inline align-top"/>Edit
+                        </div>
+                        <div @click="showDeleteModal()" class="pr-4 py-2 inline hover:bg-white
+                                    active:text-[#FFCB4C] hover:text-[#3333A3] hover:underline">
+                            <IconDelete class="w-5 h-5 ml-5 mr-2 inline align-top"/>Delete
+                    </div>
+                    </div>
+                </span>
+            </div>
+            
+            <div v-show="editMode">
+            <modalEditUser :thisUser="thisUser"
+                :users="getListUser.userCheckListEdit"
+                @hideEditMode="hideEditMode"
+                @save="updateUser" />
+            </div>
+
+            <modalDeleteUser 
+                :thisUser="thisUser"    
+                :modalStatusDelete="modalStatusDelete"
+                @hideDeleteModal="hideDeleteModal"
+                @removeUser="removeUser"/>
+
         </div>
+
 </template>
  
 <style scoped>
-    .box {
+h4{
+    font-weight: bold;
+    font-size: 14px;
+    color: rgb(188, 188, 188);
+    
+}
+.showToggle {
+    visibility: visible;
+    opacity: 1;
+}
+    /* .box {
         background-color: #3333A3;
         padding: 1em 2em 3em 2em;
         border-radius: 30px;
@@ -225,7 +291,6 @@
     }
     .button-right {
         float: right;
-        /* margin: 0 10% 2em 0; */
     }
     .modal-mask {
         display: block;
@@ -242,7 +307,6 @@
         vertical-align: middle; 
     }
     .modal-container {
-        /* width: 800px; */
         max-width: 800px;
         padding: 20px 30px;
         background-color: #fff;
@@ -266,5 +330,5 @@
     }
     .close{
         float: right;
-    }
+    } */
 </style>

@@ -1,15 +1,30 @@
 <script setup>
-    import {ref, onBeforeMount} from 'vue'
+    import {ref, computed,onBeforeMount} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
-    import EditEvent from '../components/EditEvent.vue';
     import {useDatetimeFormat} from '../state/datetimeFormat.js'
     import { useSignIn } from '../state/signIn.js';
+    import modalDeleteEvent from '../components/modalDeleteEvent.vue'
+    import modalEditEvent from '../components/modalEditEvent.vue'
 
-    const signIn = useSignIn()
-    
-    const {params} = useRoute()
+    // import Icons
+    import IconSchedule from '../components/icons/iconSchedule.vue'
+    import IconMore from '../components/icons/iconMore.vue'
+    import IconEdit from '../components/icons/iconEdit.vue'
+    import IconDelete from '../components/icons/iconDelete.vue'
+    import IconLoading from '../components/icons/iconLoading.vue'
+
     const datetimeFormat = useDatetimeFormat()
+    const {params} = useRoute()
+    const signIn = useSignIn()
 
+// --- Go back --- 
+    const myRouter = useRouter()
+    const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
+    const goToError401 = () => myRouter.push({ name: 'Error401'})
+    const goToError403 = () => myRouter.push({ name: 'Error403'})
+    const goToError404 = () => myRouter.push({ name: 'Error404'})
+    const goToError500 = () => myRouter.push({ name: 'Error500'})
+    
 // --- Get all list --- 
     const thisEvent = ref({})
     const showDetail = ref({})
@@ -31,16 +46,24 @@
         console.log(error)
     });
     console.log(res.status)
-    if(res.status===200){
+        if(res.status===200){
             thisEvent.value = await res.json()
             console.log(`GET This Event id: ${params.eventId} OK`)
+            loading.value=false
             showDetail.value = true
         }else if(res.status===404){
             console.log(`Not Found! This Event id: ${params.eventId}`)
             showDetail.value = false
+            message.value = `Not Found! This Event id: ${params.eventId}`
         }else if(res.status===401){
-            console.log('Please login')
-            goToError401()
+            let errorText = await res.text()
+            console.log(errorText)
+            if(errorText==="Token is expired."){
+                await signIn.sendRefreshToken()
+            }else{
+                message.value = "Please login"
+                goToError401()
+            }
         }else if(res.status===403){
             console.log('Unauthorized access')
             goToError403()
@@ -50,16 +73,8 @@
 
     onBeforeMount(async () => {
       await getThisEvent()
+      edit()
     })
-// -- random image --
-    const pathImg = `${import.meta.env.BASE_URL}humans/human${(params.eventId%8)+1}.png`
-
-// --- Go back --- 
-    const myRouter = useRouter()
-    const goBack = () => myRouter.go(-1)
-    const goToViewEvent= () => myRouter.push({ name: 'ViewEvent'})
-    const goToError401 = () => myRouter.push({ name: 'Error401'})
-    const goToError403 = () => myRouter.push({ name: 'Error403'})
 
 // --- GET List Overlap ---    
 const listOverlap = ref([])
@@ -81,7 +96,7 @@ const getListOverlap = async (editingEvent) => {
         console.log(`-- Get List Overlap Times --`)
         console.log(listOverlap.value)
     }else if(res.status===404){
-        console.log(`Not Found This Event id: ${params.eventId}`)
+        console.log(`Not Found This Event id: ${editingEvent.eventId}`)
     }else if(res.status===401){
         console.log('Please login')
     }else if(res.status===403){
@@ -99,10 +114,23 @@ const getListOverlap = async (editingEvent) => {
         editMode.value = false
         overlapStatus.value = true
         listOverlap.value = []
+        edit()
+    }
+    const editingEvent =ref({})
+    const edit = ()=>{
+        editingEvent.value = {
+            id: thisEvent.value.id,
+            dateTime : thisEvent.value.startTime,
+            date : thisEvent.value.startTime.substring(0, 10),
+            time : thisEvent.value.startTime.substring(11, 16),
+            notes : thisEvent.value.notes,
+            attachmentName : thisEvent.value.eventAttachmentName
+        }
     }
 
 // --- Edit---
-    const updateEvent = async (editingEvent)=>{
+
+    const updateEvent = async (editingEvent,file)=>{
         const status = await checkOverlap(editingEvent)
         console.log(status)
         if(!status){
@@ -111,6 +139,14 @@ const getListOverlap = async (editingEvent) => {
             await getListOverlap(editingEvent)
         }else{
             // false ไม่เข้า ส่งไป backend
+            if(file !== null){
+                const nameUploadFile = await uploadFile(file)
+                console.log(nameUploadFile)
+                if(nameUploadFile !== false){
+                    editingEvent.attachmentName = nameUploadFile
+                }
+            }
+            console.log(editingEvent)
             const dataTime = new Date(editingEvent.dateTime)
             if(editingEvent.notes !== null){
                 if(editingEvent.notes.trim().length === 0){
@@ -129,7 +165,8 @@ const getListOverlap = async (editingEvent) => {
                 body: JSON.stringify({
                     id : editingEvent.id,
                     startTime: dataTime.toISOString().replace(".000Z", "Z"),
-                    notes: editingEvent.notes
+                    notes: editingEvent.notes,
+                    eventAttachmentName : editingEvent.attachmentName
                 })
             }).catch(error => console.log(error) );
             console.log(res.status)
@@ -139,20 +176,50 @@ const getListOverlap = async (editingEvent) => {
                 console.log(thisEvent.value)         
                 hideEditMode()
             }else if(res.status===400){
-                console.log("Cannot Edit This Event : The data is incorrect")
+                alert("Cannot Edit This Event : The data is incorrect")
             }else if(res.status===414){
-                console.log("Cannot Edit This Event  : The data length in the input field is too large. Please try again.")
+                alert("Cannot Edit This Event : The data length in the input field is too large. Please try again.")
             }else if(res.status===404){
-                console.log("Cannot Edit This Event : Not Found! Event id")
+                alert(`Cannot Edit This Event id : ${editingEvent.id}`)
             }else if(res.status===401){
-                console.log('Please login')
+                // alert('Please login')
+                goToError401()
             }else if(res.status===403){
-                console.log('Unauthorized access')
+                // alert('Unauthorized access')
+                goToError403()
             }else{
-                console.log("Error, Cannot Create New Event")
+                alert("Error, Cannot Create New Event")
             }
         }
   }
+
+  // --- Upload File ---
+  const uploadFile = async (file) => {
+        // console.log(inputFile.value.size)
+            if(file !== null){
+                if(file.size <= 10485760){
+                var data = new FormData()
+                data.append('file', file)
+                const res = await fetch(`${import.meta.env.VITE_BASE_URL}/files`,{
+                    method:'POST',
+                    headers:{
+                        'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+                    },
+                    body: data
+                    }
+                    )
+                    .catch(
+                        error => console.log(error) 
+                    )
+                // input.value = null
+                const nameUploadFile = await res.text()
+                return nameUploadFile
+                }else if(file.size > 10485760){
+                    alert('ขนาดไฟล์ใหญ่เกิน')
+                    return false
+                }
+            }
+        }
 
 //Check overlap----------------
     const overlapStatus = ref(true)
@@ -176,13 +243,18 @@ const getListOverlap = async (editingEvent) => {
             console.log(res.status)
         if(res.status==200){
             overlapStatus.value = await res.json()
-            console.log(`--- Check Overlap Status ---`)
+            console.log('--- Check Overlap Status ---')
+            if(overlapStatus.value===false){alert(`--- Check Overlap Status --- \n ${overlapStatus.value} = This Event Overlap!`)}
         }else if(res.status===401){
-            console.log('Please login')
+            // console.log('Please login')
+            goToError401()
         }else if(res.status===403){
-            console.log('Unauthorized access')
+            // console.log('Unauthorized access')
+            goToError403()
+        }else if(res.status===404){
+            alert(`Not Found! This Event id: ${id}`)
         }
-        return overlapStatus.value
+            return overlapStatus.value
     }
     
 // --- Delete---
@@ -211,10 +283,43 @@ const getListOverlap = async (editingEvent) => {
             console.log('Error, Cannot Delete This Event')
         }
     }
+
+    const menuToggle = () => {
+        const toggleMenu = document.getElementById("toggle-edit")
+        toggleMenu.classList.toggle('showToggle')
+    }
+
+    const downloadFile = async (filename) => {
+        console.log(filename)
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/files/${filename}`,{
+            method:'GET',
+            headers:{
+                'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
+            }
+        }).catch(
+            error => console.log(error) 
+        )
+        //error 500
+        
+
+        console.log(res)
+        console.log(res.url)
+        // let blob = new Blob([res.url]);
+        let downloadElement = document.createElement("a");
+        // let href = window.URL.createObjectURL(blob); 
+        downloadElement.href = res.url;
+        downloadElement.download = filename; 
+        document.body.appendChild(downloadElement);
+        downloadElement.click(); 
+        document.body.removeChild(downloadElement); 
+        window.URL.revokeObjectURL(res.url); 
+       
+    }
 </script> 
 
 <template>
-    <div style="margin-top: 10em;">
+
+    <!-- <div style="margin-top: 10em;">
         <div class="thisEvent">
             <button @click="goBack" class="button-18" role="button">Back</button>&ensp;
             <div v-if="loading" class="subText" style="margin-top: 2em;">{{message}}</div>
@@ -228,7 +333,6 @@ const getListOverlap = async (editingEvent) => {
                     <div class="header">
                         <div class="grid-container">
                             <span class="grid-item-pic">
-                            <!-- <img src="/humans/human1.png" alt="human"> -->
                             <img :src="pathImg" alt="human">
                             </span>
                             <span class="grid-item">
@@ -269,7 +373,6 @@ const getListOverlap = async (editingEvent) => {
             </div>            
             </div>
                 <div class="button-right">
-                    <!-- <span v-show="checkDateTime">This event cannot be edited because it has passed.</span>&ensp; -->
                     <button @click="showDeleteModal()" :class="['button-18','negative']" role="button"
                         v-show="signIn.user.role!=='lecturer'" >Delete</button>  &ensp;  
                     <button @click="showEditMode()" class="button-18" role="button"
@@ -285,13 +388,13 @@ const getListOverlap = async (editingEvent) => {
                     :selectedDate="selectedDate"
                     @hideEditMode="hideEditMode"
                     @save="updateEvent"/>
-            </div>
+            </div> -->
 
         <!-- Modal Delete -->
-            <div class="modal-mask" v-show=modalStatusDelete style="display:block">
-                <div class="modal-wrapper">
+            <!-- <div class="modal-mask" v-show=modalStatusDelete style="display:block">
+                <div class="modal-wrapper"> -->
                 <!-- Modal content -->
-                    <div class="modal-container">
+                    <!-- <div class="modal-container">
                         <span class="close" @click="hideDeleteModal()" >&times;</span>
                         <div class="modal-header">
                             <h3>Do you want to delete this event ?</h3>
@@ -302,152 +405,110 @@ const getListOverlap = async (editingEvent) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
+        <!-- </div> -->
+    <!-- </div> -->
+    
+    <div v-if="loading" class="text-blue-800 my-16 text-center"><span v-if="message=='loading...'"><IconLoading/></span><span v-else>{{message}}</span></div>
+    <div v-else-if="!showDetail" class="text-red-600 my-16 text-center">{{message}}</div>
+    <div v-else class="mx-10 w-auto mt-5">
+        <div class="mb-4 font-semibold"><button @click="goToViewEvent()" class="underline hover:text-yellow-300">Event</button> / Detail </div>
+        <div class="bg-white rounded-2xl flex flex-row mx-auto px-10 py-5">
+            <IconSchedule class="w-28 h-24 text-[#9F9FF9]"/>
+            <div class="flex flex-col w-full mx-7">
+                <div class="my-3">
+                    <h4>booking name</h4>
+                    <p>{{thisEvent.bookingName}}</p>
+                </div>
+
+                <div class="my-3">
+                    <p><b>email : </b>{{thisEvent.bookingEmail}}</p>
+                </div>
+
+                <div class="flex flex-row my-3">
+                    <div class="basis-1/2">
+                        <h4>category Name</h4>
+                        <p>{{thisEvent.categoryName}}</p>
+                    </div>
+                    <div class="basis-1/2">
+                        <h4>duration</h4>
+                        <p>{{thisEvent.duration}} min.</p>
+                    </div>
+                </div>
+        <hr/>
+                <div class="flex flex-row my-3">
+                    <div class="basis-1/2">
+                        <h4>date</h4>
+                        <p>{{datetimeFormat.showDate(new Date(thisEvent.startTime))}}</p>
+                    </div>
+                    <div class="basis-1/2">
+                        <h4>time</h4>
+                        <p>{{datetimeFormat.showTime(new Date(thisEvent.startTime))}} - {{datetimeFormat.showTime(datetimeFormat.addMinutes(new Date(thisEvent.startTime),thisEvent.duration))}}</p>
+                    </div>
+                </div>
+        <hr/>
+                <div class="my-3">
+                    <h4>note</h4>
+                    <p v-if="thisEvent.notes === null">-</p>
+                    <p v-else>{{thisEvent.notes}}</p>
+                </div>
+                <div class="my-3">
+                    <h4>file</h4>
+                    <p v-if="thisEvent.eventAttachmentName === null">-</p>
+                    <button v-else @click="downloadFile(thisEvent.eventAttachmentName)"
+                            class="border-2 border-blue-500 px-3 py-1 rounded-lg text-blue-600 bg-[#E3ECFC]">{{thisEvent.eventAttachmentName}}</button>
+                </div>
+        
+        <!-- Toggle edit and Delete -->
+        </div>
+            <IconMore v-show="signIn.user.role!=='lecturer'" @click="menuToggle()" class="w-7 h-7 float-right text-gray-400" />
+            <span id="toggle-edit" class="absolute top-[170px] right-[70px] py-2 bg-[#E3ECFC] w-28 box-border drop-shadow-md rounded-xl text-gray-700 
+                         transition duration-500 opacity-0 invisible">
+                <div class="flex flex-col">
+                    <div @click="showEditMode()" class="pr-4 py-2 inline hover:bg-white
+                                active:text-[#FFCB4C] hover:text-[#3333A3] hover:underline">
+                        <IconEdit class="w-5 h-5 ml-5 mr-2 inline align-top"/>Edit
+                    </div>
+                    <div @click="showDeleteModal()" class="pr-4 py-2 inline hover:bg-white
+                                active:text-[#FFCB4C] hover:text-[#3333A3] hover:underline">
+                        <IconDelete class="w-5 h-5 ml-5 mr-2 inline align-top"/>Delete
+                </div>
+                </div>
+            </span>
         </div>
     </div>
+    <!-- Modal Edit -->
+    <div v-show="editMode">
+    <modalEditEvent
+        :thisEvent="thisEvent"
+        :editingEvent="editingEvent"
+        :overlapStatus="overlapStatus"
+        :listOverlap="listOverlap"
+        :selectedCategory="selectedCategory"
+        :selectedDate="selectedDate"
+        @hideEditMode="hideEditMode"
+        @save="updateEvent"/>
+    </div>
+               
+    <!-- Modal Delete -->
+    <modalDeleteEvent :modalStatusDelete="modalStatusDelete"
+        @hideDeleteModal="hideDeleteModal"
+        @removeEvent="removeEvent"/>
+
+
 </template>
  
 <style scoped>
-    h3 {
-        color: #FFA21A;
-    }
-    b {
-        color: #FFCB4C;
-    }
-    img {
-        text-align: center;
-        width: 100%;
-        -o-object-fit: cover;
-        object-fit: cover;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    table {
-        width: 70%;
-        margin: 1em 3em;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    th {
-        width: 30%;
-        /* min-width: 125px; */
-        text-align: right;
-        padding: 0.25em 1em;
-        color: #FFCB4C;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    td {
-        width: 30%;
-        /* min-width: 150px; */
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    .subText{
-        color: gray;
-        text-align: center;
-    }
-    .center {
-        margin: auto;
-        width: 80%;
-    }
-    .header {
-        margin: 1em 3em;
-    }
-    .box {
-        background-color: #3333A3;
-        padding: 1em 2em 3em 2em;
-        border-radius: 30px;
-        margin-top: 1em;
-        margin-bottom: 1em;
-        margin-left: auto;
-        margin-right: auto;
-        color: white;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    .NotFoundText{
-        color: gray;
-        text-align: center;
-    }
-    .button-right {
-        float: right;
-        margin: 0 10% 2em 0;
-    }
-    .thisEvent { 
-        margin-left: 1em;
-        margin-right: 1em;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-    .modal-mask {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        transition: opacity 0.3s ease;
-    }
-    .modal-wrapper {
-        margin-top: 15em;
-        vertical-align: middle; 
-    }
-    .modal-container {
-        width: 400px;
-        padding: 20px 30px;
-        background-color: #fff;
-        border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-        margin: auto;
-        text-align: center;
-    }
-    .modal-header h3 {
-        color: rgb(0, 0, 0);
-        margin: 2em 0em;
-    }
-    .modal-body {
-        margin: 20px 0;
-    }
-    .modal-button {
-        display: flex;
-        justify-content: end;
-    }
-    .close {
-        color: #aaaaaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    .grid-container {
-        display: grid;
-        grid-template-columns: 10% 90%;
-        gap: 2em;
-    }
-    .grid-item-pic {
-        -o-object-fit: cover;
-        object-fit: cover;
-        min-width: 100px;
-    }
-    .grid-item {
-        -o-object-fit: cover;
-        object-fit: cover;
-        padding-left: 20px;
-    }
-    .confirmbt {
-        background-color: #fd7038;
-    }
-    .confirmbt:hover:not([disabled]) {
-        background-color: #FFA21A;
-        color: white;
-        transition-duration: .1s;
-    }
+h4, b{
+    font-weight: bolder;
+    color: #3333A3;
+}
+p {
+    font-size: 16px;
+    margin-top: 0.25em;
+}
+.showToggle {
+    visibility: visible;
+    opacity: 1;
+}
 </style>

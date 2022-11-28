@@ -1,6 +1,8 @@
 <script setup>
     import {ref, computed} from 'vue'
-    import {useRouter} from 'vue-router'
+
+    import IconCancel from './icons/iconCancel.vue'
+
     defineEmits(['hideEditMode','save'])
     const props = defineProps({
         thisUser:{
@@ -19,6 +21,15 @@
         userEmail : props.thisUser.userEmail,
         userRole : props.thisUser.userRole
     })
+
+    const resetEditUser = () =>{
+      editingUser.value = {
+        id : props.thisUser.id,
+        userName : props.thisUser.userName,
+        userEmail : props.thisUser.userEmail,
+        userRole : props.thisUser.userRole
+      }
+    }
 
     const userCheckList = ref(props.users)
 
@@ -65,12 +76,13 @@
         matchEmailStatus.value = false
       }
     }
-    const myRouter = useRouter()
-    const goBack = () => myRouter.go(-1)
+
+    const pathImg = (userId) => `${import.meta.env.BASE_URL}humans/human${userId%8+1}.png`
+
 </script>
  
 <template>
-  <div class="modal-mask" style="display:block">
+  <!-- <div class="modal-mask" style="display:block">
     <div class="modal-wrapper">
       <div class="modal-container">
       <span class="close" @click="goBack()" >&times;</span>
@@ -104,11 +116,76 @@
         </div>
       </div>
     </div>
-  </div>   
+  </div>    -->
+<div class="bg-black w-full h-full bg-opacity-30 fixed top-0 left-0 block">
+  <div class="bg-white w-[700px] m-auto mt-32 py-3 px-5 text-left rounded-xl">
+    <h2 class="text-lg font-semibold pb-2 border-b-2 border-gray-400">
+        Edit User
+      <button class="float-right" @click="$emit('hideEditMode'),resetEditUser()"><IconCancel class="w-5 h-5"/></button>
+    </h2>
+    <div class="flex flex-row m-3">
+      <img :src="pathImg(thisUser.id)" alt="human" class="w-32 h-32 my-2 mx-auto"/>
+      <div class="flex flex-col ml-10 mt-3">
+        <div class="my-2">
+          <h4>username</h4>
+          <input type="text" id="username" name="username" 
+                v-model="editingUser.userName" maxlength="100" size="50"  @blur="checkMatchName(editingUser.userName)" required
+                class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]">
+          <span v-show="matchNameStatus" class="text-red-500">Username is already existed, please try another name</span>
+        </div>
+        <div class="my-2">
+          <h4>email</h4>
+          <input type="text" id="useremail" name="useremail" 
+                v-model="editingUser.userEmail" maxlength="50" size="50"  
+                @blur="emailValidation(editingUser.userEmail), checkMatchEmail(editingUser.userEmail)" required
+                class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]">
+            <span v-show="emailStatus" class="text-red-500">Input email is invalid!</span>
+            <span v-show="matchEmailStatus" class="text-red-500">This email is already existed, please try another email</span>
+        </div>
+
+        <div class="my-7">
+          <label>role</label>
+          <div class="my-auto m-1 py-1.5 px-2 text-center rounded-md border-2 inline">
+            <input type="radio" id="1" name="role" value="admin" v-model="editingUser.userRole" :checked="editingUser.userRole==='admin'"
+                class="accent-red-500 align-middle w-4 h-4"> 
+            <label for="1" class="ml-1 align-top">admin</label>
+          </div>
+          <div class="my-auto m-1 py-1.5 px-2 text-center rounded-md border-2 inline">
+            <input type="radio" id="2" name="role" value="lecturer" v-model="editingUser.userRole" :checked="editingUser.userRole==='lecturer'"
+                class="accent-blue-500 align-middle w-4 h-4"> 
+            <label for="2" class="ml-1 align-top">lecturer</label>
+          </div>
+          <div class="my-auto m-1 py-1.5 px-2 text-center rounded-md border-2 inline">
+            <input type="radio" id="3" name="role" value="student" v-model="editingUser.userRole" :checked="editingUser.userRole==='student'"
+                class="accent-yellow-400 align-middle w-4 h-4"> 
+            <label for="3" class="ml-1 align-top">student</label>
+          </div>
+        </div>
+
+        <div class="text-right mb-3">
+          <button @click="$emit('hideEditMode'),resetEditUser()" role="button"
+                  class="bg-red-100 text-red-500 py-1.5 px-4 rounded-full 
+                        hover:bg-red-500 hover:text-white active:bg-[#3333A3] duration-300">Cancel</button>
+                &ensp;
+          <button @click="$emit('save',editingUser)"  role="button" :disabled="checkData"
+                        class="bg-[#5C5CFF] text-white py-1.5 px-4 rounded-full 
+                            hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300 disabled:bg-gray-300">Save</button>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
 </template>
  
 <style scoped>
-    input {
+h4{
+    font-weight: bold;
+    font-size: 14px;
+    color: rgb(188, 188, 188);
+}
+    /* input {
         border-radius: 10px;
         padding: 0.5em;
         margin: 0.25em 0;
@@ -119,7 +196,6 @@
     }
    .button-right {
         float: right;
-        /* margin: 0 10% 2em 0; */
     }
     .warning{
         color: orangered;
@@ -165,5 +241,5 @@
         color: #000;
         text-decoration: none;
         cursor: pointer;
-    }
+    } */
 </style>

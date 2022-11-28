@@ -14,6 +14,14 @@ export const useDatetimeFormat = defineStore('dateTime', () => {
         const year = givenDate.getFullYear()
         return day + ' ' + date + ' ' + month + ' ' + year
     }
+
+    // 23 May 2022
+    const showDateNoDay = (givenDate) => {
+        const date = givenDate.getDate()
+        const month = months[givenDate.getMonth()]
+        const year = givenDate.getFullYear()
+        return date + ' ' + month + ' ' + year
+    }
     
     // Mon 23 May 2022 | 16:30
     const showDateTime = (givenDate) => {
@@ -80,5 +88,5 @@ export const useDatetimeFormat = defineStore('dateTime', () => {
         return year +'-'+ month +'-'+ date
     }
 
-    return { showDate, showDateTime, showDateTimeZone, addMinutes, getEndTime, showTime, getTodayDatetime, getTodayDate}
+    return { showDate, showDateNoDay, showDateTime, showDateTimeZone, addMinutes, getEndTime, showTime, getTodayDatetime, getTodayDate}
 })

@@ -26,4 +26,7 @@ public class EventUpdateDTO {
 //    @NotBlank(message = "Event's note is required!")
     @Size(max = 500, message = "Event's note is too long, maximum 500 characters.")
     private String notes;
+
+    @Size(max = 100, message = "Event's attachment name is too long, maximum 100 characters.")
+    private String eventAttachmentName;
 }

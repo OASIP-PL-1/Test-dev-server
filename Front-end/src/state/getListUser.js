@@ -24,7 +24,6 @@ export const useListUser = defineStore('listuser',() => {
           console.log(error)
           console.log('GET List All User Fail')
       });
-      // console.log(res)
       console.log(res.status)
       if(res.status==200){
         users.value = await res.json()
@@ -61,7 +60,7 @@ export const useListUser = defineStore('listuser',() => {
         }
       }
       console.log('get User checklist for name, email [CREATE]')
-      console.log(userCheckListCreate.value)
+      // console.log(userCheckListCreate.value)
     }
  
     // userCheckList for ThisUser->EditUser
@@ -78,7 +77,7 @@ export const useListUser = defineStore('listuser',() => {
           }
         }
         console.log('get User checklist for name, email [EDIT]')
-        console.log(userCheckListEdit.value)
+        // console.log(userCheckListEdit.value)
     })
 
     

@@ -2,6 +2,11 @@
 import {ref, computed, onMounted} from 'vue'
 import { useSignIn } from '../state/signIn.js';
 
+// import Icons
+import IconEdit from '../components/icons/iconEdit.vue'
+import IconLoading from '../components/icons/iconLoading.vue'
+import IconCancel from '../components/icons/iconCancel.vue'
+
 const signIn = useSignIn()
 
 const eventCategories = ref()
@@ -130,7 +135,7 @@ const checkName = (id,name) => {
 </script>
  
 <template>
-  <div style="margin-top: 6em;">
+  <!-- <div style="margin-top: 6em;">
   <div v-if="loading" class="subText">{{message}}</div>
   <div v-else-if="eventCategories == 0" class="center"> -- No Event Categories -- </div>
   <div v-else class="center">
@@ -155,16 +160,45 @@ const checkName = (id,name) => {
         </tr>
       </table>
     </div>
+  </div> -->
+
+  <div v-if="loading" class="text-blue-800 my-16 text-center"><span v-if="message=='loading...'"><IconLoading/></span><span v-else>{{message}}</span></div>
+  <div v-else-if="eventCategories == 0" class="text-red-600 my-16 text-center"> -- No Event Categories -- </div>
+  <div v-else class="m-5 grid grid-cols-3 gap-3">
+    <div v-for="(category, index) in eventCategories" :key="index" class="bg-white rounded-2xl px-5 pt-3 pb-7">
+      <IconEdit class="w-4 h-4 ml-5 mr-2 inline align-top float-right text-gray-400" @click="edit(category)"/>
+      <h4 class="text-[16px] font-semibold mt-2">{{category.categoryName}}</h4>
+      <hr class="my-2 border-black">
+      <p class="my-4"><b>duration : </b> {{category.duration}} min</p>
+      <b>description</b>
+      <div v-if="category.categoryDescription !== null">{{category.categoryDescription}}</div>
+      <div v-else>-</div>
+    </div>
+    <!-- Modal Edit  -->
+    <div class="bg-black w-full h-full bg-opacity-30 fixed top-0 left-0 block" v-show="false">
+      <div class="bg-white w-[700px] m-auto mt-32 py-3 px-5 text-left rounded-xl">
+        <h2 class="text-lg font-semibold pb-2 border-b-2 border-gray-400">
+            Edit Category
+          <button class="float-right" @click=""><IconCancel class="w-5 h-5"/></button>
+        </h2>
+        <div class="flex flex-row m-3">
+          
+        </div>
+      </div>
+    </div>
+    <!-- <div v-show="editMode">
+      <modalEditCategory/>
+    </div> -->
   </div>
 
-  <!-- Modal Edit Category -->
+  <!-- Modal Edit Category
     <div class="modal-mask" v-show=editMode style="display:block">
         <div class="modal-wrapper">
-         <!-- Modal content -->
+         Modal content
             <div class="modal-container">
                 <span class="close" @click="hideModalEdit()" >&times;</span>
                 <div class="modal-header">
-                  <!-- {{editingCategory}} -->
+                  {{editingCategory}}
                     <h3>-- Edit Category --</h3>
                 </div>
                 <div class="modal-body">
@@ -207,10 +241,64 @@ const checkName = (id,name) => {
             </div>
         </div>
     </div>
-  </div>
+  </div> -->
+  <div v-show="editMode" class="bg-black w-full h-full bg-opacity-30 fixed top-0 left-0 block">
+        <div class="bg-white w-[700px] py-5 px-7 m-auto mt-48 rounded-xl">
+          <h2 class="text-lg font-semibold pb-2 border-b-2 border-gray-400">
+                Edit Category
+                <button class="float-right" @click="hideModalEdit()"><IconCancel class="w-5 h-5"/></button>
+          </h2>
+          <div class="flex flex-col my-3">
+            <div class="flex flex-row mx-5 ">
+              <h3 class="basis-1/4 text-[16px] font-semibold px-5">category name</h3>
+              <div class="basis-3/4">
+                <input type="text" v-model="editingCategory.name" size="50" maxlength="100" class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]">
+                <span class="text-red-400 block" v-show="checkName(editingCategory.id,editingCategory.name)">
+                      &#9888; This category name is already existed, please try another name.
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-row mx-5 ">
+              <h3 class="basis-1/4 text-[16px] font-semibold px-5">duration</h3>
+              <div class="basis-3/4">
+                <input type="number" min="1" max="480" v-model="editingCategory.duration" maxlength="3" class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3] w-24">
+                  <span class="text-gray-500 text-sm">&ensp; (1 - 480 min)</span>
+                  <span class="text-red-400 block" v-show="!checkDuration(editingCategory.duration)">
+                    &#9888; Duration is out of range, please choose time between 1-480 minutes
+                  </span>
+              </div>
+            </div>
+            <div class="flex flex-row mx-5 ">
+              <h3 class="basis-1/4 text-[16px] font-semibold px-5">description</h3>
+              <div class="basis-3/4">
+                <textarea v-model="editingCategory.description" rows="7" cols="50" maxlength="500" class="bg-[#E3ECFC] p-1 text-[#3333A3] rounded-sm h-20 w-full"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-right mb-3">
+                <button @click="hideModalEdit()" class="bg-red-100 text-red-500 py-1.5 px-4 rounded-full 
+                           hover:bg-red-500 hover:text-white active:bg-[#3333A3] duration-300">Cancel</button>
+                &ensp;
+                <button @click="updateCategory(editingCategory)" :disabled="checkName(editingCategory.id,editingCategory.name) 
+                                  || checkEdited 
+                                  || !checkDuration(editingCategory.duration) 
+                                  || editingCategory.name.trim().length <= 0"
+                        class="bg-[#5C5CFF] text-white py-1.5 px-4 rounded-full 
+                            hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300 disabled:bg-gray-300">Save</button>
+           </div>
+        </div>
+    </div>
+
 </template>
  
 <style scoped>
+h3{
+    color: #3333A3;
+}
+  /* hr {
+    color: #3333A3;
+  }
   h3 {
     text-align: center;
   }
@@ -227,7 +315,6 @@ const checkName = (id,name) => {
   }
   .box {    
     border-radius: 30px;
-    /* margin: 1em 8%; */
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -262,7 +349,7 @@ const checkName = (id,name) => {
   }
   .editbt {
     text-align: right;
-  }
+  } */
 
   /* -- part modal -- */
   .modal-mask {

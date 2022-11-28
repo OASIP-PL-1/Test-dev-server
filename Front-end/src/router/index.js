@@ -2,34 +2,40 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import ViewEvent from '../views/ViewEvent.vue'
 import ViewEventCategory from '../views/ViewEventCategory.vue'
-import NotFoundPage from '../views/error/NotFoundPage.vue'
 import ThisEvent from '../views/ThisEvent.vue'
-import AddNewEvent from '../views/AddNewEvent.vue'
+import CreateEvent from '../views/CreateEvent.vue'
 import About from '../views/About.vue'
 import ViewUser from '../views/ViewUser.vue'
 import ThisUser from '../views/ThisUser.vue'
-import CreateUser from '../views/CreateUser.vue'
-import LoginUser from '../views/LoginUser.vue'
+import SignUp from '../views/SignUp.vue'
+import LogIn from '../views/LogIn.vue'
 import { useSignIn } from '../state/signIn.js'
 import Error401 from '../views/error/401.vue'
 import Error403 from '../views/error/403.vue'
+import Error404 from '../views/error/404.vue'
+import Error500 from '../views/error/500.vue'
 
 const history = createWebHistory('/pl1/')
 const routes = [
   {
-    path: '/:catchNotMatchPath(.*)',
-    name: 'NotFound',
-    component: NotFoundPage
-  },
-  {
-    path:'/error-401',
+    path:'/401',
     name: 'Error401',
     component: Error401
   },
   {
-    path:'/error-403',
+    path:'/403',
     name: 'Error403',
     component: Error403
+  },
+  {
+    path: '/404',
+    name: 'Error404',
+    component: Error404
+  },
+  {
+    path:'/500',
+    name: 'Error500',
+    component: Error500
   },
   {
     path: '/',
@@ -47,10 +53,7 @@ const routes = [
   {
     path: '/view-event-category',
     name: 'ViewEventCategory',
-    component: ViewEventCategory,
-    beforeEnter: (to, from, nextTick) => {
-      checkError401(nextTick)
-    }
+    component: ViewEventCategory
   },
   {
     path: '/view-event/:eventId',
@@ -62,9 +65,9 @@ const routes = [
     
   },
   {
-    path: '/create-new-event',
-    name: 'AddNewEvent',
-    component: AddNewEvent,
+    path: '/create-event',
+    name: 'CreateEvent',
+    component: CreateEvent,
     beforeEnter: (to, from, nextTick) => {
       const signIn = useSignIn()
       //ถ้าเป็น lecture สร้าง Event ไม่ได้
@@ -105,9 +108,9 @@ const routes = [
     },
   },
   {
-    path: '/create-user',
-    name: 'CreateUser',
-    component: CreateUser,
+    path: '/sign-up',
+    name: 'SignUp',
+    component: SignUp,
     beforeEnter: (to, from, nextTick) => {
       const signIn = useSignIn()
       //ถ้ายังไม่ login จะ link ไปหน้า Error 401
@@ -117,9 +120,9 @@ const routes = [
     }
   },
   {
-    path: '/login-user',
-    name: 'LoginUser',
-    component: LoginUser,
+    path: '/log-in',
+    name: 'LogIn',
+    component: LogIn,
     beforeEnter: (to, from, nextTick) => {
       const signIn = useSignIn()
       //ถ้า login แล้วไม่ใช่ admin จะ link ไปหน้า Error 403

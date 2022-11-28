@@ -1,11 +1,12 @@
 <script setup>
 import {useRouter} from 'vue-router'
 const myRouter = useRouter()
-const closeModal = () => myRouter.go(-1)
+// const closeModal = () => myRouter.go(-1)
+const gotoHome = () => myRouter.push({name: 'Home'})
 </script>
  
 <template>
-  <div class="modal-mask">
+    <!-- <div class="modal-mask">
     <div class="modal-wrapper">
       <div class="modal-container">
         <div class="modal-header"><h3>404 Error : Page Not Found</h3></div>
@@ -15,6 +16,14 @@ const closeModal = () => myRouter.go(-1)
         </div>
       </div>
     </div>
+  </div> -->
+  <div class="text-center">
+    <img class="my-2" src="../../assets/logo.png" alt="error"/>
+    <div class="text-[100px]">404</div>
+    <div class="text-[50px]">Page Not Found</div>
+    <div class="mb-8">We can not find the page you are looking for</div>
+    <button @click=gotoHome() class="bg-[#5C5CFF] text-white font-semibold py-2 px-5 rounded-full 
+                           hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300">Back to Home</button>
   </div>
 </template>
  

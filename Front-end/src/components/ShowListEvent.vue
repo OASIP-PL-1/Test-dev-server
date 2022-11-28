@@ -1,5 +1,7 @@
 <script setup>
+import IconMore from './icons/iconMore.vue'
 import {useDatetimeFormat} from '../state/datetimeFormat.js'
+import {useRouter} from 'vue-router'
 const datetimeFormat = useDatetimeFormat()
   defineProps({
       events:{
@@ -11,11 +13,15 @@ const datetimeFormat = useDatetimeFormat()
           require: true
       }
   })
+
+const myRouter = useRouter()
+const goToLoginUser = (eventId) => myRouter.push({name: 'ThisEvent',params:{eventId:eventId}})
+
   
 </script>
  
 <template>
-  <div class="showEvent">
+  <!-- <div class="showEvent">
         <h2>List All Event</h2>
         <div class="grid-container">
           <div v-if="events == 0" class="centerText">
@@ -31,9 +37,8 @@ const datetimeFormat = useDatetimeFormat()
                   <strong>Booking name : </strong>
                   <h4 v-if="event.bookingName.length > 50">{{event.bookingName.substring(0,50)}} ...</h4>
                   <h4 v-else>{{event.bookingName}}</h4>
-              <hr>
-                  <!-- <b>Date :</b> {{ showDate(new Date(event.startTime)) }} -->
-                  <b>Date :</b> {{ datetimeFormat.showDate(new Date(event.startTime)) }}
+              <hr> 
+                   <b>Date :</b> {{ datetimeFormat.showDate(new Date(event.startTime)) }}
               <br>
                   <b>Start Time :</b> {{ datetimeFormat.showTime(new Date(event.startTime))}}
               <br>
@@ -44,74 +49,59 @@ const datetimeFormat = useDatetimeFormat()
             </router-link>
           </div>
         </div>
+  </div> -->
+
+  <div class="w-full h-full">
+    <div v-if="events == 0" class="text-red-600 w-full text-center">
+            <div v-if="filterMode === ''"> --- No Scheduled Events --- </div>
+            <div v-else-if="filterMode === 'past'"> --- No Past Events --- </div>
+            <div v-else-if="filterMode === 'upcoming'"> --- No On-going or upcoming Events --- </div>
+            <div v-else-if="filterMode === 'date'"> --- No Scheduled Events for This Date --- </div>
+            <div v-else-if="filterMode === 'category'"> --- No Scheduled Events for This Category --- </div>
+    </div>
+    <div v-else>
+      <div class="bg-[#3333A3] flex flex-row w-full py-5 rounded-t-xl
+                        text-white text-lg font-semibold ">
+          <div class="basis-10"></div>
+          <div class="basis-[600px] px-5">Booking Name</div>
+          <div class="basis-40 px-2">Date</div>
+          <div class="basis-20 px-2">Time</div>
+          <div class="basis-72 px-2">Category</div>
+          <div class="basis-7 px-2"></div>
+      </div>
+      <div class="object-cover">
+        <div class="overflow-y-scroll overflow-x-hidden object-cover h-80" id="list-event">      
+          <div v-for="(event,index) in events" :key="index" @click="goToLoginUser(event.id)" 
+            class="px-2 py-5 hover:bg-[#FFCB4C] flex flex-row w-full odd:bg-white even:bg-[#ECECFE]">
+            <div class="basis-10 px-2 text-gray-500 text-center">#{{index+1}}</div>
+            <div class="basis-[600px] px-5">{{event.bookingName}}</div>
+            <div class="basis-40 px-2">{{ datetimeFormat.showDateNoDay(new Date(event.startTime)) }}</div>
+            <div class="basis-20 px-2">{{ datetimeFormat.showTime(new Date(event.startTime))}}</div>
+            <div class="basis-72 px-2">{{event.categoryName}}</div>
+            <button class="basis-7 px-2 text-gray-500"><IconMore class="w-5 h-5 mx-2 inline align-top"/></button>
+          </div>
+        </div>
+        <!-- <div class="bg-[#3333A3] w-full h-7 rounded-b-xl"></div> -->
+      </div>
+    </div>
   </div>
 </template>
  
 <style scoped>
-  .category {
-    background-color: antiquewhite;
-    border-radius: 10px;
-    margin-top: 5px;
-    padding: 0 4px;
-  }
-  h2 {
-    color: #FFCB4C;
-  }
-  h4{
-    padding-top: 0;
-    margin: 0 0 1em 0;
-  }
-  strong {
-    font-size: smaller;
-    color: #3333A3;
-  }
- .showEvent {
-    background-color: #3333A3;
-    border-radius: 30px;
-    padding: 4px 24px 24px;
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-    -o-object-fit: cover;
-    object-fit: cover;
- }
- .grid-container {
-   display: grid;
-    border-radius: 20px;
-    grid-template-columns: 340px 340px 340px;
-    background-color: #9F9FF9;
-    padding: 15px;
-    column-gap: 20px;
-    row-gap: 20px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 500px;
-  }
-  .grid-item {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px 20px 20px 20px;
-    border-radius: 20px;
-    transition: background-color 1s, transform .5s;
-    transition-duration: box-shadow 2s;
-    width: 300px;
-    height: 175px;
-  }
-  .grid-item:hover{
-    background-color: rgba(255, 255, 255, 1);
-    transform: scale(1.1);
-    box-shadow: 40px rgba(0, 0, 0, 0.5);
-  }
-  a {
-    color: #000000;
-    text-decoration: none;
-  }
   ::-webkit-scrollbar {
     width: 10px;
-    background-color: #FFCB4C;
+    background-color: #d4d4d4;
     border-radius: 5px;
   }
   ::-webkit-scrollbar-thumb {
-    background: #FFA21A; 
+    background: #868686; 
     border-radius: 10px;
   }::-webkit-scrollbar-thumb:hover {
     background: #5C5CFF; 
   }
+  /* #list-event div:nth-child(even){background-color: white;}
+  #list-event div:only-child(odd){background-color: #b1b1d4;}
+   */
+  /* #listAll tr:nth-child(even){background-color: #ECECFE;}
+  #listAll tr:nth-child(odd){background-color: #b5b5f7} */
 </style>

@@ -40,12 +40,19 @@ public class Event {
 
     @Lob
     @Column(name = "eventNotes" , length = 500)
-    @Size(max = 500, message = "Event's note is too long, limit")
+//    @Size(max = 500, message = "Event's note is too long, limit")
     private String eventNotes;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "eventCategoryId", nullable = false)
 //    @NotNull(message = "Event category must be choosen")
     private EventCategory eventCategory;
+
+    @Column(name = "eventAttachmentName" , length = 100)
+    private String eventAttachmentName;
+
+//    @Column(name = "eventAttachmentOriginalName" , length = 80)
+////    @Size(max = 80, message = "Event's attachment name is too long.")
+//    private String eventAttachmentOriginalName;
 
 }

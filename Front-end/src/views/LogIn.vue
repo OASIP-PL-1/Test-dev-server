@@ -3,6 +3,10 @@
     import {useRouter} from 'vue-router'
     import {useSignIn} from '../state/signIn.js'
 
+    //-- insert icons --
+    import IconEmail from '../components/icons/iconEmail.vue'
+    import IconPassword from '../components/icons/iconPassword.vue'
+
     const signIn = useSignIn()
 
     const myRouter = useRouter()
@@ -13,7 +17,7 @@
     const userLogin = ref({email:"",password:""})
     const message = ref("")
 
-    const loginUser = async (user)=>{
+    const logIn = async (user)=>{
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/login`,{
         method:'POST',
         headers:{
@@ -87,31 +91,31 @@
 </script>
  
 <template>
-      <!-- <div style="margin-top: 10em;"> -->
+      <!-- <div style="margin-top: 10em;">
     <div>
-        <!-- <div class="thisEvent">
+        <div class="thisEvent">
             <button @click="goBack" class="button-18" role="button">Back</button>
-        </div> -->
+        </div>
     <div class="box">
       <h2>Login</h2>
       <hr>
       <table>
           <tr>
             <th><label for="email"><b>Email : </b></label></th>
-            <!-- <td style="text-align: right;"><span class="subText"> / 50</span></td> -->
+            <td style="text-align: right;"><span class="subText"> / 50</span></td>
           </tr>
         <tr>
           <td colspan="2">
             <input type="text" placeholder="Enter email" name="email" 
                    v-model="userLogin.email" maxlength="50" size="50" required>&ensp;
             
-            <!-- <span v-show="emailStatus" class="warning"><br/>Input email is invalid!</span> -->
-            <!-- <span v-show="matchEmailStatus" class="warning"><br/>This email is already existed, please try another email</span> -->
+            <span v-show="emailStatus" class="warning"><br/>Input email is invalid!</span>
+            <span v-show="matchEmailStatus" class="warning"><br/>This email is already existed, please try another email</span>
           </td>
         </tr>
         <tr>
             <th><label for="password"><b>Password : </b></label></th>
-            <!-- <td style="text-align: right;"><span class="subText">8 - 14 character</span></td> -->
+            <td style="text-align: right;"><span class="subText">8 - 14 character</span></td>
           </tr>
         <tr>
           <td colspan="2">
@@ -125,22 +129,72 @@
       <span style="color: greenyellow;" v-if="message==='Login Successful'">{{message}}</span>
       <span style="color: red;" v-else>{{message}}</span>
       <div class="button-center">
-        <button type="submit" class="button-18" @click="loginUser(userLogin)" :disabled="checkBeforeAdd" style="width: 100%;">Login</button>
+        <button type="submit" class="button-18" @click="logIn(userLogin)" :disabled="checkBeforeAdd" style="width: 100%;">Login</button>
         <br/><br/>
 
       </div>
     </div>
+    </div> -->
+    
+
+  <div class="h-full">
+    <div class="bg-[#FFF] float-right h-full w-2/4">
+      <div class="pt-32 pb-8 text-center text-3xl text-[#3333A3]"><b>Log In</b></div>
+        <div class="mx-24">
+          <label for="email">
+            <IconEmail class="w-[20px] h-[20px] inline mr-2"/>
+            <b>Email</b>
+          </label>
+            <!-- <td style="text-align: right;"><span class="subText"> / 50</span></td> -->
+            <!-- <label htmlFor="text" className="relative text-gray-400 focus-within:text-gray-600 block"> -->
+          <div class="relative flex items-center text-gray-400 focus-within:text-gray-600 mt-2 mb-4">
+            <!-- <label htmlFor="text" className="relative text-gray-400 focus-within:text-gray-600 block"> -->            
+            <input type="text"
+                   placeholder="Email" 
+                   name="email" 
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                   v-model="userLogin.email" 
+                   maxlength="50" 
+                   size="50" 
+                   required
+                   >
+            <!-- <div class="text-right"> / 50</div> -->
+          </div>   
+            <!-- <span v-show="emailStatus" class="warning"><br/>Input email is invalid!</span> -->
+            <!-- <span v-show="matchEmailStatus" class="warning"><br/>This email is already existed, please try another email</span> -->
+
+        <label for="password">
+          <IconPassword class="w-[20px] h-[20px] inline mr-2"/>
+          <b>Password</b>
+        </label>
+          <div class="relative flex items-center text-gray-400 focus-within:text-gray-600 mt-2">
+            <input type="password" 
+                  placeholder="Password" 
+                  name="password"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  v-model="userLogin.password" 
+                  minlength="8" 
+                  maxlength="14" 
+                  size="50" 
+                  @blur=checkPassword(userLogin.password) 
+                  required>
+          </div>
+      <div v-show="!passwordStatus" class="text-red-500 text-right">At least 8 characters.</div>
+      <div class="text-green-500 mt-8 mb-2 text-center" v-if="message==='Login Successful'">{{message}}</div>
+      <div class="text-red-500 mt-8 mb-2 text-center" v-else>{{message}}</div>
+      <div class="button-center">
+      <button type="submit" 
+              class="bg-[#5C5CFF] text-white text-[18px] font-bold py-2 px-5 rounded-full
+                    hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300"
+              @click="logIn(userLogin)" :disabled="checkBeforeAdd" style="width: 100%;">Login</button>
+      </div>
     </div>
+  </div>
+</div>
 </template>
  
 <style scoped>
-    h2 {
-        color: #FFCB4C;
-    }
-    p, b, th {
-        color: white;
-    }
-    input {
+    /* input {
         border-radius: 10px;
         padding: 0.5em;
         margin: 0.25em 0 ;
@@ -148,7 +202,10 @@
         overflow: visible;
         -o-object-fit: cover;
         object-fit: cover;
-    }
+    } */
+    /* input:invalid {
+      border: #3333A3 1px solid;
+    } */
     table {
         margin-left: auto;
         margin-right: auto;
@@ -176,35 +233,7 @@
         -o-object-fit: cover;
         object-fit: cover;
     }
-    .box {
-      background-color:#3333A3;
-      padding: 1em 2em 1em 2em;
-      border-radius: 30px;
-      /* min-height: 400px; */
-      /* max-height: 400px; */
-      /* min-width: 200px; */
-      max-width: 600px;
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-      -o-object-fit: cover;
-      object-fit: cover;
-    }
-    .thisEvent {
-      padding: 0 2em;
-    }
-    .button-right {
-      text-align: center;
-    }
-    .warning{
+    /* .warning{
         color: orangered;
-    }
-    span{
-      font-size: smaller;
-    }
-    /* input:invalid {
-      border: red 1px solid;
     } */
- 
 </style>

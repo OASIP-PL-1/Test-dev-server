@@ -1,9 +1,7 @@
 package com.example.backend.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class EventAddDTO {
 //    @Min(value = 1, message = "The least id number is 1.")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,4 +37,7 @@ public class EventAddDTO {
 
     @NotNull(message = "Event category's id is required.")
     private int eventCategoryId;
+
+    @Size(max = 100, message = "Event's attachment name is too long, maximum 100 characters.")
+    private String eventAttachmentName;
 }

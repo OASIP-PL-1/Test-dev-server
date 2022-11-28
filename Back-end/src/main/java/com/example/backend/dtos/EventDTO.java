@@ -21,6 +21,7 @@ public class EventDTO {
     private int duration;
     private String notes;
     private Date startTime;
+    private String eventAttachmentName;
 
     public ZonedDateTime getStartTime(){
         return ZonedDateTime.ofInstant(startTime.toInstant(), ZoneId.of("Asia/Bangkok"));

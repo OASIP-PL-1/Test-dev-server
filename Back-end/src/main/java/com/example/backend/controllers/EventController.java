@@ -2,8 +2,13 @@ package com.example.backend.controllers;
 
 import com.example.backend.dtos.*;
 import com.example.backend.services.EventService;
+import com.example.backend.services.FileService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,10 +19,26 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-// @CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class EventController {
     @Autowired
     private EventService service;
+
+    //    ----------------------------------
+//    private final FileService fileService;
+
+//    @Autowired
+//    public EventController(FileService fileService){
+//        this.fileService = fileService;
+//    }
+
+//    @PostMapping("/test")
+//    public String fileUpload(@RequestParam("file") MultipartFile file){
+//        fileService.store(file);
+//        return "file successfully uploaded" + file.getOriginalFilename();
+//    }
+
+//    ----------------------------------
 
     @GetMapping("")
     public List<EventAllDTO> getAllEventDTO(HttpServletRequest request, HttpServletResponse response) {
@@ -70,8 +91,10 @@ public class EventController {
         return service.listEditOverlap(eventId, dateTime);
     }
 
+
     @PostMapping("")
-    public int createEvent(@Valid @RequestBody EventAddDTO newEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+    public int createEvent(@Valid @RequestBody EventAddDTO newEvent,
+                           HttpServletRequest request, HttpServletResponse response) throws ParseException {
         return service.createEvent(newEvent, request, response);
     }
 

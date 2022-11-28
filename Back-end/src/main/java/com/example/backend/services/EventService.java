@@ -2,39 +2,31 @@ package com.example.backend.services;
 
 import com.auth0.jwt.JWT;
 import com.example.backend.dtos.*;
+import com.example.backend.entities.EmailDetails;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
 import com.example.backend.entities.User;
 import com.example.backend.repositories.EventCategoryRepository;
 import com.example.backend.repositories.EventRepository;
 import com.example.backend.repositories.UserRepository;
-import jdk.jfr.Category;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
-//select * from eventCategoryOwners;
-//        select u.userName , ec.eventCategoryName
-//        FROM (Users u JOIN eventCategoryOwners eco ON u.userId = eco.userId)
-//        JOIN eventcategories ec ON ec.eventCategoryId = eco.eventCategoryId;
 
 @Service
 public class EventService {
@@ -48,6 +40,10 @@ public class EventService {
     private ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper = ListMapper.getInstance();
+    @Autowired
+    private EmailServiceImpl emailService;
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     public EventService(EventRepository repository, ModelMapper modelMapper) {
@@ -61,6 +57,7 @@ public class EventService {
 ////        String token = JWT.decode()
 //        System.out.println(authorization);
         String role = new Authorization().getRoleFromRequest(request);
+
         if(role.equals("admin")) {
             List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
             return listMapper.mapList(events, EventAllDTO.class, modelMapper);
@@ -146,13 +143,11 @@ public class EventService {
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
     }
 
-
-    //POST method
     public int createEvent(EventAddDTO newEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException {
         if(request.getHeader("Authorization") != null){
             String role = new Authorization().getRoleFromRequest(request);
             if (role.equals("student")) {
-    //            event.setBookingEmail(new Authorization().getUserEmailFromRequest(request));
+                //            event.setBookingEmail(new Authorization().getUserEmailFromRequest(request));
                 System.out.println(newEvent.getBookingEmail());
                 System.out.println(new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()));
                 if (!new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()))
@@ -171,8 +166,10 @@ public class EventService {
         event.setEventDuration(eventCategory.getEventCategoryDuration());
         event.setEventNotes(newEvent.getNotes());
         event.setEventCategory(eventCategory);
+        event.setEventAttachmentName(newEvent.getEventAttachmentName());
         System.out.println(event.getBookingEmail());
         repository.saveAndFlush(event);
+        emailService.sendSimpleMailWhenCreateEvent(event);
         return repository.findTopByOrderByIdDesc().getId();
     }
 
@@ -181,12 +178,14 @@ public class EventService {
         String role = new Authorization().getRoleFromRequest(request);
         Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed"));
         if(role.equals("admin")) {
+            fileService.deleteFile(event.getEventAttachmentName());
             repository.deleteById(eventId);
             return;
         }
         if(role.equals("student")){
             String userEmail = new Authorization().getUserEmailFromRequest(request);
             if(event.getBookingEmail().equals(userEmail)) {
+                fileService.deleteFile(event.getEventAttachmentName());
                 repository.deleteById(eventId);
                 return;
             }
@@ -203,8 +202,15 @@ public class EventService {
             if (!checkEditOverlap(event, updateEvent.getStartTime())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
             }
+            if (event.getEventAttachmentName()!=null&&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
+                fileService.deleteFile(event.getEventAttachmentName());
+            }
+            if(event.getEventAttachmentName()!=null&&updateEvent.getEventAttachmentName()==null){
+                fileService.deleteFile(event.getEventAttachmentName());
+            }
             event.setEventStartTime(updateEvent.getStartTime());
             event.setEventNotes(updateEvent.getNotes());
+            if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
             repository.saveAndFlush(event);
             return modelMapper.map(event, EventDTO.class);
         }
@@ -214,8 +220,12 @@ public class EventService {
                 if (!checkEditOverlap(event, updateEvent.getStartTime())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
                 }
+                if (event.getEventAttachmentName()!=null &&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
+                    fileService.deleteFile(event.getEventAttachmentName());
+                }
                 event.setEventStartTime(updateEvent.getStartTime());
                 event.setEventNotes(updateEvent.getNotes());
+                if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
                 repository.saveAndFlush(event);
                 return modelMapper.map(event, EventDTO.class);
             }

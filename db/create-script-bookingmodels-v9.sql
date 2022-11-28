@@ -41,21 +41,22 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bookingmodels`.`events` ;
 
 CREATE TABLE IF NOT EXISTS `bookingmodels`.`events` (
-  `eventId` INT NOT NULL auto_increment,
-  `bookingName` VARCHAR(100) NOT NULL,
-  `bookingEmail` VARCHAR(50) NOT NULL,
-  `eventStartTime` DATETIME NOT NULL,
-  `eventDuration` INT NOT NULL,
-  `eventNotes` TEXT(500) NULL,
-  `eventCategoryId` INT NOT NULL,
-  PRIMARY KEY (`eventId`),
-  INDEX `fk_event_eventCategory_idx` (`eventCategoryId` ASC) VISIBLE,
-  CONSTRAINT `fk_event_eventCategory`
-    FOREIGN KEY (`eventCategoryId`)
-    REFERENCES `bookingmodels`.`eventCategories` (`eventCategoryId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+                                                        `eventId` INT NOT NULL auto_increment,
+                                                        `bookingName` VARCHAR(100) NOT NULL,
+                                                        `bookingEmail` VARCHAR(50) NOT NULL,
+                                                        `eventStartTime` DATETIME NOT NULL,
+                                                        `eventDuration` INT NOT NULL,
+                                                        `eventNotes` TEXT(500) NULL,
+                                                        `eventCategoryId` INT NOT NULL,
+                                                        `eventAttachmentName` VARCHAR(100) NULL,
+                                                        PRIMARY KEY (`eventId`),
+                                                        INDEX `fk_event_eventCategory_idx` (`eventCategoryId` ASC) VISIBLE,
+                                                        CONSTRAINT `fk_event_eventCategory`
+                                                            FOREIGN KEY (`eventCategoryId`)
+                                                                REFERENCES `bookingmodels`.`eventCategories` (`eventCategoryId`)
+                                                                ON DELETE NO ACTION
+                                                                ON UPDATE NO ACTION)
+    ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -100,6 +101,24 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventCategoryOwners` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `bookingmodels`.`eventFile`
+-- -----------------------------------------------------
+-- DROP TABLE IF EXISTS `bookingmodels`.`eventAttachment` ;
+
+-- CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventAttachment` (
+--   `eventId` INT NOT NULL,
+--   `fileName` VARCHAR(50) NULL,
+--   `originalFileName` VARCHAR(80) NOT NULL,
+--   PRIMARY KEY (`eventId`),
+--   INDEX `fk_event_idx` (`eventId` ASC) VISIBLE,
+--   CONSTRAINT `fk_event_eventId1`
+--     FOREIGN KEY (`eventId`)
+--     REFERENCES `bookingmodels`.`events` (`eventId`)
+--     ON DELETE NO ACTION
+--     ON UPDATE NO ACTION)
+-- ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

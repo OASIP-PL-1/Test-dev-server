@@ -1,12 +1,18 @@
 <script setup>
   import ShowListEvent from '../components/ShowListEvent.vue'
   import Filter from '../components/Filter.vue'
+  import IconLoading from '../components/icons/iconLoading.vue'
 
   import {ref, onMounted} from 'vue'
   import { useSignIn } from '../state/signIn';
 
   const signIn = useSignIn()
 
+  onMounted(async () => {
+      await getEvents()
+      // await getEventCategoryName()
+  })
+  
   const events = ref()
   const loading =ref()
   const message = ref()
@@ -78,10 +84,7 @@
     }
   }
 
-  onMounted(async () => {
-      await getEvents()
-      // await getEventCategoryName()
-  })
+
 
   const filterMode = ref('')
 
@@ -196,7 +199,7 @@
 </script>
  
 <template>
-  <div style="margin-top: 10em;">
+  <!-- <div style="margin-top: 10em;">
     <div v-if="loading" class="subText">{{message}}</div>
     <div v-else>
         <table>
@@ -215,7 +218,39 @@
           </tr>
         </table>
     </div>
-  </div>
+  </div> -->
+    <div v-if="loading" class="text-blue-800 my-16 text-center"><span v-if="message=='loading...'"><IconLoading/></span><span v-else>{{message}}</span></div>
+    <div v-else class="flex flex-col mt-5">
+      <div class="mx-10 w-auto">
+        <Filter :eventCategories="eventCategories"
+              @past="getPastEvent"
+              @upcoming="getUpcomingEvent"
+              @selectDay="getEventByDate"
+              @categoryName="getEventByCategory"
+              @reset="getEvents"/>
+        <!-- <hr class="my-2"/> -->
+        <ShowListEvent :events="events" :filterMode="filterMode"/>
+      </div>
+      <div>
+
+      </div>
+        <!-- <table>
+          <tr>
+            <td style="width: 250px">
+              <Filter :eventCategories="eventCategories"
+              @past="getPastEvent"
+              @upcoming="getUpcomingEvent"
+              @selectDay="getEventByDate"
+              @categoryName="getEventByCategory"
+              @reset="getEvents"/>
+            </td>
+            <td style="padding-left: 20px">
+              <ShowListEvent :events="events" :filterMode="filterMode"/>
+            </td>
+          </tr>
+        </table> -->
+      
+    </div>
 </template>
  
 <style scoped>

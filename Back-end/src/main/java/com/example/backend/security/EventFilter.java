@@ -59,7 +59,14 @@ public class EventFilter extends OncePerRequestFilter {
                     }
                 } else {
                     System.out.println("Guest is accessing /api/events");
-                    if(request.getMethod().equals(HttpMethod.POST.toString())){
+                    if(request.getServletPath().startsWith("/api/events/list-book-overlap") ||
+                            request.getServletPath().startsWith("/api/events/list-edit-overlap") ||
+                            request.getServletPath().startsWith("/api/events/book") ||
+                            request.getServletPath().startsWith("/api/events/edit")){
+                        System.out.println("Guest is using overlap method.");
+                        filterChain.doFilter(request,response);
+                    }
+                    else if(request.getMethod().equals(HttpMethod.POST.toString())){
                         System.out.println("Guest can create event only");
                         filterChain.doFilter(request,response);
                     } else {
