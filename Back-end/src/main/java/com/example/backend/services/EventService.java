@@ -151,10 +151,12 @@ public class EventService {
                 System.out.println(newEvent.getBookingEmail());
                 System.out.println(new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()));
                 if (!new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()))
+                    if(newEvent.getEventAttachmentName()!=null) fileService.deleteFile(newEvent.getEventAttachmentName());
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The booking email didn't match your email.");
             }
         }
         if (!(checkOverlap(newEvent.getEventCategoryId(), newEvent.getStartTime()).size() == 0)) {
+            if(newEvent.getEventAttachmentName()!=null) fileService.deleteFile(newEvent.getEventAttachmentName());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The choosen time is overlap other events");
         }
         EventCategory eventCategory = categoryRepository.findById(newEvent.getEventCategoryId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This category is not existed."));
@@ -198,38 +200,71 @@ public class EventService {
     public EventDTO editEvent(EventUpdateDTO updateEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         Event event = repository.findById(updateEvent.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " event not found."));
         String role = new Authorization().getRoleFromRequest(request);
-        if(role.equals("admin")){
+//        if(role.equals("admin")){
+//            if (!checkEditOverlap(event, updateEvent.getStartTime())) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
+//            }
+//            if (event.getEventAttachmentName()!=null&&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
+//                fileService.deleteFile(event.getEventAttachmentName());
+//            }
+//            if(event.getEventAttachmentName()!=null&&updateEvent.getEventAttachmentName()==null){
+//                fileService.deleteFile(event.getEventAttachmentName());
+//            }
+//            event.setEventStartTime(updateEvent.getStartTime());
+//            event.setEventNotes(updateEvent.getNotes());
+//            if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
+//            repository.saveAndFlush(event);
+//            return modelMapper.map(event, EventDTO.class);
+//        }
+//        if(role.equals("student")){
+//            String userEmail = new Authorization().getUserEmailFromRequest(request);
+//            if(event.getBookingEmail().equals(userEmail)){
+//                if (!checkEditOverlap(event, updateEvent.getStartTime())) {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
+//                }
+//                if (event.getEventAttachmentName()!=null &&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
+//                    fileService.deleteFile(event.getEventAttachmentName());
+//                }
+//                event.setEventStartTime(updateEvent.getStartTime());
+//                event.setEventNotes(updateEvent.getNotes());
+//                if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
+//                repository.saveAndFlush(event);
+//                return modelMapper.map(event, EventDTO.class);
+//            }
+//        }
+        if(role.equals("admin") || role.equals("student")){
+            if(role.equals("student")){
+                String userEmail = new Authorization().getUserEmailFromRequest(request);
+                if(!event.getBookingEmail().equals(userEmail)) {
+                    if(updateEvent.getEventAttachmentName()!=null) fileService.deleteFile(updateEvent.getEventAttachmentName());
+                    response.setStatus(403);
+                    response.getWriter().print("Unauthorized.");
+                    return null;
+                }
+            }
             if (!checkEditOverlap(event, updateEvent.getStartTime())) {
+                if(updateEvent.getEventAttachmentName()!=null) fileService.deleteFile(updateEvent.getEventAttachmentName());
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
-            }
-            if (event.getEventAttachmentName()!=null&&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
-                fileService.deleteFile(event.getEventAttachmentName());
-            }
-            if(event.getEventAttachmentName()!=null&&updateEvent.getEventAttachmentName()==null){
-                fileService.deleteFile(event.getEventAttachmentName());
             }
             event.setEventStartTime(updateEvent.getStartTime());
             event.setEventNotes(updateEvent.getNotes());
-            if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
+            if(updateEvent.getEventAttachmentName()==null){
+                if(event.getEventAttachmentName()!=null){
+                    fileService.deleteFile(event.getEventAttachmentName());
+                    event.setEventAttachmentName(null);
+                }
+            } else {
+                if(event.getEventAttachmentName()!=null) {
+                    if (!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
+                        fileService.deleteFile(event.getEventAttachmentName());
+                    }
+                }
+                event.setEventAttachmentName(updateEvent.getEventAttachmentName());
+            }
             repository.saveAndFlush(event);
             return modelMapper.map(event, EventDTO.class);
         }
-        if(role.equals("student")){
-            String userEmail = new Authorization().getUserEmailFromRequest(request);
-            if(event.getBookingEmail().equals(userEmail)){
-                if (!checkEditOverlap(event, updateEvent.getStartTime())) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
-                }
-                if (event.getEventAttachmentName()!=null &&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
-                    fileService.deleteFile(event.getEventAttachmentName());
-                }
-                event.setEventStartTime(updateEvent.getStartTime());
-                event.setEventNotes(updateEvent.getNotes());
-                if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
-                repository.saveAndFlush(event);
-                return modelMapper.map(event, EventDTO.class);
-            }
-        }
+        if(updateEvent.getEventAttachmentName()!=null) fileService.deleteFile(updateEvent.getEventAttachmentName());
         response.setStatus(403);
         response.getWriter().print("Unauthorized.");
         return null;

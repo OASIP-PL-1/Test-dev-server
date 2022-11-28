@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class EventController {
     @Autowired
     private EventService service;

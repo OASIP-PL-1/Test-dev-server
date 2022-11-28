@@ -170,6 +170,9 @@ const getListOverlap = async (editingEvent) => {
                 })
             }).catch(error => console.log(error) );
             console.log(res.status)
+            //ถ้าแก้ไข event ไม่ได้ ให้ delete file ที่พึ่ง upload ไป
+
+
             if(res.status===200){
                 console.log('PUT This Event Updated')
                 thisEvent.value = await res.json()

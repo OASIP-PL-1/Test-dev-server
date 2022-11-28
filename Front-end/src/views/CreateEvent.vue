@@ -184,6 +184,9 @@
                 }).catch(error => console.log(error));
                 loading2.value =false
                 console.log(res.status)
+                //ถ้าสร้าง event ไม่ได้ ให้ delete file ที่พึ่ง upload ไป
+
+
                 if(res.status===200){
                     const newId = await res.json()
                     if(signIn.statusLogin===true){
@@ -231,6 +234,9 @@
     const clearForm = () => {
         newEvent.value = { bookingName : "", email : "", category : {}, dateTime : "", notes : ""} 
         overlapStatus.value = true
+        let input = document.getElementById('bFile')
+        input.value = null
+        inputFile.value = null
     }
 
 
@@ -266,14 +272,32 @@
             }else if(inputFile.value.size > 10485760){
                 console.log('ขนาดไฟล์ใหญ่เกิน')
                 return false
+            }else if(inputFile.value === null){
+                const nameUploadFile = null
+                return nameUploadFile
             }
         } 
             
     }
-    const checkFile = computed(()=>{ 
+    // Validate File
+    const checkFileSize = computed(()=>{ 
         //true = ขนาดไฟล์ใหญ่เกิน
         if(inputFile.value !== null){
+            console.log(inputFile.value.size)
             return inputFile.value.size > 10485760
+        }
+    })
+
+    const checkFileName = computed(()=>{ 
+        //true = ชื่อผิด(มี .. / ในชื่อ)
+        if(inputFile.value !== null){
+            return inputFile.value.name.includes("/") 
+        }
+    })
+    const checkFileLength = computed(()=>{ 
+        //true = ชื่อยาวเกิน (ชื่อไฟล์-datetime ไม่เกิน 100)
+        if(inputFile.value !== null){
+            return inputFile.value.name.length > 85
         }
     })
     // const downloadFile = async (filename) => {
@@ -384,7 +408,11 @@
                     <div class="my-1">
                         <label for="bFile">file</label>
                         <input type="file" id="bFile" name="bFile" @change="newFile">
-                        <span v-show="checkFile" class="text-red-500">&#9888; ขนาดไฟล์ใหญ่เกิน</span>
+                        <span v-show="checkFileName || checkFileSize" class="text-red-500">&ensp; &#9888;</span> 
+                        <span v-show="checkFileSize" class="text-red-500">ขนาดไฟล์ใหญ่เกิน</span>
+                        &nbsp;
+                        <span v-show="checkFileName" class="text-red-500">ชื่อไฟล์ไม่ถูกต้อง</span>
+                        <span v-show="checkFileLength" class="text-red-500">ชื่อไฟล์ยาวเกินไป</span>
                     </div>
                 </div>
             </div>
@@ -400,7 +428,7 @@
                 <button @click="clearForm()" class="bg-red-100 text-red-500 py-1.5 px-4 rounded-full 
                            hover:bg-red-500 hover:text-white active:bg-[#3333A3] duration-300">Clear</button>
                 &ensp;
-                <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd || checkFile" type="submit"
+                <button @click="createNewEvent(newEvent)" :disabled="checkBeforeAdd || checkFileSize || checkFileName || checkFileLength" type="submit"
                         class="bg-[#5C5CFF] text-white py-1.5 px-4 rounded-full 
                             hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300 disabled:bg-gray-300">Save</button>
             </div>

@@ -48,7 +48,7 @@ services:
         "spring.servlet.multipart.file-size-threshold" : "4KB",
         "spring.servlet.multipart.max-file-size" : "10MB",
         "spring.servlet.multipart.max-request-size" : "10MB",
-        "file.uploaddir" : "/public/fileStorage"
+        "file.uploaddir" : "/home/spadmin/fileStorage"
       }'
     volumes:
       - .m2:/root/.m2

@@ -64,8 +64,21 @@ public class FileService {
             throw new RuntimeException("Can not store file. Please try again.", ex);
         }
     }
-
+//    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
+//        Resource resource = fileService.loadFileAsResource(filename);
+//        String contentType = null;
+//        try {
+//            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+//        } catch (IOException ex) {
+////            logger.info("Could not determine file type.");
+//        }
+//        if (contentType == null) {
+//            contentType = "application/octet-stream";
+//        }
+//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="" + resource.getFilename() + """).body(resource);
+//    }
     public Resource loadFileAsResource(String fileName){
+        String contentType = null;
         try{
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             System.out.println(filePath);
@@ -90,15 +103,15 @@ public class FileService {
             System.out.println(filePath);
             Resource resource = new UrlResource(filePath.toUri());
             System.out.println(resource);
-            if(resource.exists()){
+//            if(resource.exists()){
                 resource.getFile().delete();
-            } else {
-                throw new RuntimeException("File not found" + fileName);
-            }
+//            } else {
+//                throw new RuntimeException("File not found" + fileName);
+//            }
         } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found in catch " + fileName, ex);
+//            throw new RuntimeException("File not found in catch " + fileName, ex);
         } catch (IOException ex) {
-            throw new RuntimeException("File can not delete " + fileName, ex);
+//            throw new RuntimeException("File can not delete " + fileName, ex);
         }
     }
 

@@ -20,13 +20,13 @@ public class EventUpdateDTO {
     private int id;
 
     @NotNull(message = "Start time is required.")
-    @Future(message = "Selecteed date must be in the future.")
+    @Future(message = "Selected date must be in the future.")
     private Date startTime;
 
 //    @NotBlank(message = "Event's note is required!")
     @Size(max = 500, message = "Event's note is too long, maximum 500 characters.")
     private String notes;
 
-    @Size(max = 100, message = "Event's attachment name is too long, maximum 100 characters.")
+    @Size(max = 85, message = "Event's attachment name is too long, maximum 85 characters.")
     private String eventAttachmentName;
 }

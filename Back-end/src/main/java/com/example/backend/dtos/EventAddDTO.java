@@ -38,6 +38,6 @@ public class EventAddDTO {
     @NotNull(message = "Event category's id is required.")
     private int eventCategoryId;
 
-    @Size(max = 100, message = "Event's attachment name is too long, maximum 100 characters.")
+    @Size(max = 85, message = "Event's attachment name is too long, maximum 85 characters.")
     private String eventAttachmentName;
 }

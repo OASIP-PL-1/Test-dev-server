@@ -42,10 +42,25 @@
         return new Date(props.editingEvent.dateTime) < new Date()
     })
 
-    const checkFile = computed(()=>{ 
+     // Validate File
+     const checkFileSize = computed(()=>{ 
         //true = ขนาดไฟล์ใหญ่เกิน
         if(inputFile.value !== null){
+            console.log(inputFile.value.size)
             return inputFile.value.size > 10485760
+        }
+    })
+
+    const checkFileName = computed(()=>{ 
+        //true = ชื่อผิด(มี .. / ในชื่อ)
+        if(inputFile.value !== null){
+            return inputFile.value.name.includes("/") 
+        }
+    })
+    const checkFileLength = computed(()=>{ 
+        //true = ชื่อยาวเกิน (ชื่อไฟล์-datetime ไม่เกิน 100)
+        if(inputFile.value !== null){
+            return inputFile.value.name.length > 85
         }
     })
 
@@ -224,7 +239,11 @@
                                     {{editingEvent.attachmentName}} <IconDelete class="w-4 h-4 inline text-red-400" @click="clearFile()"/></span>
                                 <span v-else-if="inputFile !== null">
                                     {{inputFile.name}} <IconDelete class="w-4 h-4 inline text-red-500" @click="clearFile()"/></span>
-                                <span v-show="checkFile" class="text-red-500">&#9888; ขนาดไฟล์ใหญ่เกิน</span>
+                                    <span v-show="checkFileName || checkFileSize" class="text-red-500">&ensp; &#9888;</span> 
+                                    <span v-show="checkFileSize" class="text-red-500">ขนาดไฟล์ใหญ่เกิน</span>
+                                    &nbsp;
+                                    <span v-show="checkFileName" class="text-red-500">ชื่อไฟล์ไม่ถูกต้อง</span>
+                                    <span v-show="checkFileLength" class="text-red-500">ชื่อไฟล์ยาวเกินไป</span>
                                 <input type="file" id="eFile" name="eFile" @change="newFile" class="text-white block"/>
                             </div>
                         </div>
@@ -236,7 +255,7 @@
                 <button @click="$emit('hideEditMode'), clearFile()" class="bg-red-100 text-red-500 py-1.5 px-4 rounded-full 
                            hover:bg-red-500 hover:text-white active:bg-[#3333A3] duration-300">Cancel</button>
                 &ensp;
-                <button @click="$emit('save',editingEvent, inputFile)" :disabled="checkDate || checkFile || checkEdited"
+                <button @click="$emit('save',editingEvent, inputFile)" :disabled="checkDate || checkFileSize || checkFileName || checkFileLength || checkEdited"
                         class="bg-[#5C5CFF] text-white py-1.5 px-4 rounded-full 
                             hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300 disabled:bg-gray-300">Save</button>
             </div>

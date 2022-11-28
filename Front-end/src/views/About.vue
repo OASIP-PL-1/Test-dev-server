@@ -14,7 +14,7 @@
             <div class="grid-cols-3">
                 <div>
                     <p>
-                        <img src="../assets/dev-panalee.png" width="150px">
+                        <!-- <img src="../assets/dev-panalee.png" width="150px"> -->
                     <br>
                     Panalee Palasri
                     <br>
@@ -23,7 +23,7 @@
                 </div>
                 <div>
                     <p>
-                        <img src="../assets/dev-piraya.png" width="150px">
+                        <!-- <img src="../assets/dev-piraya.png" width="150px"> -->
                     <br>  
                     Piraya Sutthiparinyanon
                     <br>
@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <p>
-                        <img src="../assets/dev-vichuta.png" width="150px">
+                        <!-- <img src="../assets/dev-vichuta.png" width="150px"> -->
                     <br>    
                     Vichuta Pipoppinyo
                     <br>

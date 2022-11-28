@@ -27,18 +27,18 @@ public class FileController {
 
     @GetMapping("/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
-        Resource resource = fileService.loadFileAsResource(filename);
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("serveFile");
+        Resource file = fileService.loadFileAsResource(filename);
+        System.out.println(file.getDescription());
+//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(file);
         String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-//            logger.info("Could not determine file type.");
+        try{
+            contentType = request.getServletContext().getMimeType(file.getFile().getAbsolutePath());
+        } catch (IOException e) {
+//            throw new RuntimeException();
         }
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getFilename()).body(file);
     }
 
     @PostMapping("")
