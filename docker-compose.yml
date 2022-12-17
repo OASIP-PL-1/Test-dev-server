@@ -48,7 +48,7 @@ services:
 
         "spring.servlet.multipart.enabled" : "true",
         "spring.servlet.multipart.file-size-threshold" : "4KB",
-        "spring.servlet.multipart.max-file-size" : "11MB",
+        "spring.servlet.multipart.max-file-size" : "10MB",
         "spring.servlet.multipart.max-request-size" : "100MB",
         "file.uploaddir" : "/public/fileStorage"
       }'
