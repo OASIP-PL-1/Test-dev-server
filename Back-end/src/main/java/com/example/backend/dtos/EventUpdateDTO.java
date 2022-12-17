@@ -23,7 +23,6 @@ public class EventUpdateDTO {
     @Future(message = "Selected date must be in the future.")
     private Date startTime;
 
-//    @NotBlank(message = "Event's note is required!")
     @Size(max = 500, message = "Event's note is too long, maximum 500 characters.")
     private String notes;
 

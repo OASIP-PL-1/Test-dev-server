@@ -6,9 +6,8 @@
 </script>
    
 <template>
-    <div class="text-center">
-      <img class="my-2" src="../../assets/logo.png" alt="error"/>
-      <div class="text-[100px]">401</div>
+    <div class="text-center mt-36">
+      <img class="max-h-48 inline-block mb-4" src="../../assets/401.png" alt="error"/>
       <div class="text-[50px]">Authorization Required</div>
       <div class="mb-8">This page is allowed for registered users only</div>
       <button @click=gotoLogin() class="bg-[#5C5CFF] text-white font-semibold py-2 px-5 rounded-full 

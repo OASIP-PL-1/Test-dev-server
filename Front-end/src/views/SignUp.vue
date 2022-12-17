@@ -3,13 +3,23 @@
     import {useRouter} from 'vue-router'
     import {useListUser} from '../state/getListUser.js'
     import { useSignIn } from '../state/signIn.js';
+    //-- insert icons --
+    import IconAccount from '../components/icons/iconAccount.vue'
+    import IconEmail from '../components/icons/iconEmail.vue'
+    import IconPassword from '../components/icons/iconPassword.vue'
+    import IconKeyCheck from '../components/icons/iconKeyCheck.vue'
+    import IconUserRole from '../components/icons/iconUserRole.vue'
+    import IconLoading from '../components/icons/iconLoading.vue'
+    import IconBack from '../components/icons/iconBack.vue'
 
     const getListUser = useListUser() 
     const signIn = useSignIn()
 
     const myRouter = useRouter()
-    const goBack = () => myRouter.go(-1)
+    const goToViewUser = () => myRouter.push({name:'ViewUser'})
     const goThisUser = (newId) => myRouter.push({name: 'ThisUser', params:{userId:newId}})
+    const goToError401 = () => myRouter.push({ name: 'Error401'})
+    const goToError403 = () => myRouter.push({ name: 'Error403'})
 
     onMounted(async () => {
       await getListUser.getUserCheckListCreate()
@@ -25,7 +35,6 @@
     })
 
     const createNewUser = async (user)=>{
-      console.log(user)
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`,{
         method:'POST',
         headers:{
@@ -39,32 +48,27 @@
           userPassword:user.password
         })
       }).catch(error => console.log(error));
-      console.log(res.status)
         if(res.status===200){
           const newId = await res.json()
-          console.log(newId)
           goThisUser(newId)
-          console.log('Create New User OK')
         }else if(res.status===400){
-          console.log(res)
-          console.log(res.message)
-          console.log("Cannot Create New User : The data is incorrect")
+          alert("Cannot Create New User : The data is incorrect")
         }else if(res.status===414){
-          console.log("Cannot Create New User : The data length in the input field is too large. Please try again.")
+          alert("Cannot Create New User : The data length in the input field is too large. Please try again.")
         }else if(res.status===404){
-          console.log("Cannot Create New User : Not Found! User id")
+          alert("Cannot Create New User : Not Found! User id")
         }else if(res.status===401){
           let errorText = await res.text()
-          console.log(errorText)
+          alert(errorText)
           if(errorText==="Token is expired."){
             await signIn.sendRefreshToken()
           }else{
-            console.log('Please login')
+            goToError401()
           }
         }else if(res.status===403){
-          console.log('Unauthorized access')
+          goToError403
         }else{
-          console.log("Error, Cannot Create New User")
+          alert("Error, Cannot Create New User")
         }
       clearInput()
     }
@@ -134,184 +138,135 @@
         }
     }
 
-    // const showInputConfirm = ref(false) 
     // - check length password
     const passwordStatus = ref(true) // true = Valid
     const checkPassword = (password) => {
       if(password.length < 8 ){
         passwordStatus.value = false 
-        // showInputConfirm.value = false
       }else{
         passwordStatus.value = true
-        // showInputConfirm.value = true
       }
     }
     
     // - check ว่า password = confrim password ไหม?
     const matchConfirmPassword = ref() // true = match
     const checkComfirmPassword = (pw1,pw2) => pw1 === pw2 ? matchConfirmPassword.value = true : matchConfirmPassword.value = false
-    //Encode password
-
 
 </script>
  
 <template>
-  <!-- <div style="margin-top: 10em;"> -->
-    <div v-if="getListUser.loading" class="subText" style="margin-top: 2em;">{{getListUser.message}}</div>
-    <div v-else>
-      <div class="thisEvent">
-        <button @click="goBack" class="button-18" role="button">Back</button>
-      </div>
-    <div class="box">
-      <h2>Sign Up</h2>
-      <p>Fill the form to create an account.</p>
-      <hr>
-      <table>
-        <tr>
-          <th><label for="username"><b>Username : </b></label></th>
-          <td style="text-align: right;"><span class="subText">{{newUser.name.length}} / 100</span></td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <input type="text" placeholder="Enter username" name="username" 
-                  v-model="newUser.name" maxlength="100" size="50" @blur="checkMatchName(newUser.name)" required>&ensp;
-            <span v-show="matchNameStatus" class="warning">Username is already existed, please try another name</span>
-          </td>
-        </tr>
-          <tr>
-            <th><label for="email"><b>Email : </b></label></th>
-            <td style="text-align: right;"><span class="subText">{{newUser.email.length}} / 50</span></td>
-          </tr>
-        <tr>
-          <td colspan="2">
-            <input type="text" placeholder="Enter email" name="email" 
-                  v-model="newUser.email" maxlength="50" size="50" @blur="emailValidation(newUser.email), checkMatchEmail(newUser.email)" required>&ensp;
-            
-            <span v-show="emailStatus" class="warning"><br/>Input email is invalid!</span>
-            <span v-show="matchEmailStatus" class="warning"><br/>This email is already existed, please try another email</span>
-          </td>
-        </tr>
-        <tr>
-            <th><label for="password"><b>Password : </b></label></th>
-            <td style="text-align: right;"><span class="subText">8 - 14 character</span></td>
-          </tr>
-        <tr>
-          <td colspan="2">
-            <input type="password" placeholder="Enter password" name="password" 
-                  v-model="newUser.password" minlength="8" maxlength="14" size="50" @blur="checkPassword(newUser.password)" required >&ensp;
-            <span v-show="!passwordStatus" class="warning"><br/>Password should be at least 8 characters.</span>
-          </td>
-        </tr>
-        <tr>
-            <th><label for="confrim"><b>Confirm Password : </b></label></th>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <input type="password" placeholder="Comfirm password" name="confrim" 
-                  v-model="newUser.confirmPW" minlength="8" maxlength="14" size="50" @blur="checkComfirmPassword(newUser.password, newUser.confirmPW)" required>&ensp;
-            <span v-show="matchConfirmPassword === false" class="warning"><br/>The password DOES NOT match</span>
-          </td>
-        </tr>
-        <tr style="color:white; padding-top: 10px;">
-          <td colspan="2">
-            <b style="padding: 1em; ">Role :</b>
-          <label>
-            <input type="radio" id="1" name="role" value="admin" v-model="newUser.role"> Admin
+  <div class="h-full">
+    <div v-if="getListUser.loading" class="text-blue-800 my-16 text-center"><span v-if="getListUser.message=='loading...'"><IconLoading/></span><span v-else>{{getListUser.message}}</span></div>
+    <div v-else class="bg-white float-right h-full w-2/4">
+      <button @click="goToViewUser()" class="text-gray-400 m-5"><IconBack class="w-5 h-5 inline"/> Back</button>
+      <div class="my-3 text-center text-3xl text-[#3333A3]"><b>Create User</b></div>
+      <div class="mx-24 flex flex-col">
+        <div class="my-3">
+          <label for="username" class="w-full flex items-center justify-between">
+            <IconAccount class="w-[20px] h-[20px] inline mr-2"/>
+            <b class="flex-auto">Username</b>
+            <span class="flex-auto text-right">{{newUser.name.length}} / 100</span>
           </label>
-          <label style="padding-left: 2em">
-            <input type="radio" id="2" name="role" value="lecturer" v-model="newUser.role"> Lecturer
+          <input type="text"
+                   placeholder="Username" 
+                   name="username" 
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 mt-1"
+                   v-model="newUser.name" 
+                   maxlength="100" 
+                   size="50" 
+                   @blur="checkMatchName(newUser.name)"
+                   required
+                   >
+          <div v-show="matchNameStatus" class="text-red-500 text-right">&#9888; Username is already existed, please try another name</div>
+        </div>
+       
+        <div class="my-3">
+          <label for="email" class="w-full flex items-center justify-between">
+            <IconEmail class="w-[20px] h-[20px] inline mr-2"/>
+            <b class="flex-auto">Email</b>
+            <span class="flex-auto text-right">{{newUser.email.length}} / 50</span>
           </label>
-          <label style="padding-left: 2em">
-            <input type="radio" id="3" name="role" value="student" v-model="newUser.role" checked> Student
+            <input type="text"
+                   placeholder="Email" 
+                   name="email" 
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 mt-1"
+                   v-model="newUser.email" 
+                   maxlength="50" 
+                   size="50" 
+                   @blur="emailValidation(newUser.email), checkMatchEmail(newUser.email)"
+                   required
+                   >
+          <div v-show="emailStatus" class="text-red-500 text-right">&#9888; Input email is invalid!</div>
+          <div v-show="matchEmailStatus" class="text-red-500 text-right">&#9888; This email is already existed, please try another email</div>
+        </div>
+
+        <div class="my-3">
+          <label for="password" class="w-full flex items-center justify-between">
+            <IconPassword class="w-[20px] h-[20px] inline mr-2"/>
+            <b class="flex-auto">Password</b>
+            <span class="flex-auto text-right">8 - 14 character</span>
           </label>
-          </td>
-        </tr>
-      </table>
-        <br>
-      <div class="button-center">
-        <button type="submit" class="button-18" @click="createNewUser(newUser)" :disabled="checkBeforeAdd" style="width: 100%;">Sign Up</button>
-        <br/><br/>
-        <!-- <button type="button" :class="['button-18','negative']" @click="clearInput">Clear</button> -->
+            <input type="password" 
+                  placeholder="Password" 
+                  name="password"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 mt-1"
+                  v-model="newUser.password" 
+                  minlength="8" 
+                  maxlength="14" 
+                  size="50" 
+                  @blur="checkPassword(newUser.password)" 
+                  required>
+          <div v-show="!passwordStatus" class="text-red-500 text-right">&#9888; At least 8 characters</div>
+        </div>
+
+        <div class="my-3">
+        <label for="confrim">
+            <IconKeyCheck class="w-[20px] h-[20px] inline mr-2"/>
+            <b>Confirm Password</b>
+        </label>
+            <input type="password" 
+                  placeholder="Comfirm password" 
+                  name="confrim"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 mt-1"
+                  v-model="newUser.confirmPW" 
+                  minlength="8" 
+                  maxlength="14" 
+                  size="50" 
+                  @blur="checkComfirmPassword(newUser.password, newUser.confirmPW)" 
+                  required>
+          <div v-show="matchConfirmPassword === false" class="text-red-500 text-right">&#9888; The password DOES NOT match</div>
+        </div>
+
+        <div class="my-3">
+          <label for="role">
+            <IconUserRole class="w-[20px] h-[20px] inline mr-2"/>
+            <b>Role</b>
+          </label>
+          <div class="mt-4">
+            <div class="my-auto m-1 py-1.5 px-2 text-center rounded-lg border-2 inline">
+              <input type="radio" id="1" name="role" value="admin" v-model="newUser.role" class="accent-[#F36747] align-middle w-4 h-4">
+              <label for="1" class="ml-1 align-top">admin</label>
+            </div>
+            <div class="my-auto m-1 py-1.5 px-2 text-center rounded-lg border-2 inline">
+              <input type="radio" id="2" name="role" value="lecturer" v-model="newUser.role" class="accent-pink-500 align-middle w-4 h-4">
+              <label for="2" class="ml-1 align-top">lecturer</label>
+            </div>
+            <div class="my-auto m-1 py-1.5 px-2 text-center rounded-lg border-2 inline">
+              <input type="radio" id="3" name="role" value="student" v-model="newUser.role" class="accent-violet-500 align-middle w-4 h-4" checked>
+              <label for="3" class="ml-1 align-top">student</label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" 
+          class="bg-[#5C5CFF] text-white text-[18px] font-bold py-2 px-5 rounded-full
+          hover:bg-[#FFA21A] active:bg-[#3333A3] duration-300 mt-6"
+          @click="createNewUser(newUser)" :disabled="checkBeforeAdd" style="width: 100%;">Create</button>
       </div>
     </div>
-    </div>
-  <!-- </div> -->
-      <!-- <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p> -->
-      <!-- <p>{{newUser}}</p> -->
+</div>
 </template>
  
 <style scoped>
-    h2 {
-        color: #FFCB4C;
-    }
-    p, b, th {
-        color: white;
-    }
-    input {
-        border-radius: 10px;
-        padding: 0.5em;
-        margin: 0.25em 0 ;
-        text-rendering: auto;
-        overflow: visible;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    table {
-        margin-left: auto;
-        margin-right: auto;
-        -o-object-fit: cover;
-        object-fit: cover;
-        width: 80%;
-    }
-    tr {
-        padding: auto;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    th {
-        /* vertical-align: top; */
-        text-align: left;
-        width: 19%;
-        padding: 10px 2em 0 2em;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    td {
-        text-align: left;
-        width: 30%;
-        padding: 0 2em 10px 2em;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-    .box {
-      background-color:#3333A3;
-      padding: 1em 2em 1em 2em;
-      border-radius: 30px;
-      /* min-height: 400px; */
-      /* max-height: 400px; */
-      /* min-width: 200px; */
-      max-width: 600px;
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-      -o-object-fit: cover;
-      object-fit: cover;
-    }
-    .thisEvent {
-      padding: 0 2em;
-    }
-    .button-right {
-      text-align: center;
-    }
-    .warning{
-        color: orangered;
-    }
-    span{
-      font-size: smaller;
-    }
-    /* input:invalid {
-      border: red 1px solid;
-    } */
- 
+
 </style>

@@ -24,6 +24,7 @@ import java.util.Date;
 public class FileService {
     private final Path fileStorageLocation;
 
+
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get((fileStorageProperties.getUploadDir()+"/eventAttachment")).toAbsolutePath().normalize();
@@ -36,16 +37,9 @@ public class FileService {
 
     public boolean tryFile(MultipartFile file){
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        System.out.println("tryFile : " + fileName);
+//        System.out.println("tryFile : " + fileName);
         if (fileName.contains("..") || fileName.contains("/")) {
             throw new RuntimeException("Error. Filename contains unappropriate characters.");
-        }
-        if (file.getSize()>10000000) {
-            throw new RuntimeException("The attachment is too big!");
-        }
-        String[] fileNameSplit = file.getOriginalFilename().split("[.]");
-        if (fileNameSplit.length>2){
-            throw new RuntimeException("Filename contains '.'.");
         }
         System.out.println(file.getSize());
         return true;
@@ -53,9 +47,9 @@ public class FileService {
 
     public String store(MultipartFile file, HttpServletRequest request, HttpServletResponse response){
         tryFile(file);
-        String[] fileNameSplit = file.getOriginalFilename().split("[.]");
+        String fileName = file.getOriginalFilename();
         long timestamp = (new Date()).getTime();
-        String newFileName = fileNameSplit[0] + "-" + timestamp + "." + fileNameSplit[1];
+        String newFileName = fileName.substring(0,fileName.lastIndexOf(".")) + "-" + timestamp + fileName.substring(fileName.lastIndexOf("."));
         try {
             Path targetLocation = this.fileStorageLocation.resolve(newFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -63,55 +57,38 @@ public class FileService {
         } catch (IOException ex) {
             throw new RuntimeException("Can not store file. Please try again.", ex);
         }
+
     }
-//    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
-//        Resource resource = fileService.loadFileAsResource(filename);
+
+    public Resource loadFileAsResource(String fileName, HttpServletRequest request, HttpServletResponse response){
 //        String contentType = null;
-//        try {
-//            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-//        } catch (IOException ex) {
-////            logger.info("Could not determine file type.");
-//        }
-//        if (contentType == null) {
-//            contentType = "application/octet-stream";
-//        }
-//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="" + resource.getFilename() + """).body(resource);
-//    }
-    public Resource loadFileAsResource(String fileName){
-        String contentType = null;
         try{
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            System.out.println(filePath);
             Resource resource = new UrlResource(filePath.toUri());
-            System.out.println(resource);
+            System.out.println("load file");
             if(resource.exists()){
-//                resource.getFile().delete();
                 return resource;
             } else {
-                throw new RuntimeException("File not found" + fileName);
+                return null;
             }
         } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found in catch " + fileName, ex);
+            return null;
         } catch (IOException ex) {
-            throw new RuntimeException("File can not delete " + fileName, ex);
+            return null;
         }
     }
 
     public void deleteFile(String fileName){
         try{
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            System.out.println(filePath);
+//            System.out.println(filePath);
             Resource resource = new UrlResource(filePath.toUri());
-            System.out.println(resource);
-//            if(resource.exists()){
-                resource.getFile().delete();
-//            } else {
-//                throw new RuntimeException("File not found" + fileName);
-//            }
+//            System.out.println(resource);
+            resource.getFile().delete();
         } catch (MalformedURLException ex) {
-//            throw new RuntimeException("File not found in catch " + fileName, ex);
+
         } catch (IOException ex) {
-//            throw new RuntimeException("File can not delete " + fileName, ex);
+
         }
     }
 

@@ -1,7 +1,6 @@
 package com.example.backend.dtos;
 
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,7 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 public class EventAddDTO {
-//    @Min(value = 1, message = "The least id number is 1.")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
@@ -31,7 +29,6 @@ public class EventAddDTO {
     @Future(message = "Selected date must be in the future.")
     private Date startTime;
 
-//    @NotBlank(message = "Event's note is required!")
     @Size(max = 500, message = "Event's note is too long, maximum 500 characters.")
     private String notes;
 

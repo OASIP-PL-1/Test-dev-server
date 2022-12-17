@@ -11,6 +11,7 @@ import com.example.backend.entities.User;
 import com.example.backend.exception.ErrorDetails;
 import com.example.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
 public class AuthService {
     @Autowired
     UserRepository repository;
+
+    @Value("${jwt.secret}")
+    private String secret;
 
     private JWTVerifier refreshTokenVerifier;
 
@@ -72,12 +76,10 @@ public class AuthService {
             JWT.decode(refreshToken).getClaims();
             System.out.println(JWT.decode(refreshToken).getClaims().get("sub"));
         } catch (Exception ex){
-            System.out.println(ex.getMessage());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid token");
         }
         if(JWT.decode(refreshToken).getExpiresAt().before(new Date())){
             message.put("message", "Token is expired.");
-//            httpStatus = HttpStatus.BAD_REQUEST;
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is expired. Please login again");
         } else {
             Map claims = JWT.decode(refreshToken).getClaims();
@@ -85,7 +87,6 @@ public class AuthService {
             String subUserEmail = userEmail.substring(1, userEmail.length() - 1);
             String role = claims.get("role").toString();
             String subRole = role.substring(1, role.length() - 1);
-//        System.out.println(subUserEmail + subRole);
             message.put("message", "New token is available");
             message.put("accessToken", generateAccessToken(subUserEmail, subRole));
             message.put("refreshToken", generateRefreshToken(subUserEmail, subRole));
@@ -95,7 +96,7 @@ public class AuthService {
     }
 
     private String generateAccessToken(String userEmail, String userRole){
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         System.out.println("GenerateToken");
         String accessToken = JWT.create()
                 .withSubject(userEmail)
@@ -107,7 +108,7 @@ public class AuthService {
     }
 
     private String generateRefreshToken(String userEmail, String userRole){
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         System.out.println("GenerateToken");
         String accessToken = JWT.create()
                 .withSubject(userEmail)

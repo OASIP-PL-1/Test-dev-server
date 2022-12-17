@@ -2,14 +2,9 @@ package com.example.backend.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.RowId;
 
 import javax.persistence.*;
 
-//@Table(name = "eventCategoryOwners", indexes = {
-//        @Index(name = "fk_eventCategoryOwners_eventCategories1_idx", columnList = "eventCategoryId"),
-//        @Index(name = "fk_eventCategoryOwners_users1_idx", columnList = "userId")
-//})
 @Table(name = "eventCategoryOwners")
 @Entity
 @Getter @Setter

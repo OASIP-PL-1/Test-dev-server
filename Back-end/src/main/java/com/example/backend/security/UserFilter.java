@@ -19,18 +19,21 @@ public class UserFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getServletPath().startsWith("/api/users")) {
             String authorizationHeader = request.getHeader("Authorization");
-            String token = authorizationHeader.substring("Bearer ".length());
-            Map claims = JWT.decode(token).getClaims();
-            String role = claims.get("role").toString().replace("\"","");
-//            System.out.println(role);
-            if(role.equals("admin")){
-                response.setStatus(200);
-                System.out.println("UserFilter : Admin can do any request in users.");
-                filterChain.doFilter(request,response);
-            } else{
-                response.setStatus(403);
-                response.getWriter().print("Unauthorized.");
-                System.out.println("UserFilter : You aren't admin.");
+            if(authorizationHeader!=null){
+                String token = authorizationHeader.substring("Bearer ".length());
+                Map claims = JWT.decode(token).getClaims();
+                String role = claims.get("role").toString().replace("\"","");
+                if(role.equals("admin")){ //UserFilter : Admin can do any request in users
+                    response.setStatus(200);
+                    filterChain.doFilter(request,response);
+                } else{ //You aren't admin
+                    response.setStatus(403);
+                    response.getWriter().print("Unauthorized.");
+                    return;
+                }
+            } else { //guest can do nothing
+                response.setStatus(401);
+                response.getWriter().print("Token is required.");
                 return;
             }
         }

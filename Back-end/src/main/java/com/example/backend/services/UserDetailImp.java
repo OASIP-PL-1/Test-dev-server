@@ -22,7 +22,6 @@ public class UserDetailImp implements UserDetails {
         Collection<SimpleGrantedAuthority> role = new ArrayList<>();
         role.add(new SimpleGrantedAuthority(user.getUserRole().toString()));
         return role;
-//        return null;
     }
 
     @Override

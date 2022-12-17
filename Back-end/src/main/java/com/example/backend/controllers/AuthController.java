@@ -1,6 +1,5 @@
 package com.example.backend.controllers;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.backend.dtos.RefreshToken;
 import com.example.backend.dtos.UserLoginDTO;
 import com.example.backend.exception.ErrorDetails;
@@ -10,8 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.http.HttpResponse;
-import java.util.Optional;
 
 @EnableWebSecurity
 @RestController
@@ -29,7 +26,6 @@ public class AuthController {
     @PostMapping("/refresh")
     public ErrorDetails logIn(@Valid @RequestBody RefreshToken token){
         return service.refresh(token.getRefreshToken());
-//        https://github.com/maxim04/video-2-spring-jwt-access-refresh-tokens/blob/master/src/main/java/com/example/demo/rest/AuthREST.java
     }
 
 }

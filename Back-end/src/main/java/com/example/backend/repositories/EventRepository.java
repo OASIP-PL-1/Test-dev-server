@@ -11,7 +11,22 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository <Event, Integer>, CrudRepository<Event, Integer> {
     public List<Event> findByEventCategoryIdOrderByEventStartTimeDesc(int id);
+    public List<Event> findByEventCategoryIdAndAndBookingEmailOrderByEventStartTime(int categoryId, String email);
+    @Query(value = "select * " +
+            "from events e JOIN eventCategoryowners eco ON e.eventCategoryId = eco.eventCategoryId " +
+            "where e.eventCategoryId=:categoryId AND eco.userId=:lecturerId",
+            nativeQuery = true)
+    public List<Event> lecturerGetEventByCategoryId(@Param("categoryId")int categoryId, @Param("lecturerId")int lecturerId);
+
     public List<Event> findByEventStartTimeBetweenOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime);
+    public List<Event> findByEventStartTimeBetweenAndBookingEmailOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime, String studentEmail);
+
+    @Query(value="select e.* " +
+            "from events e JOIN eventCategoryOwners eco ON e.eventCategoryId = eco.eventCategoryId " +
+            "where e.eventStartTime >= :startDateTime AND e.eventStartTime <= :endDateTime AND eco.userId = :lecturerId",
+            nativeQuery = true)
+    public List<Event> lecturerFilterByDate(@Param("startDateTime") Date startDateTime, @Param("endDateTime") Date endDateTime, @Param("lecturerId") int lecturerId);
+
     public Event findTopByOrderByIdDesc();
     public List<Event> findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(int id, Date startTime, Date endTime);
     public List<Event> findByBookingEmail(String userEmail);
@@ -19,9 +34,6 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     @Query(value = "select e.* from (events e JOIN eventCategoryOwners eco ON e.eventCategoryId = eco.eventCategoryId) JOIN users u on eco.userId = u.userId " +
             "where u.userEmail = :userEmail",
             nativeQuery = true)
-//    @Query(value = "select e.* from events e " +
-//        "where e.eventId = :userId",
-//        nativeQuery = true)
     public List<Event> lecturerGetEvent(@Param("userEmail") String userEmail);
 
     @Query(value = "select e.* from events e " +
@@ -31,10 +43,37 @@ public interface EventRepository extends JpaRepository <Event, Integer>, CrudRep
     public List<Event> filterPastEvent(@Param("currentTime")Date currentTime);
 
     @Query(value = "select e.* from events e " +
+            "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) <= :currentTime AND e.bookingEmail = :studentEmail " +
+            "order by e.eventStartTime desc",
+            nativeQuery = true)
+    public List<Event> studentFilterPastEvent(@Param("currentTime")Date currentTime, @Param("studentEmail")String StudentEmail);
+
+    @Query(value="select e.* " +
+            "from events e JOIN eventCategoryowners eco ON e.eventCategoryId = eco.eventCategoryId " +
+            "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) <= :currentTime AND eco.userId=:lecturerId " +
+            "order by e.eventStartTime desc;",
+            nativeQuery = true)
+    public List<Event> lecturerFilterPastEvent(@Param("currentTime")Date currentTime, @Param("lecturerId")int lecturerId);
+
+
+    @Query(value = "select e.* from events e " +
             "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) >= :currentTime " +
             "order by e.eventStartTime asc",
             nativeQuery = true)
     public List<Event> filterUpcomingEvent(@Param("currentTime")Date currentTime);
+
+    @Query(value = "select e.* from events e " +
+            "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) >= :currentTime AND e.bookingEmail = :studentEmail " +
+            "order by e.eventStartTime asc",
+            nativeQuery = true)
+    public List<Event> studentFilterUpcomingEvent(@Param("currentTime")Date currentTime, @Param("studentEmail")String StudentEmail);
+
+    @Query(value="select e.* " +
+            "from events e JOIN eventCategoryowners eco ON e.eventCategoryId = eco.eventCategoryId " +
+            "where DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE) >= :currentTime AND eco.userId=:lecturerId " +
+            "order by e.eventStartTime desc;",
+            nativeQuery = true)
+    public List<Event> lecturerFilterUpcomingEvent(@Param("currentTime")Date currentTime, @Param("lecturerId")int lecturerId);
 
     @Query(value = "select distinct e.* from events e where (e.eventCategoryId = :eventCategoryId)" +
             "AND ((:startTime > e.eventStartTime AND :startTime < DATE_ADD(e.eventStartTime, INTERVAL e.eventDuration MINUTE))" +

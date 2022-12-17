@@ -2,13 +2,8 @@ package com.example.backend.controllers;
 
 import com.example.backend.dtos.*;
 import com.example.backend.services.EventService;
-import com.example.backend.services.FileService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,22 +19,6 @@ public class EventController {
     @Autowired
     private EventService service;
 
-    //    ----------------------------------
-//    private final FileService fileService;
-
-//    @Autowired
-//    public EventController(FileService fileService){
-//        this.fileService = fileService;
-//    }
-
-//    @PostMapping("/test")
-//    public String fileUpload(@RequestParam("file") MultipartFile file){
-//        fileService.store(file);
-//        return "file successfully uploaded" + file.getOriginalFilename();
-//    }
-
-//    ----------------------------------
-
     @GetMapping("")
     public List<EventAllDTO> getAllEventDTO(HttpServletRequest request, HttpServletResponse response) {
         return service.getEventAllDTO(request, response);
@@ -51,23 +30,23 @@ public class EventController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<EventAllDTO> getEventDTOByCategory(@Valid @PathVariable int categoryId) {
-        return service.getEventAllDTOByCategory(categoryId);
+    public List<EventAllDTO> getEventDTOByCategory(@Valid @PathVariable int categoryId, HttpServletRequest request, HttpServletResponse response) {
+        return service.getEventAllDTOByCategory(categoryId, request, response);
     }
 
     @GetMapping("/past")
-    public List<EventAllDTO> getPastEvent() {
-        return service.getPastEventAllDTO();
+    public List<EventAllDTO> getPastEvent(HttpServletRequest request, HttpServletResponse response) {
+        return service.getPastEventAllDTO(request, response);
     }
 
     @GetMapping("/upcoming")
-    public List<EventAllDTO> getUpcomingEvent() {
-        return service.getUpcomingEventAllDTO();
+    public List<EventAllDTO> getUpcomingEvent(HttpServletRequest request, HttpServletResponse response) {
+        return service.getUpcomingEventAllDTO(request, response);
     }
 
     @GetMapping("/date/{date}")
-    public List<EventAllDTO> getEventByDate(@PathVariable String date) throws ParseException {
-        return service.getEventALLDTOByDate(date);
+    public List<EventAllDTO> getEventByDate(@PathVariable String date, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+        return service.getEventALLDTOByDate(date, request, response);
     }
 
     @GetMapping("/book/{categoryId}/{dateTime}")
@@ -107,8 +86,5 @@ public class EventController {
     public EventDTO editEvent(@Valid @RequestBody EventUpdateDTO updateEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         return service.editEvent(updateEvent, request, response);
     }
-
-
-
 
 }

@@ -11,7 +11,6 @@
     import IconDeleteAlert from '../components/icons/iconDeleteAlert.vue'
     import IconCancel from '../components/icons/iconCancel.vue'
     import Dot from '../components/icons/dot.vue'
-    import modalDeleteUser from '../components/modalDeleteUser.vue'
 
     const getListUser = useListUser()
     const userCheckList = ref()
@@ -29,6 +28,9 @@
     const myRouter = useRouter()
     const goToThisUser = (id) => myRouter.push({ name: 'ThisUser', params:{userId:id}})
     const goToSignUp = () => myRouter.push({name: 'SignUp'})
+    const goToError401 = () => myRouter.push({name: 'Error401'}) 
+    const goToError403 = () => myRouter.push({name: 'Error403'})
+    const goToError500 = () => myRouter.push({name: 'Error500'})
 
     // -- Edit Mode --
     const editMode = ref(false)
@@ -101,7 +103,6 @@
             && editingUser.userEmail===thisUser.value.userEmail 
             && editingUser.userRole===thisUser.value.userRole)
             {// ถ้าไม่ได้แก้ไข จะไม่ส่งค่าไป updated
-                console.log(`User id ${editingUser.id} save ok , not PUT`)  
                 hideEditMode() 
         }else{
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users`, 
@@ -118,11 +119,8 @@
                     userRole: editingUser.userRole,
                 })
             }).catch(error => console.log(error));
-            console.log(res.status)
             if(res.status===200){
-                console.log('PUT This User Updated')
                 thisUser.value = await res.json()
-                console.log(thisUser.value)
                 users.value = users.value.map((user) => user.id === thisUser.value.id ? 
                 {...user, 
                     id : thisUser.value.id,
@@ -133,17 +131,17 @@
                 )
                 hideEditMode()
             }else if(res.status===400){
-                console.log("Cannot Edit This User : The data is incorrect")
+                alert("Cannot Edit This User : The data is incorrect")
             }else if(res.status===414){
-                console.log("Cannot Edit This User  : The data length in the input field is too large. Please try again.")
+                alert("Cannot Edit This User  : The data length in the input field is too large. Please try again.")
             }else if(res.status===404){
-                console.log("Cannot Edit This User : Not Found! User id")
+                alert("Cannot Edit This User : Not Found! User id")
             }else if(res.status===401){
-                console.log('Please login')
+                goToError401()
             }else if(res.status===403){
-                console.log('Unauthorized access')
+                goToError403()
             }else{
-                console.log("Error, Cannot Update This User")
+                alert("Error, Cannot Update This User")
                 }
             }
         }
@@ -164,54 +162,24 @@
             'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
             }
         }).catch(error => console.log(error) );
-        console.log(res.status)
         if (res.status===200) {
-            console.log('DELETE successfully')
             await getListUser.getUsers()
             users.value = getListUser.users
             hideDeleteModal()
         }else if(res.status===404){
-            console.log(`Not Found! This User id: ${thisUser.value.id}`)
+            alert(`Not Found! This User id: ${thisUser.value.id}`)
         }else if(res.status===401){
-            console.log('Please login')
+            goToError401()
         }else if(res.status===403){
-            console.log('Unauthorized access')
+            goToError403()
         }else{
-            console.log('Error, Cannot Delete This User')
+            alert('Error, Cannot Delete This User')
         }
     }
-
 
 </script>
  
 <template>
-    <!-- <div style="margin-top: 8em;">
-        <div v-if="getListUser.loading" class="subText" style="margin-top: 2em;">{{getListUser.message}}</div>
-        <div v-else-if="getListUser.users.length === 0" class="center">-- No User--</div>
-        <div v-else>
-            <div v-for="(user,index) in getListUser.users" :key="index" class="boxRow">
-                <table class="boxUser">
-                    <tr>
-                        <td style="text-align: center; width: 20%;">
-                            <span class="grid-item-pic">
-                                <img :src="pathImg(user.id)" alt="human" width="80">
-                            </span>
-                        </td>
-                        <td style="text-align: left; width: 60%; min-width: 500px; padding: 1em;">
-                            <b style="font-size: larger;">{{user.userName}} </b><br/>
-                            {{user.userEmail}}
-                        </td>
-                        <td style="text-align: left; width: 10%; min-width: 50px; padding: 1em;">
-                            {{user.userRole}}
-                        </td>
-                        <td style="text-align: right; width: 10%;">
-                            <button class="button-18" @click="goToThisUser(user.id)">Detail</button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div> -->
     <div v-if="getListUser.loading" class="text-blue-800 my-16 text-center">
         <span v-if="getListUser.message=='loading...'"><IconLoading/></span><span v-else>{{getListUser.message}}</span>
     </div>
@@ -233,70 +201,70 @@
                     <h3 class="text-[16px] font-semibold">{{user.userName}}</h3>
                     <p>{{user.userEmail}}</p>
                 </div>
-                <div class="my-auto mx-3 w-24 p-0.5  text-center rounded-md border-2">
-                    <Dot v-if="user.userRole=='admin'"  class="w-5 h-5 inline text-red-500"/>
-                    <Dot v-else-if="user.userRole=='lecturer'" class="w-5 h-5 inline text-blue-500"/>
-                    <Dot v-else-if="user.userRole=='student'" class="w-5 h-5 inline text-yellow-400"/>
+                <div class="my-auto mx-3 w-24 p-0.5 text-center rounded-lg border-2">
+                    <Dot v-if="user.userRole=='admin'" class="w-5 h-5 inline text-[#F36747]"/>
+                    <Dot v-else-if="user.userRole=='lecturer'" class="w-5 h-5 inline text-pink-500"/>
+                    <Dot v-else-if="user.userRole=='student'" class="w-5 h-5 inline text-violet-500"/>
                     {{user.userRole}}
                 </div>
             </div>
             <div class="basis-1/4 px-4 border-l-2 flex flex-row text-center text-[12px]">
                 <button @click="goToThisUser(user.id)" class="text-gray-400 hover:text-[#3333A3] duration-150 px-3 py-1">
-                    <IconDetail class="w-5 h-5 inline mx-1"/>detail</button>
+                    <IconDetail class="w-5 h-5 inline mx-1"/>Detail</button>
                 <button @click="editUser(user)" class="text-gray-400 hover:text-[#3333A3] duration-150 px-3 py-1">
-                    <IconEdit class="w-5 h-5 inline mx-1"/>edit</button>
+                    <IconEdit class="w-5 h-5 inline mx-1"/>Edit</button>
                 <button @click="deleteUser(user)" class="text-gray-400 hover:text-[#3333A3] duration-150 px-3 py-1">
-                    <IconDelete class="w-5 h-5 inline mx-1"/>delete</button>
+                    <IconDelete class="w-5 h-5 inline mx-1"/>Delete</button>
             </div>
         </div>
 
     <!-- EDIT MODAL -->
         <div v-show="editMode" class="bg-black w-full h-full bg-opacity-30 fixed top-0 left-0 block">
-            <div class="bg-white w-[700px] m-auto mt-32 py-3 px-5 text-left rounded-xl">
+            <div class="bg-white w-[700px] m-auto mt-32 py-5 px-7 text-left rounded-lg">
             <h2 class="text-lg font-semibold pb-2 border-b-2 border-gray-400">
                 Edit User
             <button class="float-right" @click="hideEditMode()"><IconCancel class="w-5 h-5"/></button>
             </h2>
-            <div class="flex flex-row m-3">
-            <img :src="pathImg(editingUser.id)" alt="human" class="w-32 h-32 my-2 mx-auto"/>
-            <div class="flex flex-col ml-10 mt-3">
+            <div class="flex flex-row mt-3">
+            <img :src="pathImg(editingUser.id)" alt="human" class="w-32 h-32 mt-8 mx-auto"/>
+            <div class="flex flex-col">
                 <div class="my-2">
-                <h4>username</h4>
+                <h4 class="font-semibold text-[#3333A3]">Username</h4>
                 <input type="text" id="username" name="username" 
                         v-model="editingUser.userName" maxlength="100" size="50"  @blur="checkMatchName(editingUser.userName)" required
-                        class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]">
+                        class="bg-gray-50 border border-gray-300 rounded-lg p-1 mt-1 w-5/6">
                 <span v-show="matchNameStatus" class="text-red-500 block">Username is already existed, please try another name</span>
                 </div>
                 <div class="my-2">
-                <h4>email</h4>
+                <h4 class="font-semibold text-[#3333A3]">Email</h4>
                 <input type="text" id="useremail" name="useremail" 
                         v-model="editingUser.userEmail" maxlength="50" size="50"  
                         @blur="emailValidation(editingUser.userEmail), checkMatchEmail(editingUser.userEmail)" required
-                        class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]">
+                        class="bg-gray-50 border border-gray-300 rounded-lg p-1 mt-1 w-5/6">
                     <span v-show="emailStatus" class="text-red-500 block">Input email is invalid!</span>
                     <span v-show="matchEmailStatus" class="text-red-500 block">This email is already existed, please try another email</span>
                 </div>
 
                 <div class="my-7">
-                <label>role</label>
+                <label class="font-semibold text-[#3333A3]" >Role</label>
                 <div class="my-auto m-1 py-1.5 px-2 text-center rounded-md border-2 inline">
                     <input type="radio" id="1" name="role" value="admin" v-model="editingUser.userRole" :checked="editingUser.userRole==='admin'"
-                        class="accent-red-500 align-middle w-4 h-4"> 
+                        class="accent-[#F36747] align-middle w-4 h-4"> 
                     <label for="1" class="ml-1 align-top">admin</label>
                 </div>
                 <div class="my-auto m-1 py-1.5 px-2 text-center rounded-md border-2 inline">
                     <input type="radio" id="2" name="role" value="lecturer" v-model="editingUser.userRole" :checked="editingUser.userRole==='lecturer'"
-                        class="accent-blue-500 align-middle w-4 h-4"> 
+                        class="accent-pink-500 align-middle w-4 h-4"> 
                     <label for="2" class="ml-1 align-top">lecturer</label>
                 </div>
                 <div class="my-auto m-1 py-1.5 px-2 text-center rounded-md border-2 inline">
                     <input type="radio" id="3" name="role" value="student" v-model="editingUser.userRole" :checked="editingUser.userRole==='student'"
-                        class="accent-yellow-400 align-middle w-4 h-4"> 
+                        class="accent-violet-500 align-middle w-4 h-4"> 
                     <label for="3" class="ml-1 align-top">student</label>
                 </div>
                 </div>
 
-                <div class="text-right mb-3">
+                <div class="text-right">
                 <button @click="hideEditMode()" role="button"
                         class="bg-red-100 text-red-500 py-1.5 px-4 rounded-full 
                                 hover:bg-red-500 hover:text-white active:bg-[#3333A3] duration-300">Cancel</button>
@@ -311,7 +279,7 @@
             </div>
         </div>
 
-    <!-- DELETE -->
+    <!-- DELETE MODAL-->
         <div v-show="modalStatusDelete" class="bg-black w-full h-full bg-opacity-30 fixed top-0 left-0 block">
             <div class="bg-white w-[500px] py-5 px-7 m-auto mt-48 rounded-xl">
                 <button @click="hideDeleteModal()" class="float-right"><IconCancel class="w-5 h-5"/></button>

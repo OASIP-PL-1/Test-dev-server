@@ -14,7 +14,6 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository <User, Integer> {
     public User findTopByOrderByIdDesc();
-//    public User findTopByIdOrderByIdDesc();
     public User findByUserName(String userName);
     public User findByUserEmail(String userEmail);
 
@@ -49,13 +48,6 @@ public interface UserRepository extends JpaRepository <User, Integer> {
             nativeQuery = true)
     public int checkUserEmailExisted(@Param("userEmail") String userEmail,
                                     @Param("userId") int userId);
-
-//    @Query(value ="select count(*)\n" +
-//            "from users u JOIN eventcategoryowners e on u.userId = e.userId\n" +
-//            "where u.userId = :userId and e.eventCategoryId = :eventCategoryId",
-//            nativeQuery = true)
-//    public int checkLecturerCategory(@Param("userId")int userId,
-//                                     @Param("eventCategoryId")int eventCategoryId);
 
     @Query(value = "select count(*)\n" +
             "from users u JOIN eventCategoryOwners e on u.userId = e.userId\n" +

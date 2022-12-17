@@ -1,6 +1,5 @@
 package com.example.backend.dtos;
 
-import com.example.backend.entities.Role;
 import com.example.backend.validator.EmailConstraint;
 import com.example.backend.validator.RoleConstraint;
 import com.example.backend.validator.UserEmailConstraint;

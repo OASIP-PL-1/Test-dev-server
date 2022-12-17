@@ -30,51 +30,32 @@ import java.util.*;
 public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("dofilterInternal");
-        System.out.println(request.getServletPath());
-        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/refresh")) {
-            System.out.println("/api/login");
+        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/refresh")) {;
             filterChain.doFilter(request, response);
-        }
-        else {
+        } else {
             String authorizationHeader = request.getHeader("Authorization");
-            System.out.println(authorizationHeader);
-//            System.out.println(authorizationHeader.equals("Bearer null"));
-//            System.out.println(authorizationHeader.startsWith("Bearer"));
             if (authorizationHeader == null) {
                 filterChain.doFilter(request, response);
             }
-            else {
+            else { //check if token is valid
                 if ((!authorizationHeader.equals("Bearer null")) && (authorizationHeader.startsWith("Bearer"))) {
                     try {
                         String token = authorizationHeader.substring("Bearer ".length());
-                        System.out.println("try");
-                        System.out.println("hnhnhnhnhnhnh");
                         Object JWTtoken = JWT.decode(token);
-//                    System.out.println(JWTtoken);
-//                    System.out.println(JWT.decode(token).getClaims().get("role"));
-//                    JWT.decode(token).getClaims();
                     } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
                         response.setStatus(401);
                         response.getWriter().print("Invalid token.");
                         return;
                     }
                     String token = authorizationHeader.substring("Bearer ".length());
-                    System.out.println("try");
                     if (JWT.decode(token).getExpiresAt().before(new Date())) {
                         response.setStatus(401);
                         response.getWriter().print("Token is expired.");
                         return;
                     }
                     response.setStatus(200);
-                    System.out.println("Pass all");
                     filterChain.doFilter(request, response);
                 } else {
-//                System.out.println("Token is null. Required.");
-//                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                response.getWriter().print("Token is required.");
-//                return;
                     filterChain.doFilter(request, response);
                 }
             }

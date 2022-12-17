@@ -102,25 +102,6 @@ CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventCategoryOwners` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `bookingmodels`.`eventFile`
--- -----------------------------------------------------
--- DROP TABLE IF EXISTS `bookingmodels`.`eventAttachment` ;
-
--- CREATE TABLE IF NOT EXISTS `bookingmodels`.`eventAttachment` (
---   `eventId` INT NOT NULL,
---   `fileName` VARCHAR(50) NULL,
---   `originalFileName` VARCHAR(80) NOT NULL,
---   PRIMARY KEY (`eventId`),
---   INDEX `fk_event_idx` (`eventId` ASC) VISIBLE,
---   CONSTRAINT `fk_event_eventId1`
---     FOREIGN KEY (`eventId`)
---     REFERENCES `bookingmodels`.`events` (`eventId`)
---     ON DELETE NO ACTION
---     ON UPDATE NO ACTION)
--- ENGINE = InnoDB;
-
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

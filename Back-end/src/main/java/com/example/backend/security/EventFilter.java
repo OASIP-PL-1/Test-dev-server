@@ -21,58 +21,31 @@ public class EventFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getServletPath().startsWith("/api/events")) {
             String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader == null) {
-                System.out.println("Guest's token is null");
-                if(request.getMethod().equals(HttpMethod.POST.toString())){
-                    System.out.println("Guest can create event only");
-                    filterChain.doFilter(request,response);
-                } else {
+            System.out.println("EventFilter" + authorizationHeader);
+            if (authorizationHeader == null) { //guest can do nothing
                     response.setStatus(401);
                     response.getWriter().print("Token is required.");
                     return;
-                }
             } else {
                 if (!authorizationHeader.equals("Bearer null")) {
                     String token = authorizationHeader.substring("Bearer ".length());
                     Map claims = JWT.decode(token).getClaims();
                     String role = claims.get("role").toString().replace("\"", "");
-//            System.out.println(role);
-                    if (role.equals("admin")) {
+                    if (role.equals("admin")) { //EventFilter : Admin can do ANY request in events.
                         response.setStatus(200);
-                        System.out.println("EventFilter : Admin can do ANY request in events.");
                         filterChain.doFilter(request, response);
-                    } else if (role.equals("student")) {
+                    } else if (role.equals("student")) { //EventFilter : Student can GET his own assigned events only
                         response.setStatus(200);
-                        System.out.println("EventFilter : Student can GET his own assigned events only.");
                         filterChain.doFilter(request, response);
                     } else if (role.equals("lecturer")) {
-                        if (request.getMethod().equals(HttpMethod.GET.toString())) {
+                        if (request.getMethod().equals(HttpMethod.GET.toString())) { //EventFilter : lecturer can GET events that he taught only
                             response.setStatus(200);
-                            System.out.println("EventFilter : lecturer can GET events that he taught only.");
                             filterChain.doFilter(request, response);
-                        } else {
+                        } else { //Lecturer isn't allow to used this method
                             response.setStatus(403);
                             response.getWriter().print("Unauthorized.");
-                            System.out.println("Lecturer isn't allow to used this method");
                             return;
                         }
-                    }
-                } else {
-                    System.out.println("Guest is accessing /api/events");
-                    if(request.getServletPath().startsWith("/api/events/list-book-overlap") ||
-                            request.getServletPath().startsWith("/api/events/list-edit-overlap") ||
-                            request.getServletPath().startsWith("/api/events/book") ||
-                            request.getServletPath().startsWith("/api/events/edit")){
-                        System.out.println("Guest is using overlap method.");
-                        filterChain.doFilter(request,response);
-                    }
-                    else if(request.getMethod().equals(HttpMethod.POST.toString())){
-                        System.out.println("Guest can create event only");
-                        filterChain.doFilter(request,response);
-                    } else {
-                        response.setStatus(401);
-                        response.getWriter().print("Token is required.");
-                        return;
                     }
                 }
             }

@@ -15,7 +15,7 @@ import java.io.IOException;
 
 
 @RestController
-@CrossOrigin
+// @CrossOrigin(origins = "*")
 @RequestMapping("/api/files")
 public class FileController {
     private final FileService fileService;
@@ -27,34 +27,34 @@ public class FileController {
 
     @GetMapping("/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("serveFile");
-        Resource file = fileService.loadFileAsResource(filename);
-        System.out.println(file.getDescription());
-//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(file);
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        System.out.println("serveFile");
+        Resource file = fileService.loadFileAsResource(filename, request, response);
+        if(file==null){
+            response.setStatus(404);
+            response.getWriter().print("File not found.");
+            return null;
+        }
         String contentType = null;
         try{
             contentType = request.getServletContext().getMimeType(file.getFile().getAbsolutePath());
         } catch (IOException e) {
-//            throw new RuntimeException();
+            response.setStatus(404);
+            response.getWriter().print("Content error.");
+            return null;
         }
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getFilename()).body(file);
     }
 
     @PostMapping("")
     public String fileUpload(@RequestParam("file")MultipartFile file, HttpServletRequest request, HttpServletResponse response){
-//        fileService.store(file, 2, "jpg");
-//        String[] fileNameSplit = file.getOriginalFilename().split("[.]");
-//        System.out.println(fileNameSplit.length);
-//        String fileSurname = fileNameSplit[1];
-//        System.out.println(fileSurname);
-//        return fileService.store(file, 2, "jpg");
         return fileService.store(file, request, response);
     }
 
-    @GetMapping("")
-    public boolean testFile(@RequestParam("file")MultipartFile file){
-        return fileService.tryFile(file);
+    @DeleteMapping("/{filename:.+}")
+    public void deleteFile(@PathVariable String filename, HttpServletRequest request, HttpServletResponse response){
+        fileService.deleteFile(filename);
     }
+
 
 }

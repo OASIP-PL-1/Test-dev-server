@@ -11,8 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 
+import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -23,6 +25,19 @@ import java.util.Date;
 public class BackEndApplication {
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
+
+//        String name = "abc.efg.ijk.jpg";
+//        String addOn = "addOn";
+//        String newString = "";
+//        String[] sub = name.split("[.]");
+//        System.out.println(sub[1]);
+////        for (int i = 0; i < sub.length-2; i++) {
+////            newString += sub[i] + ".";
+////        }
+////        newString = newString + sub[sub.length-1] + "-" + addOn + "." + sub[sub.length];
+////        System.out.println(newString);
+//        System.out.println(sub[sub.length-1]);
+//        System.out.println(name.substring(0,name.lastIndexOf(".")) + "-" + addOn + name.substring(name.lastIndexOf(".")));
 
 
 //        String name = "003-helenS.jpg";

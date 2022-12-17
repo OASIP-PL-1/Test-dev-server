@@ -2,10 +2,10 @@ package com.example.backend.services;
 
 import com.auth0.jwt.JWT;
 import com.example.backend.dtos.*;
-import com.example.backend.entities.EmailDetails;
 import com.example.backend.entities.Event;
 import com.example.backend.entities.EventCategory;
 import com.example.backend.entities.User;
+import com.example.backend.repositories.EventCategoryOwnerRepository;
 import com.example.backend.repositories.EventCategoryRepository;
 import com.example.backend.repositories.EventRepository;
 import com.example.backend.repositories.UserRepository;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,9 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -36,6 +33,8 @@ public class EventService {
     private EventCategoryRepository categoryRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private EventCategoryOwnerRepository categoryOwnerRepository;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -53,11 +52,7 @@ public class EventService {
 
     //GET method
     public List<EventAllDTO> getEventAllDTO(HttpServletRequest request, HttpServletResponse response) {
-//        String authorization = request.getHeader("Authorization").substring(7);
-////        String token = JWT.decode()
-//        System.out.println(authorization);
         String role = new Authorization().getRoleFromRequest(request);
-
         if(role.equals("admin")) {
             List<Event> events = repository.findAll(Sort.by("eventStartTime").descending());
             return listMapper.mapList(events, EventAllDTO.class, modelMapper);
@@ -74,22 +69,15 @@ public class EventService {
     public EventDTO getEventDTOById(int eventId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed."));
         String role = new Authorization().getRoleFromRequest(request);
+        String userEmail = new Authorization().getUserEmailFromRequest(request);
         if(role.equals("admin")) {
             return modelMapper.map(event, EventDTO.class);
         }
         if(role.equals("student")){
-            String userEmail = new Authorization().getUserEmailFromRequest(request);
             if(event.getBookingEmail().equals(userEmail)) return modelMapper.map(event, EventDTO.class);
         }
         if(role.equals("lecturer")){
-            String userEmail = new Authorization().getUserEmailFromRequest(request);
             User user = userRepository.findByUserEmail(userEmail);
-//            EventCategory category = event.getEventCategory();
-//            System.out.println(category + " " + user);
-//            int eventCategoryId = event.getEventCategory().getId();
-//            if(userRepository.checkLecturerCategory(user.getId(), eventCategoryId)==1){
-//                return modelMapper.map(event, EventDTO.class);
-//            }
             if(repository.checkLecturerCategory(eventId, user.getId())==1){
                 return modelMapper.map(event, EventDTO.class);
             }
@@ -108,38 +96,86 @@ public class EventService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(dateString);
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-        System.out.println(categoryId + "---" + date + "----" + dateEnd);
         EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "CategoryId is not existed."));
         List<Event> events = repository.findByEventCategoryIdAndEventStartTimeBetweenOrderByEventStartTimeAsc(categoryId, date, dateEnd);
         return listMapper.mapList(events, EventListOverlapDTO.class, modelMapper);
     }
 
     //GET method - filter
-    public List<EventAllDTO> getEventAllDTOByCategory(int id) {
-        List<Event> events = repository.findByEventCategoryIdOrderByEventStartTimeDesc(id);
+    public List<EventAllDTO> getEventAllDTOByCategory(int id, HttpServletRequest request, HttpServletResponse response) {
+        List<Event> events = new ArrayList<>();
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")) {
+            events = repository.findByEventCategoryIdOrderByEventStartTimeDesc(id);
+        } else if(role.equals("student")){
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            events = repository.findByEventCategoryIdAndAndBookingEmailOrderByEventStartTime(id, userEmail);
+        } else {
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            int lecturerId = userRepository.findByUserEmail(userEmail).getId();
+//            System.out.println(lecturerId);
+//            System.out.println(categoryOwnerRepository.findByUserIdAndEventCategoryId(lecturerId,id));
+            if(categoryOwnerRepository.findByUserIdAndEventCategoryId(lecturerId,id)!=null){
+                events = repository.findByEventCategoryIdOrderByEventStartTimeDesc(id);
+            }
+//            events = repository.lecturerGetEventByCategoryId(id, userRepository.findByUserEmail(userEmail).getId());
+        }
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
     }
 
-    public List<EventAllDTO> getPastEventAllDTO() {
+    public List<EventAllDTO> getPastEventAllDTO(HttpServletRequest request, HttpServletResponse response) {
         Date currentDate = new Date(System.currentTimeMillis());
-        List<Event> events = repository.filterPastEvent(currentDate);
+        List<Event> events;
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")){
+            events = repository.filterPastEvent(currentDate);
+        } else if (role.equals("student")) {
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            events = repository.studentFilterPastEvent(currentDate, userEmail);
+        } else { //lecturer
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            int lecturerId = userRepository.findByUserEmail(userEmail).getId();
+            events = repository.lecturerFilterPastEvent(currentDate, lecturerId);
+        }
+
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
     }
 
-    public List<EventAllDTO> getUpcomingEventAllDTO() {
+    public List<EventAllDTO> getUpcomingEventAllDTO(HttpServletRequest request, HttpServletResponse response) {
         Date currentDate = new Date(System.currentTimeMillis());
-        List<Event> events = repository.filterUpcomingEvent(currentDate);
+        List<Event> events;
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")){
+            events = repository.filterUpcomingEvent(currentDate);
+        } else if (role.equals("student")) {
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            events = repository.studentFilterUpcomingEvent(currentDate, userEmail);
+        } else { //lecturer
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            int lecturerId = userRepository.findByUserEmail(userEmail).getId();
+            events = repository.lecturerFilterUpcomingEvent(currentDate, lecturerId);
+        }
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
     }
 
-    public List<EventAllDTO> getEventALLDTOByDate(String dateString) throws ParseException {
-        System.out.println("dateString recieve from front end : " + dateString);
+    public List<EventAllDTO> getEventALLDTOByDate(String dateString, HttpServletRequest request, HttpServletResponse response) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
         Date date = sdf.parse(dateString);
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-        System.out.println(date + " " + dateEnd);
-        List<Event> events = repository.findByEventStartTimeBetweenOrderByEventStartTimeAsc(date, dateEnd);
+        System.out.println(date + "and" + dateEnd);
+        List<Event> events;
+        String role = new Authorization().getRoleFromRequest(request);
+        if(role.equals("admin")){
+            events = repository.findByEventStartTimeBetweenOrderByEventStartTimeAsc(date, dateEnd);
+        } else if (role.equals("student")){
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            events = repository.findByEventStartTimeBetweenAndBookingEmailOrderByEventStartTimeAsc(date, dateEnd, userEmail);
+        } else { //lecturer
+            String userEmail = new Authorization().getUserEmailFromRequest(request);
+            int lecturerId = userRepository.findByUserEmail(userEmail).getId();
+            events = repository.lecturerFilterByDate(date, dateEnd, lecturerId);
+        }
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
     }
 
@@ -147,7 +183,6 @@ public class EventService {
         if(request.getHeader("Authorization") != null){
             String role = new Authorization().getRoleFromRequest(request);
             if (role.equals("student")) {
-                //            event.setBookingEmail(new Authorization().getUserEmailFromRequest(request));
                 System.out.println(newEvent.getBookingEmail());
                 System.out.println(new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()));
                 if (!new Authorization().getUserEmailFromRequest(request).equals(newEvent.getBookingEmail()))
@@ -200,38 +235,6 @@ public class EventService {
     public EventDTO editEvent(EventUpdateDTO updateEvent, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         Event event = repository.findById(updateEvent.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " event not found."));
         String role = new Authorization().getRoleFromRequest(request);
-//        if(role.equals("admin")){
-//            if (!checkEditOverlap(event, updateEvent.getStartTime())) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
-//            }
-//            if (event.getEventAttachmentName()!=null&&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
-//                fileService.deleteFile(event.getEventAttachmentName());
-//            }
-//            if(event.getEventAttachmentName()!=null&&updateEvent.getEventAttachmentName()==null){
-//                fileService.deleteFile(event.getEventAttachmentName());
-//            }
-//            event.setEventStartTime(updateEvent.getStartTime());
-//            event.setEventNotes(updateEvent.getNotes());
-//            if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
-//            repository.saveAndFlush(event);
-//            return modelMapper.map(event, EventDTO.class);
-//        }
-//        if(role.equals("student")){
-//            String userEmail = new Authorization().getUserEmailFromRequest(request);
-//            if(event.getBookingEmail().equals(userEmail)){
-//                if (!checkEditOverlap(event, updateEvent.getStartTime())) {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The event is overlap another events.");
-//                }
-//                if (event.getEventAttachmentName()!=null &&!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) {
-//                    fileService.deleteFile(event.getEventAttachmentName());
-//                }
-//                event.setEventStartTime(updateEvent.getStartTime());
-//                event.setEventNotes(updateEvent.getNotes());
-//                if(!event.getEventAttachmentName().equals(updateEvent.getEventAttachmentName())) event.setEventAttachmentName(updateEvent.getEventAttachmentName());
-//                repository.saveAndFlush(event);
-//                return modelMapper.map(event, EventDTO.class);
-//            }
-//        }
         if(role.equals("admin") || role.equals("student")){
             if(role.equals("student")){
                 String userEmail = new Authorization().getUserEmailFromRequest(request);
@@ -276,7 +279,6 @@ public class EventService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Thailand"));
         Date startTime = sdf.parse(dateTime);
-        System.out.println(dateTime);
         EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category is not existed."));
         return checkOverlap(categoryId, startTime).size() == 0;
     }
@@ -293,27 +295,13 @@ public class EventService {
         EventCategory eventCategory = categoryRepository.findById(categoryId).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category is not exist");
         });
-        System.out.println(eventCategory.getEventCategoryDuration());
         Date startTime = date;
         Date endTime = new Date(startTime.getTime() + 1000 * 60 * eventCategory.getEventCategoryDuration());
-        System.out.println(startTime + "*********" + endTime);
         List<Event> event = repository.overlap(categoryId, startTime, endTime);
         return event;
     }
 
-
     //Private method for validation
-    private boolean checkEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
-        Pattern pat = Pattern.compile(emailRegex);
-        return pat.matcher(email).matches();
-    }
-
-    private boolean checkStartDate(Date startDate) {
-        Date currentDate = new Date();
-        return startDate.before(currentDate);
-    }
-
     private boolean checkEditOverlap(Event event, Date editTime) throws ParseException {
         Date startTime = editTime;
         Date endTime = new Date(startTime.getTime() + 1000 * 60 * event.getEventDuration());

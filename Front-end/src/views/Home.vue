@@ -9,23 +9,6 @@
 </script>
  
 <template>
-    <!-- <div style="margin-top: 10em;">
-    <img class="object-cover w-6/12" src="../assets/phone.png" alt="phone" style="display:inline">
- 
-    <div class="rightall" style="display:inline">
-        <img src="../assets/head.png" alt="head" style="max-width: 500px; min-width: 300px; width: 70%;">
-        <h4 style="padding-left: 10%; padding-right: 10%;">Online Appointment Scheduling System for Integrated Project Clinics (OASIP) will make a reservation for your event easily</h4>
-        <h4 style="padding-left: 20%;">
-            <ul style="text-align: left;">
-                <li>Booking : create / cancel events</li>
-                <li>Checking reservation</li>
-                <li>Categories's detail</li>
-            </ul>    
-        </h4>
-        <h4 style="padding-left: 10%; padding-right: 10%;">This wil give user convenience for consulting with their Product Owner or the teachers</h4>
-            <button @click="goToLoginUser()" class="button-18" role="button" style="font-size:1.5em">Book Now</button>
-    </div>
-    </div> -->
     <div class="flex flex-row h-full pb-10">
         <div class="w-1/2 ml-10 mr-0 mb-10 p-2">
             <img class="object-cover h-full" src="../assets/phone.png" alt="phone"/>

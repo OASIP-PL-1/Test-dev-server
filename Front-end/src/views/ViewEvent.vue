@@ -4,9 +4,15 @@
   import IconLoading from '../components/icons/iconLoading.vue'
 
   import {ref, onMounted} from 'vue'
+  import {useRouter} from 'vue-router'
   import { useSignIn } from '../state/signIn';
 
   const signIn = useSignIn()
+
+  const myRouter = useRouter()
+  const goToError401 = () => myRouter.push({name: 'Error401'}) 
+  const goToError403 = () => myRouter.push({name: 'Error403'})
+  const goToError500 = () => myRouter.push({name: 'Error500'})
 
   onMounted(async () => {
       await getEvents()
@@ -29,29 +35,24 @@
       }
       )
       .catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
+        // message.value = "Not Found Backend Server!!!"
         console.log(error)
         console.log('GET List All Event Fail')
+        goToError500()
     });
-    console.log(res.status)
     if(res.status==200){
       events.value = await res.json()
       loading.value = false
-      console.log(`GET List All Event OK`)
-      console.log(events.value)
       await getEventCategoryName()
     }else if(res.status===401){
       let errorText = await res.text()
-      console.log(errorText)
       if(errorText==="Token is expired."){
         await signIn.sendRefreshToken()
       }else{
-        message.value = "Please login"
+        goToError401()
       }
-      console.log('Please login')
     }else if(res.status===403){
-      message.value = 'Unauthorized access'
-      console.log('Unauthorized access')
+      goToError403()
     }
   }
 
@@ -66,21 +67,19 @@
           'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
         }
       }).catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
+        // message.value = "Not Found Backend Server!!!"
         console.log(error)
-        console.log('GET List All CategoryName Fail')
+        alert('GET List All CategoryName Fail')
+        goToError500()
     });
     if(res.status==200){
       eventCategories.value = await res.json()
       loading.value = false
       filterMode.value = ''
-      console.log(`GET List All CategoryName OK`)
-      console.log(res.status)
     }else if(res.status===401){
-      console.log('Please login')
-      message.value = "Please login"
+      goToError401()
     }else if(res.status===403){
-      console.log('Unauthorized access')
+      goToError403()
     }
   }
 
@@ -99,19 +98,19 @@
       }
       )
     .catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
+        // message.value = "Not Found Backend Server!!!"
         console.log(error)
-        console.log(`GET Filter Mode : Past Fail`)
+        alert('GET Filter Mode : Past Fail')
+        goToError500()
     });
     events.value = await res.json()
     filterMode.value = 'past'
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value}`)
-      console.log(res.status)
     }else if(res.status===401){
-      console.log('Please login')
+      goToError401()
     }else if(res.status===403){
-      console.log('Unauthorized access')
+      goToError403()
     }
   }
 
@@ -124,20 +123,19 @@
         }
       })
     .catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
+        // message.value = "Not Found Backend Server!!!"
         console.log(error)
-        console.log(`GET Filter Mode : Upcoming Fail`)
+        alert(`GET Filter Mode : Upcoming Fail`)
+        goToError500()
     });
     events.value = await res.json()
     filterMode.value = 'upcoming'
-    console.log(res.status)
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value}`)
-      console.log(res.status)
     }else if(res.status===401){
-      console.log('Please login')
+      goToError401()
     }else if(res.status===403){
-      console.log('Unauthorized access')
+      goToError403()
     }
   }
 
@@ -149,21 +147,20 @@
           'Authorization' : 'Bearer '+signIn.getCookie('accessToken')
         }
       }).catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
+        // message.value = "Not Found Backend Server!!!"
         console.log(error)
-        console.log(`GET Filter Mode : Date Fail`)
+        alert(`GET Filter Mode : Date Fail`)
+        goToError500()
     });
 
     events.value = await res.json()
     filterMode.value = 'date'
-    console.log(res.status)
     if(res.status==200){
       console.log(`Filter Mode : ${filterMode.value} = ${date}`)
-      console.log(res.status)
     }else if(res.status===401){
-      console.log('Please login')
+      goToError401()
     }else if(res.status===403){
-      console.log('Unauthorized access')    
+      goToError403()
     }
   }
 
@@ -178,19 +175,19 @@
       }
       )
     .catch((error)=> {
-        message.value = "Not Found Backend Server!!!"
+        // message.value = "Not Found Backend Server!!!"
         console.log(error)
-        console.log(`GET Filter Mode : Category Fail`)
+        alert(`GET Filter Mode : Category Fail`)
+        goToError500()
     });
       events.value = await res.json()
       filterMode.value = 'category'
       if(res.status==200){
         console.log(`Filter Mode : ${filterMode.value} = ${(eventCategories.value.find((category)=> id === category.id)).categoryName}`)
-        console.log(res.status)
       }else if(res.status===401){
-        console.log('Please login')
+        goToError401()
       }else if(res.status===403){
-        console.log('Unauthorized access')
+        goToError403()
       }
     }else{
       getEvents()
@@ -199,89 +196,23 @@
 </script>
  
 <template>
-  <!-- <div style="margin-top: 10em;">
-    <div v-if="loading" class="subText">{{message}}</div>
-    <div v-else>
-        <table>
-          <tr>
-            <td style="width: 250px">
-              <Filter :eventCategories="eventCategories"
-              @past="getPastEvent"
-              @upcoming="getUpcomingEvent"
-              @selectDay="getEventByDate"
-              @categoryName="getEventByCategory"
-              @reset="getEvents"/>
-            </td>
-            <td style="padding-left: 20px">
-              <ShowListEvent :events="events" :filterMode="filterMode"/>
-            </td>
-          </tr>
-        </table>
-    </div>
-  </div> -->
     <div v-if="loading" class="text-blue-800 my-16 text-center"><span v-if="message=='loading...'"><IconLoading/></span><span v-else>{{message}}</span></div>
-    <div v-else class="flex flex-col mt-5">
-      <div class="mx-10 w-auto">
+    <div v-else class="flex flex-col m-10">
+      <div class="w-auto">
         <Filter :eventCategories="eventCategories"
+              :filterMode="filterMode"
               @past="getPastEvent"
               @upcoming="getUpcomingEvent"
               @selectDay="getEventByDate"
               @categoryName="getEventByCategory"
               @reset="getEvents"/>
-        <!-- <hr class="my-2"/> -->
         <ShowListEvent :events="events" :filterMode="filterMode"/>
       </div>
       <div>
-
       </div>
-        <!-- <table>
-          <tr>
-            <td style="width: 250px">
-              <Filter :eventCategories="eventCategories"
-              @past="getPastEvent"
-              @upcoming="getUpcomingEvent"
-              @selectDay="getEventByDate"
-              @categoryName="getEventByCategory"
-              @reset="getEvents"/>
-            </td>
-            <td style="padding-left: 20px">
-              <ShowListEvent :events="events" :filterMode="filterMode"/>
-            </td>
-          </tr>
-        </table> -->
-      
     </div>
 </template>
  
 <style scoped>
-  .subText{
-    color: gray;
-    text-align: center;
-  }
-  .centerText{
-    text-align: center;
-  }
-  table {
-    margin-left: auto;
-    margin-right: auto;
-    -o-object-fit: cover;
-    object-fit: cover;
-  }
-  td {
-    /* padding: 0 0 0 20px; */
-    width: auto;
-    -o-object-fit: cover;
-    object-fit: cover;
-  }
-  input .text {
-    height: 20px;
-    width: 200px;
-    padding: 4px;
-  }
-  select {
-    height: 32px;
-    width: 200px;
-    padding: 4px;
-    margin: 8px 0px;
-  }
+  
 </style>

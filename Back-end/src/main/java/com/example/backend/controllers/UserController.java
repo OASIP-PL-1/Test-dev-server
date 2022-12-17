@@ -1,12 +1,8 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dtos.*;
-import com.example.backend.exception.ErrorDetails;
 import com.example.backend.services.UserService;
-import com.example.backend.validator.EmailConstraint;
-import com.example.backend.validator.RoleConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,8 +39,4 @@ public class UserController {
         return service.editUser(updateUser);
     }
 
-//    @PostMapping("/log-in")
-//    public ErrorDetails logIn(@RequestBody UserLogin login) {
-//        return service.logIn(login);
-//    }
 }

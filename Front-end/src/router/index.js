@@ -28,7 +28,7 @@ const routes = [
     component: Error403
   },
   {
-    path: '/404',
+    path: '/:catchNotMatchPath(.*)',
     name: 'Error404',
     component: Error404
   },
@@ -62,7 +62,6 @@ const routes = [
     beforeEnter: (to, from, nextTick) => {
       checkError401(nextTick)
     }
-    
   },
   {
     path: '/create-event',
@@ -70,8 +69,8 @@ const routes = [
     component: CreateEvent,
     beforeEnter: (to, from, nextTick) => {
       const signIn = useSignIn()
-      //ถ้าเป็น lecture สร้าง Event ไม่ได้
-      if(signIn.statusLogin === true && signIn.user.role === 'lecturer'){nextTick({name:'Error403'})}
+      //ถ้าเป็น lecture,guest สร้าง Event ไม่ได้
+      if(signIn.statusLogin === false || signIn.user.role === 'lecturer'){nextTick({name:'Error403'})}
       else{nextTick()}
     }
   },
@@ -134,17 +133,7 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
-  }
-  // ,
-  // {
-  //   name: 'Error401',
-  //   component: Error401
-  // },
-  // {
-  //   name: 'Error403',
-  //   component: Error403
-  // }
- 
+  } 
 ]
 
 const router = createRouter({ history, routes })

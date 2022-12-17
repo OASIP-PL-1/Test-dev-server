@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormatSymbols;
 import java.util.Date;
 
 @Service
@@ -43,16 +44,25 @@ public class EmailServiceImpl implements EmailService{
     public void sendSimpleMailWhenCreateEvent(Event event){
         EmailDetails e = new EmailDetails();
         e.setRecipient(event.getBookingEmail());
-        e.setSubject("no-reply : Event created");
-        System.out.println();
-        e.setMsgBody("Your event is successfully created. Please take time for your queue until the booking Date.\n\n"+
-                "Event detail\n"+
-                "Booking name : " + event.getBookingName() + "\n" +
-                "Booking time : " + event.getEventStartTime() + "-" + new Date(event.getEventStartTime().getTime()+ event.getEventDuration()*60*1000) + "\n" +
-                "Booking category : " + event.getEventCategory().getEventCategoryName() + "\n" +
-                "Booking notes : " + event.getEventNotes() + "\n" +
-                "Event attachment's name : " + event.getEventAttachmentName() + "\n\n" +
-                "Please don't reply this email, no one will reply back.");
+        String dayNames[] = new DateFormatSymbols().getWeekdays();
+        String monthNames[] = new DateFormatSymbols().getShortMonths();
+        Date date = event.getEventStartTime();
+        Date finishedDate = new Date(date.getTime()+(event.getEventDuration()*60*1000));
+        String dateDetailed = dayNames[date.getDay()+1].substring(0,3) + " " +
+                monthNames[date.getMonth()] + " " +
+                date.getDate() + ", " +
+                (1900+ date.getYear()) + " " +
+                (date.getHours()<10 ? "0" + date.getHours() : date.getHours()) + ":" + (date.getMinutes()<10 ? "0" + date.getMinutes() : date.getMinutes()) + " - " +
+                (finishedDate.getHours()<10 ? "0" + finishedDate.getHours() : finishedDate.getHours()) + ":" + (finishedDate.getMinutes()<10 ? "0" + finishedDate.getMinutes() : finishedDate.getMinutes()) +
+                " (ICT)";
+        String subjectName = "[OASIP] Server-side Clinic @ " + dateDetailed;
+        e.setSubject(subjectName);
+        e.setMsgBody(subjectName + "\n" +
+                "Reply-to: " + sender + "\n" +
+                "Booking Name: " + event.getBookingName() + "\n" +
+                "Event Category: " + event.getEventCategory().getEventCategoryName() + "\n" +
+                "When: " + dateDetailed + "\n" +
+                "Event Notes: " + (event.getEventNotes()==null ? "-" : event.getEventNotes()));
         System.out.println(sendSimpleMail(e));
     }
 }

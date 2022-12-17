@@ -4,10 +4,8 @@
 
     defineEmits(['past','upcoming','selectDay','categoryName','reset'])
     defineProps({
-      eventCategories:{
-          type: Array,
-          require: true
-      }
+      eventCategories:{type: Array,require: true},
+      filterMode:{type:String, require:true}
     })
 
     const filterMode = ref('')
@@ -43,42 +41,6 @@
 </script>
 
 <template>        
-    <!-- <div class="filter">
-    <h2>Filter</h2>
-        <hr>
-        <div>
-            <div class="choices">
-                <input type="radio" id ="past" value="past" v-model="filterMode" @click="($emit('past'))"/>
-                <label for="past">Past events</label>
-            <br>
-                <input type="radio" id="upcoming" value="upcoming" v-model="filterMode" @click="($emit('upcoming'))"/>
-                <label for="upcoming">Upcoming events</label>
-            <br>
-                <input type="radio" id="date" value="date" v-model="filterMode"/>
-                <label for="date">Chosen date</label>
-            <br>
-                <input type="radio" id="category" value="category" v-model="filterMode"/>
-                <label for="category">Category name</label>
-            <br><br>
-                <div v-show="filterMode=='date'" >
-         
-                </div>
-                <div v-show="filterMode=='category'">
-                    <b>Filter by category name: </b>
-                    <hr>
-                    <span>Choose a category:</span><br>
-                    <select v-model="selectedCategory" @change="($emit('categoryName', selectedCategory))">
-                        <option selected value="0">--Not selected--</option>
-                        <option v-for="category in eventCategories" :value="category.id">
-                            {{ category.categoryName }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <button @click="($emit('reset'))" class="button-18" style="float: right">Reset</button>
-    </div> -->
 
     <!-- Filter bar -->
 
@@ -116,8 +78,8 @@
     </div>
 
     <!-- Search bar , choose date , choose dropdown category name-->
-
-    <div class="flex flex-row w-full mb-5 pl-2 px-2 py-1 ">
+    <div v-show="filterMode === 'date' || filterMode === 'category'" class="flex flex-row w-full mb-5 pl-2 px-2 py-1 ">
+        <!-- Search Hide -->
         <div class="flex flex-col mx-5 basis-1/2 invisible">
             <p class="p-1"><IconSearch class="w-5 h-5 inline mr-2"/>Search by booking name </p>
             <input type="text" class="w-[300px] text-[#3333A3] p-1 bg-inherit border-b-2 hover:border-blue-800"> 
