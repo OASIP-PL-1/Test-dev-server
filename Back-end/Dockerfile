@@ -9,3 +9,9 @@ ARG JAR_FILE=/app/target/*.jar
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-Duser.timezone=Asia/Bangkok","-jar","app.jar"]
+
+# -Dmaven.test.skip
+# build package ของ maven ให้เป็นไฟล์เล็กๆ และข้ามการ test
+
+# -Duser.timezone=Asia/Bangkok 
+# กำหนด Timezone ให้ ฺBackend แสดงเวลาเป็น ICT
