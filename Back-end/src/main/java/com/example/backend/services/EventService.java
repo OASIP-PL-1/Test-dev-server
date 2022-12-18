@@ -215,14 +215,14 @@ public class EventService {
         String role = new Authorization().getRoleFromRequest(request);
         Event event = repository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Choosen event is not existed"));
         if(role.equals("admin")) {
-            fileService.deleteFile(event.getEventAttachmentName());
+            if(event.getEventAttachmentName() != null) fileService.deleteFile(event.getEventAttachmentName());
             repository.deleteById(eventId);
             return;
         }
         if(role.equals("student")){
             String userEmail = new Authorization().getUserEmailFromRequest(request);
             if(event.getBookingEmail().equals(userEmail)) {
-                fileService.deleteFile(event.getEventAttachmentName());
+                if(event.getEventAttachmentName() != null) fileService.deleteFile(event.getEventAttachmentName());
                 repository.deleteById(eventId);
                 return;
             }

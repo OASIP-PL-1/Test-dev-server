@@ -1,7 +1,6 @@
 package com.example.backend.services;
 
 
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -11,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -61,7 +59,6 @@ public class FileService {
     }
 
     public Resource loadFileAsResource(String fileName, HttpServletRequest request, HttpServletResponse response){
-//        String contentType = null;
         try{
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
@@ -81,9 +78,7 @@ public class FileService {
     public void deleteFile(String fileName){
         try{
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-//            System.out.println(filePath);
             Resource resource = new UrlResource(filePath.toUri());
-//            System.out.println(resource);
             resource.getFile().delete();
         } catch (MalformedURLException ex) {
 

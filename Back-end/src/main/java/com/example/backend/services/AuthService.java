@@ -3,10 +3,7 @@ package com.example.backend.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.backend.dtos.RefreshToken;
 import com.example.backend.dtos.UserLoginDTO;
-import com.example.backend.entities.Role;
 import com.example.backend.entities.User;
 import com.example.backend.exception.ErrorDetails;
 import com.example.backend.repositories.UserRepository;
@@ -14,14 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @Service
@@ -35,7 +29,6 @@ public class AuthService {
     private JWTVerifier refreshTokenVerifier;
 
     Argon2PasswordEncoder encoder = new Argon2PasswordEncoder();
-//    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public ErrorDetails logIn(UserLoginDTO login){
         System.out.println("ErrorDetails logIn");

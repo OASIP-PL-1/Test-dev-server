@@ -12,11 +12,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository <Event, Integer>, CrudRepository<Event, Integer> {
     public List<Event> findByEventCategoryIdOrderByEventStartTimeDesc(int id);
     public List<Event> findByEventCategoryIdAndAndBookingEmailOrderByEventStartTime(int categoryId, String email);
-    @Query(value = "select * " +
-            "from events e JOIN eventCategoryowners eco ON e.eventCategoryId = eco.eventCategoryId " +
-            "where e.eventCategoryId=:categoryId AND eco.userId=:lecturerId",
-            nativeQuery = true)
-    public List<Event> lecturerGetEventByCategoryId(@Param("categoryId")int categoryId, @Param("lecturerId")int lecturerId);
 
     public List<Event> findByEventStartTimeBetweenOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime);
     public List<Event> findByEventStartTimeBetweenAndBookingEmailOrderByEventStartTimeAsc(Date startDateTime, Date endDateTime, String studentEmail);

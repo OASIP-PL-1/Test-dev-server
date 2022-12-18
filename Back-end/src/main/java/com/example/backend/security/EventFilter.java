@@ -21,7 +21,6 @@ public class EventFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getServletPath().startsWith("/api/events")) {
             String authorizationHeader = request.getHeader("Authorization");
-            System.out.println("EventFilter" + authorizationHeader);
             if (authorizationHeader == null) { //guest can do nothing
                     response.setStatus(401);
                     response.getWriter().print("Token is required.");

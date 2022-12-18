@@ -133,7 +133,7 @@ const getListOverlap = async (editingEvent) => {
                 editingEvent.attachmentName === thisEvent.value.eventAttachmentName && 
                 file === null){
                 //ถ้าไม่มีการแก้ไขไฟล์ ไม่ต้อง PUT ให้ backend
-                alert('ไม่มีการแก้ไข event นี้')
+                alert('This event is not modified')
                 hideEditMode()
             }else{
                 // check edit file
@@ -295,8 +295,8 @@ const removeFile = async (filename) => {
                 downloadElement.download = filename; 
                 document.body.appendChild(downloadElement);
                 downloadElement.click(); 
-                document.body.removeChild(downloadElement); 
-                window.URL.revokeObjectURL(res.url); 
+                // document.body.removeChild(downloadElement); 
+                // window.URL.revokeObjectURL(res.url); 
             }else if(response.status === 404){
                 let errorText = await response.text()
                 alert(errorText)

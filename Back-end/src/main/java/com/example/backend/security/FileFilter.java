@@ -21,20 +21,6 @@ public class FileFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getServletPath().startsWith("/api/files")) {
             String authorizationHeader = request.getHeader("Authorization");
-            System.out.println("FileFilter" + authorizationHeader);
-//            if(authorizationHeader == null) { //guest can't delete
-//                if(request.getMethod().equals(HttpMethod.DELETE)) {
-//                    response.setStatus(401);
-//                    response.getWriter().print("Token is required for deleting file.");
-//                    return;
-//                }
-//            }
-//            if (!authorizationHeader.equals("Bearer null")) {
-//                    String token = authorizationHeader.substring("Bearer ".length());
-//                    Map claims = JWT.decode(token).getClaims();
-//                    String role = claims.get("role").toString().replace("\"", "");
-//                    if(role.equals("admin") || role.equals("student") || role.equals("lecturer")) filterChain.doFilter(request, response);
-//            }
             if(request.getMethod().equals(HttpMethod.DELETE)){
                 if(authorizationHeader == null) { //guest can't delete
                     response.setStatus(401);

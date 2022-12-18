@@ -61,7 +61,6 @@ public class EventController {
 
     @GetMapping("/list-book-overlap/{categoryId}/{dateTime}")
     public List<EventListOverlapDTO> listBookOverlap(@PathVariable int categoryId, @PathVariable String dateTime) throws ParseException {
-        System.out.println(categoryId + "-----" + dateTime);
         return service.getEventOverlapList(categoryId, dateTime);
     }
 

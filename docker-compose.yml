@@ -78,7 +78,6 @@ services:
       - 443:443
       - 80:80
     volumes:
-      # - "./nginx.conf:/etc/nginx/conf.d/default.conf:ro"
       - ./dohttps/nginx/config/conf.d/default.conf:/etc/nginx/conf.d/default.conf:rw
       - ./dohttps/nginx/ssl:/etc/ssl/:rw
 
