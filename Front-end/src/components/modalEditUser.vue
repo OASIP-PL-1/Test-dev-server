@@ -87,7 +87,7 @@
         Edit User
       <button class="float-right" @click="$emit('hideEditMode'),resetEditUser()"><IconCancel class="w-5 h-5"/></button>
     </h2>
-    <div class="flex flex-row mt-3">
+    <div class="flex flex-row m-3">
       <img :src="pathImg(thisUser.id)" alt="human" class="w-32 h-32 mt-8 mx-auto"/>
       <div class="flex flex-col">
         <div class="my-2">

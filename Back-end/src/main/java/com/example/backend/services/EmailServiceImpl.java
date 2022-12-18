@@ -22,7 +22,6 @@ public class EmailServiceImpl implements EmailService{
     public String sendSimpleMail(EmailDetails details) {
         try{
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            System.out.println(sender);
             mailMessage.setFrom(sender);
             mailMessage.setTo(details.getRecipient());
             mailMessage.setText(details.getMsgBody());
@@ -31,7 +30,6 @@ public class EmailServiceImpl implements EmailService{
             return "mail success";
         }
         catch (Exception e){
-            System.out.println(e);
             return "mail failed";
         }
     }
@@ -63,6 +61,6 @@ public class EmailServiceImpl implements EmailService{
                 "Event Category: " + event.getEventCategory().getEventCategoryName() + "\n" +
                 "When: " + dateDetailed + "\n" +
                 "Event Notes: " + (event.getEventNotes()==null ? "-" : event.getEventNotes()));
-        System.out.println(sendSimpleMail(e));
+        sendSimpleMail(e);
     }
 }

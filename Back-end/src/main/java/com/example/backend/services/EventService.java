@@ -113,12 +113,9 @@ public class EventService {
         } else {
             String userEmail = new Authorization().getUserEmailFromRequest(request);
             int lecturerId = userRepository.findByUserEmail(userEmail).getId();
-//            System.out.println(lecturerId);
-//            System.out.println(categoryOwnerRepository.findByUserIdAndEventCategoryId(lecturerId,id));
             if(categoryOwnerRepository.findByUserIdAndEventCategoryId(lecturerId,id)!=null){
                 events = repository.findByEventCategoryIdOrderByEventStartTimeDesc(id);
             }
-//            events = repository.lecturerGetEventByCategoryId(id, userRepository.findByUserEmail(userEmail).getId());
         }
         return listMapper.mapList(events, EventAllDTO.class, modelMapper);
     }
@@ -163,7 +160,6 @@ public class EventService {
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
         Date date = sdf.parse(dateString);
         Date dateEnd = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-        System.out.println(date + "and" + dateEnd);
         List<Event> events;
         String role = new Authorization().getRoleFromRequest(request);
         if(role.equals("admin")){
@@ -204,7 +200,6 @@ public class EventService {
         event.setEventNotes(newEvent.getNotes());
         event.setEventCategory(eventCategory);
         event.setEventAttachmentName(newEvent.getEventAttachmentName());
-        System.out.println(event.getBookingEmail());
         repository.saveAndFlush(event);
         emailService.sendSimpleMailWhenCreateEvent(event);
         return repository.findTopByOrderByIdDesc().getId();
@@ -305,16 +300,13 @@ public class EventService {
     private boolean checkEditOverlap(Event event, Date editTime) throws ParseException {
         Date startTime = editTime;
         Date endTime = new Date(startTime.getTime() + 1000 * 60 * event.getEventDuration());
-        System.out.println(startTime + "*********" + endTime);
         int eventSize = repository.overlap(event.getEventCategory().getId(), startTime, endTime).size();
         //check self overlap
         int minutesBetweenDate = (int) TimeUnit.MINUTES.convert((Math.abs(editTime.getTime() - event.getEventStartTime().getTime())), TimeUnit.MILLISECONDS);
         System.out.println("Minute between date : " + minutesBetweenDate);
         if (minutesBetweenDate < event.getEventDuration()) {
-            System.out.println("match last event");
             eventSize--;
         }
-        System.out.println(eventSize);
         return eventSize == 0;
     }
 

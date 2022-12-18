@@ -307,7 +307,6 @@ const removeFile = async (filename) => {
 </script> 
 
 <template>
-    
     <div v-if="loading" class="text-blue-800 my-16 text-center"><span v-if="message=='loading...'"><IconLoading/></span><span v-else>{{message}}</span></div>
     <div v-else-if="!showDetail" class="text-red-600 my-16 text-center">{{message}}</div>
     <div v-else class="mx-10 w-auto mt-5">
@@ -355,7 +354,7 @@ const removeFile = async (filename) => {
                     <h4>File</h4>
                     <p v-if="thisEvent.eventAttachmentName === null">-</p>
                     <button v-else @click="downloadFile(thisEvent.eventAttachmentName)"
-                            class="border border-gray-400 px-2 py-1 rounded-lg text-black bg-gray-50">{{thisEvent.eventAttachmentName}}</button>
+                            class="border border-gray-600 px-1 py-1 rounded text-black bg-gray-100 text-[14px]">{{thisEvent.eventAttachmentName}}</button>
                 </div>
         <!-- Toggle edit and Delete -->
         </div>
@@ -367,7 +366,7 @@ const removeFile = async (filename) => {
                                     active:text-[#FFCB4C] hover:text-[#3333A3] hover:underline">
                         <IconEdit class="w-5 h-5 ml-5 mr-2 inline align-top"/>Edit
                     </div>
-                    <div @click="showDeleteModal()" class="pr-4 py-2 inline hover:bg-white
+                    <div @click="showDeleteModal()" class="pr-4 py-2 inline hover:bg-[#ECECFE]
                                 active:text-[#FFCB4C] hover:text-[#3333A3] hover:underline">
                         <IconDelete class="w-5 h-5 ml-5 mr-2 inline align-top"/>Delete
                 </div>

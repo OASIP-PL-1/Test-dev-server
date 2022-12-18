@@ -1,7 +1,6 @@
 <script setup>
 import {useRouter} from 'vue-router'
 const myRouter = useRouter()
-// const closeModal = () => myRouter.go(-1)
 const gotoHome = () => myRouter.push({name: 'Home'})
 </script>
      

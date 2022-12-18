@@ -36,7 +36,7 @@ const goToLoginUser = (eventId) => myRouter.push({name: 'ThisEvent',params:{even
       <div class="object-cover">
         <div class="overflow-y-scroll overflow-x-hidden object-cover h-96" id="list-event">      
           <div v-for="(event,index) in events" :key="index" @click="goToLoginUser(event.id)" 
-                class="px-2 py-5 flex flex-row w-full odd:bg-white hover:bg-[#FFCB4C] even:bg-[#ECECFE]">
+                class="px-2 py-5 flex flex-row w-full odd:bg-white hover:bg-[#FFD880] even:bg-[#ECECFE]">
             <div class="basis-1/12 text-gray-500 text-center">#{{index+1}}</div>
             <div class="basis-4/12">{{event.bookingName}}</div>
             <div class="basis-2/12 text-center">{{ datetimeFormat.showDateNoDay(new Date(event.startTime)) }}</div>

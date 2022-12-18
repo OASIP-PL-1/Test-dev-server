@@ -69,8 +69,9 @@ const routes = [
     component: CreateEvent,
     beforeEnter: (to, from, nextTick) => {
       const signIn = useSignIn()
-      //ถ้าเป็น lecture,guest สร้าง Event ไม่ได้
-      if(signIn.statusLogin === false || signIn.user.role === 'lecturer'){nextTick({name:'Error403'})}
+      //ถ้าเป็น guest จะเข้าหน้าสร้าง Event ไม่ได้ ไปหน้า Error 401 แต่ถ้าเป็น lecturer จะเข้าแต่ไม่มีสิทธิ์ ไปหน้า Error 403
+      if(signIn.statusLogin === false){nextTick({name:'Error401'})}
+      else if(signIn.user.role === 'lecturer'){nextTick({name:'Error403'})}
       else{nextTick()}
     }
   },
@@ -91,19 +92,10 @@ const routes = [
     name: 'ThisUser',
     component: ThisUser,
     beforeEnter: (to, from, nextTick) => {
-      // reject the navigation
-      console.log(to.params.userId)
       const signIn = useSignIn()
       if(signIn.statusLogin === false){nextTick({ name:'Error401'})}
       else if(signIn.statusLogin === true && signIn.user.role !== 'admin'){nextTick({name:'Error403'})}
       else{nextTick()}
-     //ถ้า จะดู detail ได้เฉพาะ user ตัวเอง
-      // if (signIn.user.id == to.params.userId){
-      //   console.log('user id match')
-      // }else{
-      //   console.log('user id NOT match')
-      // }
-      // return false
     },
   },
   {

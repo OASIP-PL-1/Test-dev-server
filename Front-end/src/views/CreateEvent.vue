@@ -321,7 +321,7 @@
                     <div class="basis-1/2 my-2">
                         <label for="bCategory">Event category</label>
                         <select id="bCategory" v-model="newEvent.category" 
-                                class="bg-gray-50 border border-gray-300 rounded-lg w-6/12 p-1 mt-1">
+                                class="bg-gray-50 border border-gray-300 rounded-lg w-5/12 p-1 mt-1">
                             <option selected value={}>--Not selected--</option>
                             <option v-for="category in eventCategories" :value="category" >
                                 {{ category.categoryName}}
@@ -341,7 +341,7 @@
                     <div class="basis-1/2 my-2">
                         <label for="bTime">Start date-time</label>
                         <input type="datetime-local" id="bTime" name="bTime" v-model="newEvent.dateTime" :min="datetimeFormat.getTodayDatetime(new Date())" 
-                                class="bg-gray-50 border border-gray-300 rounded-lg w-6/12 p-1 mt-1"/>
+                                class="bg-gray-50 border border-gray-300 rounded-lg w-5/12 p-1 mt-1"/>
                         <span v-show="new Date(newEvent.dateTime) < new Date()" class="text-red-400 block">
                             &#9888; The choosen time is in the past, please choose again
                         </span>

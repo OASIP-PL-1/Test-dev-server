@@ -90,25 +90,21 @@ public class AuthService {
 
     private String generateAccessToken(String userEmail, String userRole){
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
-        System.out.println("GenerateToken");
         String accessToken = JWT.create()
                 .withSubject(userEmail)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 30*60*1000))
                 .withClaim("role", userRole)
                 .sign(algorithm);
-        System.out.println(accessToken);
         return accessToken;
     }
 
     private String generateRefreshToken(String userEmail, String userRole){
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
-        System.out.println("GenerateToken");
         String accessToken = JWT.create()
                 .withSubject(userEmail)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 24*60*60*1000))
                 .withClaim("role", userRole)
                 .sign(algorithm);
-        System.out.println(accessToken);
         return accessToken;
     }
 }

@@ -99,36 +99,37 @@
  
 <template>
         <div class="bg-black w-full h-full bg-opacity-30 fixed top-0 left-0 block">
-        <div class="bg-white w-[1000px] m-auto mt-5 py-3 px-5 text-left rounded-xl">
-            <h2 class="text-lg font-semibold pb-2 border-b-2 border-gray-400">
+        <div class="bg-white w-[1000px] m-auto mt-32 py-5 px-7 text-left rounded-lg">
+            <h2 class="text-xl font-semibold pb-2 border-b-2 border-gray-400">
                 Edit Event
                 <button class="float-right" @click="$emit('hideEditMode'), resetFile()"><IconCancel class="w-5 h-5"/></button>
             </h2>
-            <div class="flex flex-col m-3">
-                <div class="flex flex-row mx-5 pb-5 border-b-2">
+            <div class="flex flex-col mt-3">
+                <div class="flex flex-row border-b-2 mx-7 pb-1.5">
                     <IconSchedule class="basis-1/5 w-24 h-24 text-[#9F9FF9]"/>
                     <div class="basis-4/5 flex flex-col w-full ml-5">
-                        <div class="my-1">
-                            <h4>booking name</h4>
+                        <div class="mt-1">
+                            <h3 class="font-semibold text-[#3333A3]">Booking name</h3>
                             <p>{{thisEvent.bookingName}}</p>
                         </div>
-                        <div class="my-1">
-                            <p><b>email : </b>{{thisEvent.bookingEmail}}</p>
+                        <div class="my-2">
+                            <h3 class="font-semibold text-[#3333A3] inline">Email : </h3>
+                            <p class="inline">{{thisEvent.bookingEmail}}</p>
                         </div>
-                        <div class="flex flex-row my-1">
+                        <div class="flex flex-row my-2">
                             <div class="basis-1/2">
-                                <h4>category Name</h4>
+                                <h3 class="font-semibold text-[#3333A3]">Category Name</h3>
                                 <p>{{thisEvent.categoryName}}</p>
                             </div>
                             <div class="basis-1/2">
-                                <h4>duration</h4>
+                                <h3 class="font-semibold text-[#3333A3]">Duration</h3>
                                 <p>{{thisEvent.duration}} min.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-row mx-5 my-2 pb-5 border-b-2">
+                <div class="flex flex-row border-b-2 mx-7 pb-1.5 mt-2">
                     <h3 class="basis-1/5 text-[16px] font-semibold">Appointment</h3>
                     <div class="basis-4/5 flex flex-col w-full ml-5">
                         <div v-show="new Date(editingEvent.dateTime)!='Invalid Date'" class="flex flex-row">
@@ -140,30 +141,30 @@
                         </span>
                         <div class="flex flex-row my-1">
                             <div class="basis-1/2">
-                                <h3>date</h3>
+                                <h3 class="font-semibold text-[#3333A3]">Date</h3>
                                 <input type="date" v-model="editingEvent.date" :min="datetimeFormat.getTodayDate(new Date())"
-                                    class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]"/>
+                                    class="bg-gray-50 border border-gray-300 rounded-lg w-3/6 p-1 mt-1"/>
                             </div>
                             <div class="basis-1/2">
-                                <h3>time</h3>
+                                <h3 class="font-semibold text-[#3333A3]">Time</h3>
                                 <input type="time" v-model="editingEvent.time"
-                                       class="bg-[#E3ECFC] p-1 rounded-sm text-[#3333A3]"/>
+                                       class="bg-gray-50 border border-gray-300 rounded-lg w-3/6 p-1 mt-1"/>
                             </div>
                         </div>
 
                     </div>
                 </div>
-                <div class="flex flex-row mx-5 my-2">
-                    <h3 class="basis-1/5 text-[16px] font-semibold my-2 text-[#3333A3]">More details</h3>
+                <div class="flex flex-row mx-7 mt-2">
+                    <h3 class="basis-1/5 text-[16px] font-semibold my-2">More details</h3>
                     <div class="basis-4/5 flex flex-col w-full ml-5">
                         <div class="flex flex-row my-1">
                             <div class="basis-1/2 pr-5">
-                                <h3>note</h3>
+                                <h3 class="font-semibold text-[#3333A3]">Note</h3>
                                 <textarea maxlength="500" v-model="editingEvent.notes"
-                                    class="bg-[#E3ECFC] p-1 text-[#3333A3] rounded-sm h-20 w-full">{{editingEvent.notes}}</textarea>
+                                    class="bg-gray-50 border border-gray-300 rounded-lg h-20 w-full p-1 mt-1">{{editingEvent.notes}}</textarea>
                             </div>
                             <div class="basis-1/2">
-                                <h3>file</h3>
+                                <h3 class="font-semibold text-[#3333A3]">File</h3>
                                 <span v-if="editingEvent.attachmentName === null && inputFile === null">-</span>
                                 <span v-else-if="editingEvent.attachmentName !== null && inputFile === null">
                                     {{editingEvent.attachmentName}} <IconDelete class="w-4 h-4 inline text-red-400" @click="clearFile()"/></span>
@@ -177,7 +178,7 @@
                 </div>
             </div>
             
-            <div class="text-right mb-3">
+            <div class="text-right">
                 <button @click="$emit('hideEditMode'), resetFile()" class="bg-red-100 text-red-500 py-1.5 px-4 rounded-full 
                            hover:bg-red-500 hover:text-white active:bg-[#3333A3] duration-300">Cancel</button>
                 &ensp;
@@ -204,17 +205,17 @@
 </template>
  
 <style scoped>
-h4, b{
+/* h4, b{
     font-weight: bolder;
-    color: #8181FA;
+    color: #3333A3;
 }
 h3{
     font-weight: bolder;
-    color: #3333A3;
+    color: #000;
 }
 p {
     font-size: 14px;
     margin-top: 0em;
-}
+} */
    
 </style>
