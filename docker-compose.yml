@@ -54,6 +54,7 @@ services:
       }'
     volumes:
       - .m2:/root/.m2
+      - /public/fileStorage:/public/fileStorage
     stdin_open: true
     tty: true
 
