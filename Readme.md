@@ -259,6 +259,6 @@ upstream backend-server {
 
 ```
 ### Reference
-INT221 Implement HTTPS by Sumate Maneesart
-nginx - client_max_body_size - https://stackoverflow.com/questions/2056124/nginx-client-max-body-size-has-no-effect
+* INT221 Implement HTTPS by Sumate Maneesart
+* nginx - client_max_body_size - https://stackoverflow.com/questions/2056124/nginx-client-max-body-size-has-no-effect
 
