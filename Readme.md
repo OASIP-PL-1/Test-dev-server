@@ -36,7 +36,7 @@
     ``` 
 
 2. ## วิธี check container
-    ```conf
+    ```
     ##view container status and name 
     sudo docker ps -a
 
@@ -259,3 +259,6 @@ upstream backend-server {
 
 ```
 ### Reference
+INT221 Implement HTTPS by Sumate Maneesart
+nginx - client_max_body_size - https://stackoverflow.com/questions/2056124/nginx-client-max-body-size-has-no-effect
+
